@@ -7,7 +7,7 @@ import { useLaboratoryPaymentStore } from "../../../stores/dentalOrderReportStor
 import useTechnicianStore from "../../../stores/technicianStore";
 
 // Style
-// import "../../assets/style/addsize.css";
+import "../../assets/style/LaboratoryPage/addtechreport.css";
 
 // Images
 import acceptButton from "../../assets/images/EmployeesPage/verifyProcess.png";

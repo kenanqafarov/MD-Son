@@ -1,4 +1,4 @@
-const BASE_URL = 'http://83.171.249.199:5555/api/v1';
+const BASE_URL = 'http://169.58.183.137:5555/api/v1';
 
 const parseFDINumber = (toothNo) => {
   const t = Number(toothNo);
