@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../src/api/config";
 import { create } from "zustand";
 import {
   getAllReservations,
@@ -11,7 +12,7 @@ import {
 } from "../src/api/reservation";
 import axios from "axios";
 import axiosInstance from "../src/api/temp-axios-auth";
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 const useReservationStore = create((set) => ({
   reservations: [],

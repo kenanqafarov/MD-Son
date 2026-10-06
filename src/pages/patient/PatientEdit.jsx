@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CustomDropdown from "../../components/CustomDropdown";
@@ -51,7 +52,7 @@ const PatientEdit = () => {
     const fetchDoctors = async () => {
       try {
         const token = localStorage.getItem("token");
-        const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+        
         const response = await axios.get(
           `${API_BASE_URL}/general-calendar/read-doctors`,
           {

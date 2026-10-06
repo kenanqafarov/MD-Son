@@ -1,23 +1,24 @@
+import { API_BASE_URL } from "./config";
 import axiosInstance from "./temp-axios-auth";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL + "/general-calendar";
+const GENERAL_CALENDAR_URL = `${API_BASE_URL}/general-calendar`;
 
 // 🔽 Həkimlər
 export const getDoctors = async () => {
-  const response = await axiosInstance.get(`${API_BASE_URL}/read-doctors`);
+  const response = await axiosInstance.get(`${GENERAL_CALENDAR_URL}/read-doctors`);
   return response.data;
 };
 
 // 🔽 Otaqlar
 export const getRooms = async () => {
-  const response = await axiosInstance.get(`${API_BASE_URL}/read-rooms`);
+  const response = await axiosInstance.get(`${GENERAL_CALENDAR_URL}/read-rooms`);
   return response.data;
 };
 
 // 🔽 Randevu yarat
 export const createAppointment = async (appointmentData) => {
   const response = await axiosInstance.post(
-    `${API_BASE_URL}/new-appointment`,
+    `${GENERAL_CALENDAR_URL}/new-appointment`,
     appointmentData
   );
   return response.data;
@@ -26,7 +27,7 @@ export const createAppointment = async (appointmentData) => {
 // 🔽 Randevu yenilə
 export const updateAppointment = async (appointmentData) => {
   const response = await axiosInstance.put(
-    `${API_BASE_URL}/update-appointment`,
+    `${GENERAL_CALENDAR_URL}/update-appointment`,
     appointmentData
   );
   return response.data;
@@ -35,7 +36,7 @@ export const updateAppointment = async (appointmentData) => {
 // 🔽 Randevu sil
 export const deleteAppointment = async (id) => {
   const response = await axiosInstance.delete(
-    `${API_BASE_URL}/delete-appointment/${id}`
+    `${GENERAL_CALENDAR_URL}/delete-appointment/${id}`
   );
   return response.data;
 };
@@ -43,7 +44,7 @@ export const deleteAppointment = async (id) => {
 // 🔽 Otağa görə randevular
 export const getRoomPatients = async (cabinetName) => {
   const response = await axiosInstance.get(
-    `${API_BASE_URL}/selecting-room-viewing-patient/${cabinetName}`
+    `${GENERAL_CALENDAR_URL}/selecting-room-viewing-patient/${cabinetName}`
   );
   return response.data;
 };
@@ -51,7 +52,7 @@ export const getRoomPatients = async (cabinetName) => {
 // 🔽 Pasiyent detalları
 export const getPatientDetails = async (patientId) => {
   const response = await axiosInstance.get(
-    `${API_BASE_URL}/selecting-patient-to-read/${patientId}`
+    `${GENERAL_CALENDAR_URL}/selecting-patient-to-read/${patientId}`
   );
   return response.data;
 };
@@ -59,7 +60,7 @@ export const getPatientDetails = async (patientId) => {
 // 🔽 Həkimə görə randevular
 export const getDoctorPatients = async (doctorId) => {
   const response = await axiosInstance.get(
-    `${API_BASE_URL}/selecting-doctor-viewing-patient/${doctorId}`
+    `${GENERAL_CALENDAR_URL}/selecting-doctor-viewing-patient/${doctorId}`
   );
   return response.data;
 };

@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "./config";
 import axiosInstance from '../api/temp-axios-auth';
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 const warehouseStockRoomApiService = {
   searchRoomStock: async (searchPayload) => {

@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 // src/services/warehouseService.js
 import axiosInstance from '../api/temp-axios-auth';
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 const warehouseClinic = {
   searchWarehouse: async (searchPayload) => {

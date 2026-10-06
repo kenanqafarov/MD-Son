@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 // api/anamnesis-list.js
 import axiosInstance from "./temp-axios-auth";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 // CREATE - POST /api/v1/anamnesis-list/create
 export const createAnamnesisItem = async (data) => {

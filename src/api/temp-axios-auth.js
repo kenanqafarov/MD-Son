@@ -1,12 +1,6 @@
 import axios from "axios";
 import useAuthStore from "../../stores/authStore";
-
-let API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BASE_URL;
-
-if (API_BASE_URL === undefined || API_BASE_URL === "undefined" || !API_BASE_URL) {
-  console.warn("⚠️ Environment variables VITE_API_URL and VITE_BASE_URL are not defined. Falling back to '/api/v1'.");
-  API_BASE_URL = "/api/v1";
-}
+import { API_BASE_URL } from "./config";
 
 // Helper function to check if token is expired
 function isTokenExpired(token) {

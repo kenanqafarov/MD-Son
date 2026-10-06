@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 // src/api/warehouse-receipts.js
 import axiosInstance from "./temp-axios-auth"; // Bu yolun düzgün olduğuna əmin olun!
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 /**
  * Updates the pending status of a warehouse receipt.

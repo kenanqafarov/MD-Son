@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useEffect, useState, useMemo } from "react";
 import SimpleList from "../../components/list/SimpleList";
 import SearchIcon from "../../assets/icons/Search";
@@ -79,7 +80,7 @@ const StockImport = () => {
  const fetchEntryDetail = async (id) => {
   try {
    const res = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/warehouse-entry/info/${id}`,
+    `${API_BASE_URL}/warehouse-entry/info/${id}`,
     {
      headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,

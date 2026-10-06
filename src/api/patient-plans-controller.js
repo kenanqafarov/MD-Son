@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "./config";
 import axiosInstance from "./temp-axios-auth";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 // ✔ read category and operation items
 export const readCategoryAndOperationItems = async (id) => {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { HiArrowsUpDown } from "react-icons/hi2";
@@ -93,7 +94,7 @@ function PatientsList() {
 
     // Cache yoxdursa, API-dən gətir
     const token = localStorage.getItem("token");
-    const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+    
     axios
       .get(`${API_BASE_URL}/patient/read`, {
         headers: {
@@ -115,7 +116,7 @@ function PatientsList() {
   const removePatient = useCallback(async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+      
       await axios.delete(
         `${API_BASE_URL}/patient/delete/${id}`,
         {

@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -144,7 +145,7 @@ const EmployeeSchedule = () => {
           "Content-Type": "application/json",
         };
 
-        const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+        
         const [employeesResponse, schedulesResponse, roomsResponse] =
           await Promise.all([
             fetch(`${API_BASE_URL}/add-worker/read`, {

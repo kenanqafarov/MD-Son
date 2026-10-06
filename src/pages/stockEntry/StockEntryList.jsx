@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
@@ -36,7 +37,7 @@ const StockEntryList = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL || "/api/v1"}/add-worker/info/${workerId}`,
+        `${API_BASE_URL}/add-worker/info/${workerId}`,
         {
           method: "GET",
           headers: {

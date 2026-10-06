@@ -6,8 +6,8 @@ import {
   searchWorkerSchedules,
   deleteWorkerSchedule,
 } from "../src/api/worker-schedule";
-import axios from "axios";
-const API_BASE_URL = "http://169.58.183.137:5555/api/v1";
+import axiosInstance from "../src/api/temp-axios-auth";
+
 
 const useWorkersScheduleStore = create((set, get) => ({
   schedules: [], // Initialize as empty array
@@ -58,8 +58,8 @@ const useWorkersScheduleStore = create((set, get) => ({
   searchSchedules: async (searchData) => {
     set({ loading: true, error: null });
     try {
-      const response = await axios.post(
-        `${API_BASE_URL}/workers-work-schedule/search`,
+      const response = await axiosInstance.post(
+        `/workers-work-schedule/search`,
         searchData,
         {
           headers: {

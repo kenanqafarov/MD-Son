@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "./config";
 // src/api/deletionFromWarehouseApi.js
 import axiosInstance from "./temp-axios-auth";
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 /**
  * Anbardan silinmə əməliyyatlarının siyahısını oxuyur.

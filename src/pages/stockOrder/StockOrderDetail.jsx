@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 // StockOrderEdit.jsx
 
 import { useState, useEffect } from "react";
@@ -15,7 +16,7 @@ import useWorkerStore from "../../../stores/workerStore";
 import useCalendarStore from "../../../stores/calendarStore";
 import "../../assets/style/StockOrder/stockorderedit.css";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+
 
 const StockOrderDetail = () => {
   const navigate = useNavigate();

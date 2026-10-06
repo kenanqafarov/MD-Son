@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useState } from "react";
 import "../../assets/style/GeneralSettings/editsettings.css";
 
@@ -25,7 +26,7 @@ const EditSettings = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem("token");
-      const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+      
       const response = await fetch(`${API_BASE_URL}/general-settings/update`, {
         method: "PUT",
         headers: {

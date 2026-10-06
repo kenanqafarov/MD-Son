@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useState, useEffect } from "react";
 import { FaDownload } from "react-icons/fa";
 import EditIcon from "../../assets/icons/Edit";
@@ -28,7 +29,7 @@ const InfoAdmin = ({ showEdit = true }) => {
       }
 
       try {
-        const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+        
         const response = await fetch(
           `${API_BASE_URL}/add-worker/info/${id}`,
           {

@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 // api/anamnes.js
 import axiosInstance from "./temp-axios-auth";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 export const createAnamnesis = (data) => {
   return axiosInstance.post(`${API_BASE_URL}/anamnesis-list/create`, data);

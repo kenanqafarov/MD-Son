@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 // src/api/warehouse-removals.js
 import axiosInstance from "./temp-axios-auth"; // Bu yolun düzgün olduğuna əmin olun!
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 /**
  * Searches for warehouse removal records based on provided criteria.

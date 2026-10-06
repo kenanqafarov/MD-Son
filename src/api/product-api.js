@@ -1,7 +1,8 @@
+import { API_BASE_URL } from "./config";
 import axiosInstance from "./temp-axios-auth";
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
 
 export const createProduct = async (productData) => {
   try {

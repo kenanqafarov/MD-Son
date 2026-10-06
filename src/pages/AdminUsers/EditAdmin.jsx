@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -6,7 +7,7 @@ import AddPhotoIcon from "../../assets/icons/AddPhoto";
 import CloseIcon from "../../assets/icons/Close";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+
 
 function EditAdmin() {
   const { id } = useParams();

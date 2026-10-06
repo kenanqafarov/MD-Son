@@ -1,3 +1,4 @@
+import axiosInstance from "../../api/temp-axios-auth";
 import React, { useEffect } from "react";
 import StockOrderForm from "../../components/StockOrderForm.jsx";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,8 +19,8 @@ const StockOrderDetail = ({ mode }) => {
 
   const handleSubmit = async (formData) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/order-from-warehouse/update/${id}`,
+      await axiosInstance.put(
+        `/order-from-warehouse/update/${id}`,
         formData
       );
       navigate("/stock/order");

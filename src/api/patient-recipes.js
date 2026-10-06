@@ -1,6 +1,7 @@
+import { API_BASE_URL } from "./config";
 import axiosInstance from "./temp-axios-auth";
 
-const BASE_URL = import.meta.env.VITE_BASE_URL + "/patient-recipes";
+const BASE_URL = `${API_BASE_URL}/patient-recipes`;
 
 // CREATE - POST
 export const createPatientRecipe = async (data) => {

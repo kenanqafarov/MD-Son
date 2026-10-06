@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useEffect, useState } from "react";
 import { CiSearch, CiCircleInfo, CiExport } from "react-icons/ci";
 import { GoTrash } from "react-icons/go";
@@ -32,7 +33,7 @@ const AdminUser = () => {
           throw new Error("Refresh token not found.");
         }
 
-        const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+        
         const response = await fetch(
           `${API_BASE_URL}/add-worker/read`,
           {
@@ -92,7 +93,7 @@ const AdminUser = () => {
         throw new Error("Refresh token not found.");
       }
 
-      const API_BASE_URL = import.meta.env.VITE_BASE_URL || "/api/v1";
+      
       const response = await fetch(
         `${API_BASE_URL}/add-worker/delete/${userToDeleteId}`,
         {

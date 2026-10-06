@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +53,7 @@ const PatientAdd = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/general-calendar/read-doctors`,
+          `${API_BASE_URL}/general-calendar/read-doctors`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

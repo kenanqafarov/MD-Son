@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "../../api/config";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProductCategoryStore } from "../../../stores/productCategories";
@@ -26,7 +27,7 @@ const StockImportEdit = () => {
   const fetchEntryDetail = async () => {
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/warehouse-entry/info/${id}`,
+        `${API_BASE_URL}/warehouse-entry/info/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
