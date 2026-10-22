@@ -2,6 +2,7 @@ import { Button, Form, Input, message, Select } from 'antd'
 import React, { useEffect } from 'react'
 import useInsuranceCompanyStore from '../../../../../../stores/insuranceStore';
 import usePlansStore from '../../../../../../stores/plans';
+import usePatientStore from '../../../../../../stores/patiendStore';
 
 const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
   const [form] = Form.useForm();
@@ -17,6 +18,8 @@ const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
     updatePlans,
     loading: plansLoading,
   } = usePlansStore();
+
+  const { fetchPatientById } = usePatientStore();
 
   useEffect(() => {
     fetchList();
@@ -38,8 +41,31 @@ const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
       form.setFieldsValue(editingPlan);
     } else {
       form.resetFields();
+      if (patientId) {
+        fetchPatientById(patientId)
+          .then((patient) => {
+            if (patient && patient.insuranceCompanyId) {
+              form.setFieldsValue({
+                'Sığorta Şirkəti': patient.insuranceCompanyId,
+              });
+            } else {
+              form.setFieldsValue({
+                'Sığorta Şirkəti': 0,
+              });
+            }
+          })
+          .catch(() => {
+            form.setFieldsValue({
+              'Sığorta Şirkəti': 0,
+            });
+          });
+      } else {
+        form.setFieldsValue({
+          'Sığorta Şirkəti': 0,
+        });
+      }
     }
-  }, [editingPlan, form]);
+  }, [editingPlan, patientId, form, fetchPatientById]);
     
   const handleFinish = async (values) => {
     try {

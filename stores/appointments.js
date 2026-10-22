@@ -47,32 +47,74 @@ const useGeneralCalendarStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const data = await getRoomPatients(roomId);
-      set({ appointments: data, loading: false });
+      set({ appointments: Array.isArray(data) ? data : [], loading: false });
     } catch (error) {
-      console.error(`Failed to fetch patients for room ${roomId}:`, error);
-      set({ error: error.message, loading: false });
+      if (error?.response?.status === 404) {
+        set({ appointments: [], loading: false });
+      } else {
+        console.error(`Failed to fetch patients for room ${roomId}:`, error);
+        set({ error: error.message, loading: false, appointments: [] });
+      }
     }
   },
 
   // 🔽 Həkimə görə pasiyentləri yüklə
-// 🔽 Həkimə görə pasiyentləri yüklə
-fetchDoctorPatients: async (doctorId) => {
-  set({ loading: true, error: null });
-  try {
-    const data = await getDoctorPatients(doctorId);
-    console.log("Doctor patients data:", data);
-    // API-dən gələn məlumatların formatını yoxlayın
-    if (Array.isArray(data)) {
-      set({ appointments: data, loading: false });
-    } else {
-      console.error("API did not return an array:", data);
-      set({ appointments: [], loading: false, error: "Invalid data format" });
+  fetchDoctorPatients: async (doctorId) => {
+    set({ loading: true, error: null });
+    try {
+      const data = await getDoctorPatients(doctorId);
+      set({ appointments: Array.isArray(data) ? data : [], loading: false });
+    } catch (error) {
+      if (error?.response?.status === 404) {
+        set({ appointments: [], loading: false });
+      } else {
+        console.error(`Failed to fetch patients for doctor ${doctorId}:`, error);
+        set({ error: error.message, loading: false, appointments: [] });
+      }
     }
-  } catch (error) {
-    console.error(`Failed to fetch patients for doctor ${doctorId}:`, error);
-    set({ error: error.message, loading: false, appointments: [] });
-  }
-},
+  },
+
+  // 🔽 Bütün randevuları yüklə (bütün otaqlar üzrə)
+  fetchAllAppointments: async () => {
+    set({ loading: true, error: null });
+    try {
+      let roomsData = get().rooms;
+      if (!roomsData || roomsData.length === 0) {
+        roomsData = await getRooms();
+        if (Array.isArray(roomsData)) {
+          set({ rooms: roomsData });
+        }
+      }
+
+      const roomsList = Array.isArray(roomsData) ? roomsData : [];
+      const promises = roomsList.map(async (room) => {
+        try {
+          const res = await getRoomPatients(room.cabinetName);
+          return Array.isArray(res) ? res : [];
+        } catch (err) {
+          return [];
+        }
+      });
+
+      const allResults = await Promise.all(promises);
+      const allAppointments = allResults.flat();
+
+      const seen = new Set();
+      const uniqueAppointments = [];
+      for (const apt of allAppointments) {
+        const key = `${apt.patientName}_${apt.date}_${apt.time}_${apt.cabinetName || ""}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueAppointments.push(apt);
+        }
+      }
+
+      set({ appointments: uniqueAppointments, loading: false });
+    } catch (error) {
+      console.error("Failed to fetch all appointments:", error);
+      set({ error: error.message, loading: false, appointments: [] });
+    }
+  },
 
   // 🔽 Pasiyent detalları
   fetchPatientDetails: async (patientId) => {

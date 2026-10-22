@@ -1,15 +1,23 @@
 import { Button, Form, Input, message, Select } from 'antd'
 import React, { useEffect } from 'react'
-import usePatientInsuranceStore from '../../../../../../stores/patientInsuranceStore';
+import useInsuranceCompanyStore from '../../../../../../stores/insuranceStore';
 import usePlansStore from '../../../../../../stores/plans';
+import usePatientStore from '../../../../../../stores/patiendStore';
 
 const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
   const [form] = Form.useForm();
 
 
   const {
-      patientInsurance,
-    } = usePatientInsuranceStore();
+      insuranceCompanyList,
+      fetchList
+    } = useInsuranceCompanyStore();
+
+  const { fetchPatientById } = usePatientStore();
+
+  useEffect(() => {
+    fetchList();
+  }, [fetchList]);
 
   const {
     createPlans,
@@ -17,12 +25,12 @@ const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
     loading: plansLoading,
   } = usePlansStore();
 
-  // patientInsurance məlumatını Select options formatına çevir
+  // insuranceCompanyList məlumatını Select options formatına çevir
   const insuranceOptions = [
     { label: 'Yoxdur', value: 0 },
-    ...(Array.isArray(patientInsurance) 
-      ? patientInsurance.map(insurance => ({
-          label: insurance.insuranceCompanyName || insurance.policyNumber || `Sığorta #${insurance.id}`,
+    ...(Array.isArray(insuranceCompanyList) 
+      ? insuranceCompanyList.map(insurance => ({
+          label: insurance.companyName || `Sığorta #${insurance.id}`,
           value: insurance.id,
         }))
       : [])
@@ -33,8 +41,31 @@ const AddToPlan = ({ onClose, onFinish, editingPlan, patientId }) => {
       form.setFieldsValue(editingPlan);
     } else {
       form.resetFields();
+      if (patientId) {
+        fetchPatientById(patientId)
+          .then((patient) => {
+            if (patient && patient.insuranceCompanyId) {
+              form.setFieldsValue({
+                'Sığorta Şirkəti': patient.insuranceCompanyId,
+              });
+            } else {
+              form.setFieldsValue({
+                'Sığorta Şirkəti': 0,
+              });
+            }
+          })
+          .catch(() => {
+            form.setFieldsValue({
+              'Sığorta Şirkəti': 0,
+            });
+          });
+      } else {
+        form.setFieldsValue({
+          'Sığorta Şirkəti': 0,
+        });
+      }
     }
-  }, [editingPlan, form]);
+  }, [editingPlan, patientId, form, fetchPatientById]);
     
   const handleFinish = async (values) => {
     try {

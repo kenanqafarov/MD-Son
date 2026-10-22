@@ -47,42 +47,62 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
   }, [fetchPatients, fetchAppointmentTypes]);
 
   // Transform data for dropdowns
+  // Transform data for dropdowns
   const operationOptions = useMemo(() => {
     return (
-      appointmentTypes?.map((type) => ({
-        value: type.id.toString(),
-        label: type.appointmentTypeName,
-      })) || []
+      appointmentTypes
+        ?.filter((type) => type && type.id != null)
+        ?.map((type) => ({
+          value: String(type.id),
+          label: type.appointmentTypeName || "Randevu tipi",
+        })) || []
     );
   }, [appointmentTypes]);
 
   const roomOptions = useMemo(() => {
     return (
-      rooms?.map((room) => ({
-        value: room.cabinetName,
-        label: room.cabinetName,
-      })) || []
+      rooms
+        ?.filter((room) => room && room.cabinetName)
+        ?.map((room) => ({
+          value: room.cabinetName,
+          label: room.cabinetName,
+        })) || []
     );
   }, [rooms]);
 
   const patientOptions = useMemo(() => {
     return (
-      patients?.map((patient) => ({
-        value: patient.id.toString(),
-        label: `${patient.name} ${patient.surname} - ${patient.phone}`,
-        debt: patient.debt || 0,
-        doctorId: patient.doctorId || patient.doctor_id || patient.baseUser,
-        doctorName: patient.doctorName,
-      })) || []
+      patients
+        ?.filter((patient) => patient && (patient.id != null || patient.patientId != null))
+        ?.map((patient) => {
+          const id = patient.id ?? patient.patientId;
+          const fullName = [patient.name, patient.surname].filter(Boolean).join(" ").trim();
+          const label = patient.phone
+            ? `${fullName || "Pasiyent"} - ${patient.phone}`
+            : (fullName || "Pasiyent");
+          return {
+            value: String(id),
+            label,
+            debt: patient.debt || 0,
+            doctorId: patient.doctorId || patient.doctor_id || patient.baseUser,
+            doctorName: patient.doctorName,
+          };
+        }) || []
     );
   }, [patients]);
 
   const doctorOptions = useMemo(() => {
     return (
-      doctors?.map((doctor) => ({
-        value: doctor.doctorId,
-        label: `${doctor.name} ${doctor.surname}`,
-      })) || []
+      doctors
+        ?.filter((doctor) => doctor && (doctor.doctorId || doctor.id))
+        ?.map((doctor) => {
+          const id = doctor.doctorId || doctor.id;
+          const fullName = [doctor.name, doctor.surname].filter(Boolean).join(" ").trim();
+          return {
+            value: id,
+            label: fullName || doctor.username || "Həkim",
+          };
+        }) || []
     );
   }, [doctors]);
 
@@ -91,14 +111,19 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
     if (location.state?.selectedDateTime) {
       const { date, time } = location.state.selectedDateTime;
 
-      // Convert time object to string format
-      const timeString = `${String(time.hour || 9).padStart(2, "0")}:${String(
-        time.minute || 0
-      ).padStart(2, "0")}:00`;
+      // Convert time to string format
+      let timeString = "09:00:00";
+      if (typeof time === "string") {
+        timeString = time.length === 5 ? `${time}:00` : time;
+      } else if (typeof time === "object" && time) {
+        timeString = `${String(time.hour || 9).padStart(2, "0")}:${String(
+          time.minute || 0
+        ).padStart(2, "0")}:00`;
+      }
 
       setFormData((prev) => ({
         ...prev,
-        date,
+        date: date || "",
         time: timeString,
       }));
     }
@@ -260,7 +285,8 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
         });
       },
       onError: (error) => {
-        toast.error("Randevu yaradılarkən xəta baş verdi");
+        const serverMessage = error?.response?.data?.message || error?.response?.data || error?.message || "Randevu yaradılarkən xəta baş verdi";
+        toast.error(typeof serverMessage === "string" ? serverMessage : "Randevu yaradılarkən xəta baş verdi");
         console.error("Error creating appointment:", error);
 
         // Ətraflı error məlumatı

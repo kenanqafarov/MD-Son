@@ -6,6 +6,7 @@ import "../../assets/style/AdminUsers/editadmin.css";
 import AddPhotoIcon from "../../assets/icons/AddPhoto";
 import CloseIcon from "../../assets/icons/Close";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { formatNameInput, handleNameKeyDown } from "../../utils/textUtils";
 
 
 
@@ -120,7 +121,11 @@ function EditAdmin() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let finalVal = value;
+    if (["name", "surname"].includes(name)) {
+      finalVal = formatNameInput(value);
+    }
+    setFormData((prev) => ({ ...prev, [name]: finalVal }));
     setFormErrors((prev) => ({ ...prev, [name]: "" })); // Clear error on change
   };
 
@@ -149,8 +154,8 @@ function EditAdmin() {
       const payload = {
         id: id,
         username: formData.username,
-        name: formData.name,
-        surname: formData.surname,
+        name: formData.name ? formData.name.trim() : "",
+        surname: formData.surname ? formData.surname.trim() : "",
         permissions: formData.permissions,
         phone: formData.phone,
         // password is only sent if a new value is provided
@@ -253,6 +258,7 @@ function EditAdmin() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            onKeyDown={handleNameKeyDown}
             required
           />
         </div>
@@ -266,6 +272,7 @@ function EditAdmin() {
             name="surname"
             value={formData.surname}
             onChange={handleInputChange}
+            onKeyDown={handleNameKeyDown}
             required
           />
         </div>

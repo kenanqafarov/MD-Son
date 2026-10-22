@@ -19,10 +19,11 @@ const useOperationTypesStore = create((set) => ({
   error: null,
 
   // ✔ Fetch all
-  fetchAll: async () => {
+  fetchAll: async (insuranceCompanyId = null) => {
     set({ loading: true, error: null });
     try {
-      const data = await readOperationTypes();
+      const params = insuranceCompanyId ? { insuranceCompanyId } : {};
+      const data = await readOperationTypes(params);
       set({ operationTypes: data?.data || [], loading: false });
     } catch (err) {
       set({ error: err, loading: false });
@@ -50,10 +51,10 @@ const useOperationTypesStore = create((set) => ({
   },
 
   // ✔ Create
-  create: async (payload) => {
+  create: async (payload, insuranceCompanyId = null) => {
     try {
       await createOperationTypes(payload);
-      await useOperationTypesStore.getState().fetchAll();
+      await useOperationTypesStore.getState().fetchAll(insuranceCompanyId || payload?.insuranceCompanyId || null);
     } catch (err) {
       console.error("Create error:", err);
       throw err;
@@ -61,10 +62,10 @@ const useOperationTypesStore = create((set) => ({
   },
 
   // ✔ Update
-  update: async (id, payload) => {
+  update: async (id, payload, insuranceCompanyId = null) => {
     try {
       await updateOperationTypes(id, payload);
-      await useOperationTypesStore.getState().fetchAll();
+      await useOperationTypesStore.getState().fetchAll(insuranceCompanyId || payload?.insuranceCompanyId || null);
     } catch (err) {
       console.error("Update error:", err);
       throw err;
@@ -72,20 +73,20 @@ const useOperationTypesStore = create((set) => ({
   },
 
   // ✔ Update status
-  updateStatus: async (id, statusData) => {
+  updateStatus: async (id, statusData, insuranceCompanyId = null) => {
     try {
       await updateOperationTypesStatus(id, statusData);
-      await useOperationTypesStore.getState().fetchAll();
+      await useOperationTypesStore.getState().fetchAll(insuranceCompanyId);
     } catch (err) {
       console.error("Status update error:", err);
     }
   },
 
   // ✔ Delete
-  remove: async (id) => {
+  remove: async (id, insuranceCompanyId = null) => {
     try {
       await deleteOperationTypes(id);
-      await useOperationTypesStore.getState().fetchAll();
+      await useOperationTypesStore.getState().fetchAll(insuranceCompanyId);
     } catch (err) {
       console.error("Delete error:", err);
     }

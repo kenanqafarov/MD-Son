@@ -157,7 +157,7 @@ export const deleteWorker = async (id) => {
 export const fetchWorkersByPermission = async (permissionName) => {
   try {
     const response = await axiosInstance.post(
-      `${API_BASE_URL}/add-worker/read-permission/${permissionName}`
+      `${API_BASE_URL}/add-worker/read-permission/${encodeURIComponent(permissionName)}`
     );
     return response.data;
   } catch (error) {

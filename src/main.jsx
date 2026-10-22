@@ -344,6 +344,24 @@ const EditMedicine = lazy(() => import("./pages/ReceptsPage/EditMedicine"));
 const InsuranceList = lazy(() => import("./pages/Insurance/InsuranceList"));
 const AddInsurance = lazy(() => import("./pages/Insurance/AddInsurance"));
 const EditInsurance = lazy(() => import("./pages/Insurance/EditInsurance"));
+const InsuranceOperationCategoryList = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceOperationCategoryList")
+);
+const InsuranceAddOperationCategory = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceAddOperationCategory")
+);
+const InsuranceEditOperationCategory = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceEditOperationCategory")
+);
+const InsuranceOperationList = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceOperationList")
+);
+const InsuranceAddOperation = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceAddOperation")
+);
+const InsuranceEditOperation = lazy(() =>
+  import("./pages/Insurance/Operations/InsuranceEditOperation")
+);
 
 // 🦷 Dental Sets & Implants
 const DentalSetList = lazy(() => import("./pages/DentalSet/DentalSetList"));
@@ -817,15 +835,15 @@ const AnimatedRoutes = () => {
               element={<EmployeeSchedule />}
             />
             <Route
-              path="employees/work-schedule/:id"
+              path="/employees/work-schedule/:id"
               element={<EmployeeWorkScheduleList />}
             />
             <Route
-              path="employees/work-schedule/:id/add"
+              path="/employees/work-schedule/:id/add"
               element={<EmployeeWorkScheduleAdd />}
             />
             <Route
-              path="employees/work-schedule/:id/edit"
+              path="/employees/work-schedule/:id/edit"
               element={<EmployeeWorkScheduleEdit />}
             />
 
@@ -1088,6 +1106,30 @@ const AnimatedRoutes = () => {
             <Route path="/insurance" element={<InsuranceList />} />
             <Route path="/insurance/add" element={<AddInsurance />} />
             <Route path="/insurance/edit/:id" element={<EditInsurance />} />
+            <Route
+              path="/insurance/:insuranceId/operations"
+              element={<InsuranceOperationCategoryList />}
+            />
+            <Route
+              path="/insurance/:insuranceId/operations/add"
+              element={<InsuranceAddOperationCategory />}
+            />
+            <Route
+              path="/insurance/:insuranceId/operations/edit/:id"
+              element={<InsuranceEditOperationCategory />}
+            />
+            <Route
+              path="/insurance/:insuranceId/operations/:id"
+              element={<InsuranceOperationList />}
+            />
+            <Route
+              path="/insurance/:insuranceId/operations/:id/add"
+              element={<InsuranceAddOperation />}
+            />
+            <Route
+              path="/insurance/:insuranceId/operations/:id/edit/:operationId"
+              element={<InsuranceEditOperation />}
+            />
 
             {/* Dental Set Routes */}
             <Route path="/dental-set" element={<DentalSetList />} />

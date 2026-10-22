@@ -3,6 +3,7 @@ import "../../assets/style/Technicians/edittechnician.css";
 import AddPhotoIcon from "../../assets/icons/AddPhoto";
 import CloseIcon from "../../assets/icons/Close";
 import useTechnicianStore from "../../../stores/technicianStore";
+import { formatNameInput, handleNameKeyDown } from "../../utils/textUtils";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -64,6 +65,8 @@ function EditTechnician({ technicianId }) {
         ...prev,
         genderStatus: value === "male" ? "MAN" : "WOMAN",
       }));
+    } else if (["name", "surname", "patronymic"].includes(name)) {
+      setFormData((prev) => ({ ...prev, [name]: formatNameInput(value) }));
     } else if (name === "finCode") {
       setFormData((prev) => ({ ...prev, [name]: value.toUpperCase().slice(0, 7) }));
     } else {
@@ -74,9 +77,9 @@ function EditTechnician({ technicianId }) {
   const handleSubmit = async () => {
     try {
       const dataToSend = {
-        name: formData.name,
-        surname: formData.surname,
-        patronymic: formData.patronymic,
+        name: formData.name ? formData.name.trim() : "",
+        surname: formData.surname ? formData.surname.trim() : "",
+        patronymic: formData.patronymic ? formData.patronymic.trim() : "",
         finCode: formData.finCode,
         password: formData.password,
         dateOfBirth: formData.dateOfBirth,
@@ -122,6 +125,11 @@ function EditTechnician({ technicianId }) {
                 name={name}
                 value={formData[name]}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (["name", "surname", "patronymic"].includes(name)) {
+                    handleNameKeyDown(e);
+                  }
+                }}
               />
             </div>
           ))}

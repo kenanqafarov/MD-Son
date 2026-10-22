@@ -46,7 +46,9 @@ const useOperationItemsTypeStore = create((set) => ({
   create: async (payload) => {
     try {
       await createOperationItemsType(payload);
-      await useOperationItemsTypeStore.getState().fetchAllOp();
+      if (payload?.opTypeId) {
+        await useOperationItemsTypeStore.getState().fetchAllOp(payload.opTypeId);
+      }
     } catch (err) {
       console.error("Create error:", err);
       throw err;
@@ -54,20 +56,25 @@ const useOperationItemsTypeStore = create((set) => ({
   },
 
   // Mövcud operation items type yenilə
-  updateOp: async (id, payload) => {
+  updateOp: async (id, payload, categoryId = null) => {
     try {
       await updateOperationItemsType(id, payload);
-      await useOperationItemsTypeStore.getState().fetchAllOp();
+      const catId = categoryId || payload?.opTypeId;
+      if (catId) {
+        await useOperationItemsTypeStore.getState().fetchAllOp(catId);
+      }
     } catch (err) {
       console.error("Update error:", err);
       throw err;
     }
   },
 
-  updateStatus: async (id, statusData) => {
+  updateStatus: async (id, statusData, categoryId = null) => {
     try {
       await updateOperationItemsTypeStatus(id, statusData);
-      await useOperationItemsTypeStore.getState().fetchAllOp(); // siyahını yenilə
+      if (categoryId) {
+        await useOperationItemsTypeStore.getState().fetchAllOp(categoryId);
+      }
     } catch (err) {
       console.error("Status update error:", err);
     }

@@ -338,7 +338,7 @@ function AddQueue() {
         </div>
         {dateValidationError && (
           <div className="validation-error-container">
-            <span className="validation-error-icon">âš </span>
+            <span className="validation-error-icon">âš  </span>
             <span className="validation-error-message">
               {dateValidationError}
             </span>
@@ -373,7 +373,7 @@ function AddQueue() {
         </div>
         {timeValidationError && (
           <div className="validation-error-container">
-            <span className="validation-error-icon">âš </span>
+            <span className="validation-error-icon">âš  </span>
             <span className="validation-error-message">
               {timeValidationError}
             </span>

@@ -12,6 +12,8 @@ import CustomDropdown from "./CustomDropdown";
 import useWorkerStore from "../../stores/workerStore";
 import usePermissionStore from "../../stores/permissionStore";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { formatNameInput, handleNameKeyDown } from "../utils/textUtils";
+import { toast } from "react-toastify";
 
 function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
   const { addWorker } = useWorkerStore();
@@ -57,27 +59,64 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
       .max(20, "İstifadəçi Adı 3-20 simvol arasında olmalıdır")
       .required("İstifadəçi adı tələb olunur"),
     password:
-      mode === "view"
-        ? yup.string()
+      mode === "create"
+        ? yup
+            .string()
+            .required("Şifrə tələb olunur")
+            .test("password-rules", function (val) {
+              if (!val) return this.createError({ message: "Şifrə tələb olunur" });
+              if (val.length < 8) {
+                return this.createError({ message: "Şifrə minimum 8 simvol olmalıdır" });
+              }
+              if (!/[0-9]/.test(val)) {
+                return this.createError({ message: "Şifrədə ən azı bir rəqəm olmalıdır" });
+              }
+              if (!/[a-zA-Z]/.test(val)) {
+                return this.createError({ message: "Şifrədə ən azı bir hərf olmalıdır" });
+              }
+              if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val)) {
+                return this.createError({
+                  message: "Şifrədə ən azı bir xüsusi simvol (!, @, #, $, _ və s.) olmalıdır",
+                });
+              }
+              return true;
+            })
         : yup
             .string()
-            .matches(
-              /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!_]).{8,}$/,
-              "Şifrə minimum 8 simvol olmalı, böyük/kiçik hərf, rəqəm və xüsusi simvol içerməlidir"
-            )
-            .required("Şifrə tələb olunur"),
+            .nullable()
+            .test("password-rules-edit", function (val) {
+              if (!val || val.trim() === "") return true;
+              if (val.length < 8) {
+                return this.createError({ message: "Şifrə minimum 8 simvol olmalıdır" });
+              }
+              if (!/[0-9]/.test(val)) {
+                return this.createError({ message: "Şifrədə ən azı bir rəqəm olmalıdır" });
+              }
+              if (!/[a-zA-Z]/.test(val)) {
+                return this.createError({ message: "Şifrədə ən azı bir hərf olmalıdır" });
+              }
+              if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(val)) {
+                return this.createError({
+                  message: "Şifrədə ən azı bir xüsusi simvol (!, @, #, $, _ və s.) olmalıdır",
+                });
+              }
+              return true;
+            }),
     name: yup
       .string()
+      .transform((val) => (typeof val === "string" ? val.trim() : val))
       .min(3, "Ad 3-20 simvol arasında olmalıdır")
       .max(20, "Ad 3-20 simvol arasında olmalıdır")
       .required("Ad tələb olunur"),
     surname: yup
       .string()
+      .transform((val) => (typeof val === "string" ? val.trim() : val))
       .min(3, "Soyad 3-20 simvol arasında olmalıdır")
       .max(20, "Soyad 3-20 simvol arasında olmalıdır")
       .required("Soyad tələb olunur"),
     patronymic: yup
       .string()
+      .transform((val) => (typeof val === "string" ? val.trim() : val))
       .min(3, "Ata Adı 3-20 simvol arasında olmalıdır")
       .max(20, "Ata Adı 3-20 simvol arasında olmalıdır")
       .required("Ata Adı tələb olunur"),
@@ -101,16 +140,17 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         "Telefon nömrəsini (000)-000-00-00 formatında daxil edin"
       )
       .required("Telefon nömrəsi tələb olunur"),
-    phone2:
-      mode === "create"
-        ? yup
-            .string()
-            .matches(
-              /^\(\d{3}\)-\d{3}-\d{2}-\d{2}$/,
-              "Telefon nömrəsini (000)-000-00-00 formatında daxil edin"
-            )
-            .required("Mobil nömrə 2 tələb olunur")
-        : yup.string().nullable(),
+    phone2: yup
+      .string()
+      .nullable()
+      .test(
+        "phone2-format",
+        "Telefon nömrəsini (000)-000-00-00 formatında daxil edin",
+        function (value) {
+          if (!value) return true;
+          return /^\(\d{3}\)-\d{3}-\d{2}-\d{2}$/.test(value);
+        }
+      ),
     homePhone: yup
       .string()
       .nullable()
@@ -186,7 +226,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
     },
   });
 
-  // Reset form when userData changes (async load fix)
+  // Reset form when userData or rawPermissions change
   useEffect(() => {
     if (userData) {
       reset({
@@ -210,7 +250,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         permissions: getDefaultPermissions(),
       });
     }
-  }, [userData]);
+  }, [userData, rawPermissions]);
 
   const handleEditButton = () => setMode("edit");
   const handleCancelButton = () =>
@@ -242,16 +282,23 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
       return permission ? permission.permissionName : permissionId;
     });
 
+    let formattedDob = data.dateOfBirth;
+    if (formattedDob instanceof Date) {
+      formattedDob = formattedDob.toISOString().split("T")[0];
+    } else if (typeof formattedDob === "string" && formattedDob.includes("T")) {
+      formattedDob = formattedDob.split("T")[0];
+    }
+
     const transformedData = {
         username: data.username || "",
         password: data.password || "",
-        name: data.name || "",
-        surname: data.surname || "",
-        patronymic: data.patronymic || "",
+        name: (data.name || "").trim(),
+        surname: (data.surname || "").trim(),
+        patronymic: (data.patronymic || "").trim(),
         finCode: (data.finCode || "").toUpperCase(),
         colorCode: (data.colorCode && data.colorCode.trim() !== "") ? data.colorCode : "#ffffff",
         genderStatus: data.genderStatus || "",
-        dateOfBirth: data.dateOfBirth || "",
+        dateOfBirth: formattedDob || "",
         degree: data.degree || "",
         phone: data.phone || "",
         phone2: data.phone2 || "",
@@ -263,13 +310,14 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         permissions: permissionsWithNames,
       };
 
-    console.log("🔍 Transformasyon əvvəl (data):", data);
-    console.log("🔍 Transformasyon sonra (transformedData):", JSON.stringify(transformedData, null, 2));
-
     try {
       if (mode === "edit") {
         const updateData = Object.keys(transformedData).reduce((acc, key) => {
-          if (
+          if (key === "password") {
+            if (transformedData.password && transformedData.password.trim() !== "") {
+              acc.password = transformedData.password;
+            }
+          } else if (
             JSON.stringify(transformedData[key]) !==
             JSON.stringify(userData[key])
           ) {
@@ -278,8 +326,9 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
           return acc;
         }, {});
 
-        // password həmişə göndərilməlidir - backend tələb edir
-        updateData.password = transformedData.password;
+        if (userData?.id) {
+          updateData.id = userData.id;
+        }
 
         await onSubmit(updateData);
       } else {
@@ -288,11 +337,23 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
       }
     } catch (error) {
       console.error("Form submission error:", error);
-      console.error("Error details:", error.response);
       const apiErrorMessage =
-        error?.response?.message ||
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error?.message ||
         "Xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin.";
-      setErrorMessage(apiErrorMessage);
+      setErrorMessage(typeof apiErrorMessage === 'string' ? apiErrorMessage : JSON.stringify(apiErrorMessage));
+    }
+  };
+
+  const handleFormError = (formErrors) => {
+    console.error("Form validation errors:", formErrors);
+    if (formErrors.password) {
+      toast.error(formErrors.password.message || "Şifrə tələblərə cavab vermir");
+    } else {
+      const firstKey = Object.keys(formErrors)[0];
+      const firstError = formErrors[firstKey];
+      toast.error(firstError?.message || "Zəhmət olmasa tələb olunan sahələri düzgün doldurun");
     }
   };
 
@@ -302,11 +363,12 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
       await onSubmit(pendingSubmitData);
     } catch (error) {
       console.error("Form submission error:", error);
-      console.error("Error details:", error.response);
       const apiErrorMessage =
-        error?.response?.message ||
+        error?.response?.data?.message ||
+        error?.response?.data ||
+        error?.message ||
         "Xəta baş verdi. Zəhmət olmasa, yenidən cəhd edin.";
-      setErrorMessage(apiErrorMessage);
+      setErrorMessage(typeof apiErrorMessage === 'string' ? apiErrorMessage : JSON.stringify(apiErrorMessage));
     } finally {
       setPendingSubmitData(null);
       setShowSaveModal(false);
@@ -334,20 +396,38 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         confirmText="Qəbul et"
         onConfirm={executePendingSubmit}
       />
-      <h3 className="main-form-title">
-        {mode === "create"
-          ? "İşçi əlavə et"
-          : mode === "edit"
-          ? "İşçi məlumatlarını yenilə"
-          : "İşçi məlumatları"}
-      </h3>
+      <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+        <h3 className="main-form-title !mb-0">
+          {mode === "create"
+            ? "İşçi əlavə et"
+            : mode === "edit"
+            ? "İşçi məlumatlarını yenilə"
+            : "İşçi məlumatları"}
+        </h3>
+        {mode !== "view" && (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="btn-cancel !h-10 !w-auto !px-4 !m-0"
+              onClick={handleCancelButton}>
+              Ləğv et
+            </button>
+            <button
+              type="button"
+              className="btn-submit !h-10 !w-auto !px-6 !m-0"
+              onClick={handleSubmit(handleFormSubmit, handleFormError)}>
+              {mode === "create" ? "Əlavə et" : "Yadda saxla"}
+            </button>
+          </div>
+        )}
+      </div>
       {errorMessage && (
         <div className="alert alert-danger" role="alert">
           {errorMessage}
         </div>
       )}
 
-      <form className="main-form" onSubmit={handleSubmit(handleFormSubmit)}>
+      <form className="main-form" onSubmit={handleSubmit(handleFormSubmit, handleFormError)}>
         <div className={`${mode === "view" ? "profile-buttons" : ""}`}>
           <ProfileImage 
             initialImage={userData?.profilePhotoPath} 
@@ -401,7 +481,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
             {(mode === "create" || mode === "edit") && (
               <div className="main-form-group password-field-group">
                 <label htmlFor="password">
-                  Şifrə <span className="text-red-500">*</span>
+                  Şifrə {mode === "create" ? <span className="text-red-500">*</span> : <span className="text-xs text-gray-500 font-normal">(dəyişmək istəmirsinizsə boş buraxın)</span>}
                 </label>
                 <div className="password-input-wrapper">
                   <input
@@ -411,10 +491,12 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
                     placeholder={
                       errors.password
                         ? errors.password.message
-                        : "Şifrəni daxil edin"
+                        : mode === "create"
+                        ? "Şifrəni daxil edin"
+                        : "Yeni şifrə (istəyə görə)"
                     }
                     className={
-                      errors.password && !watch("password")
+                      errors.password
                         ? "border-2 text-sm border-red-500 bg-red-50 placeholder-red-500"
                         : ""
                     }
@@ -425,6 +507,11 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
                     {showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
                   </span>
                 </div>
+                {errors.password && (
+                  <span className="text-red-500 text-xs mt-1 block font-medium">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
             )}
 
@@ -435,7 +522,14 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
               <input
                 id="name"
                 type="text"
-                {...register("name")}
+                {...register("name", {
+                  onChange: (e) => {
+                    const formatted = formatNameInput(e.target.value);
+                    e.target.value = formatted;
+                    setValue("name", formatted, { shouldValidate: true });
+                  },
+                })}
+                onKeyDown={handleNameKeyDown}
                 placeholder={
                   errors.name ? errors.name.message : "Adı daxil edin"
                 }
@@ -455,7 +549,14 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
               <input
                 id="surname"
                 type="text"
-                {...register("surname")}
+                {...register("surname", {
+                  onChange: (e) => {
+                    const formatted = formatNameInput(e.target.value);
+                    e.target.value = formatted;
+                    setValue("surname", formatted, { shouldValidate: true });
+                  },
+                })}
+                onKeyDown={handleNameKeyDown}
                 placeholder={
                   errors.surname ? errors.surname.message : "Soyadı daxil edin"
                 }
@@ -475,7 +576,14 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
               <input
                 id="patronymic"
                 type="text"
-                {...register("patronymic")}
+                {...register("patronymic", {
+                  onChange: (e) => {
+                    const formatted = formatNameInput(e.target.value);
+                    e.target.value = formatted;
+                    setValue("patronymic", formatted, { shouldValidate: true });
+                  },
+                })}
+                onKeyDown={handleNameKeyDown}
                 placeholder={
                   errors.patronymic
                     ? errors.patronymic.message
@@ -639,7 +747,6 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
             <div className="main-form-group">
               <label htmlFor="phone2">
                 Mobil nömrə 2
-                {mode === "create" && <span className="text-red-500">*</span>}
               </label>
               <input
                 id="phone2"
@@ -651,9 +758,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
                     setValue("phone2", formattedValue);
                   },
                 })}
-                placeholder={
-                  errors.phone2 ? errors.phone2.message : "(000)-000-00-00"
-                }
+                placeholder="(000)-000-00-00"
                 readOnly={mode === "view"}
                 className={`${mode === "view" ? "readonly" : ""} ${
                   errors.phone2 && !watch("phone2")
@@ -828,7 +933,10 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
 
         {mode !== "view" && (
           <div className="main-form-actions">
-            <button type="submit" className="btn-submit">
+            <button
+              type="submit"
+              className="btn-submit"
+              onClick={handleSubmit(handleFormSubmit, handleFormError)}>
               {mode === "create" ? "Əlavə et" : "Yenilə"}
             </button>
             <button

@@ -39,6 +39,15 @@ const processQueue = (error, token = null) => {
 
 axiosInstance.interceptors.request.use(
   async (config) => {
+    // Avoid duplicate /api/v1 prefix when callers use `${API_BASE_URL}/...` with axiosInstance
+    if (config.url) {
+      if (config.baseURL && config.url.startsWith(config.baseURL)) {
+        config.url = config.url.slice(config.baseURL.length);
+      } else if (config.url.startsWith("/api/v1")) {
+        config.url = config.url.slice(7);
+      }
+    }
+
     let token = localStorage.getItem("token");
 
     // Check if token is expired before making the request

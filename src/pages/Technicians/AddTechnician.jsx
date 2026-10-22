@@ -7,6 +7,7 @@ import AddPhotoIcon from "../../assets/icons/AddPhoto";
 import CloseIcon from "../../assets/icons/Close";
 import useTechnicianStore from "../../../stores/technicianStore";
 import usePermissionStore from "../../../stores/permissionStore";
+import { formatNameInput, handleNameKeyDown } from "../../utils/textUtils";
 
 function AddTechnician({ onClose }) {
   const { addTechnician } = useTechnicianStore();
@@ -100,7 +101,9 @@ function AddTechnician({ onClose }) {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     let finalValue = value;
-    if (name === "finCode") {
+    if (["name", "surname", "patronymic"].includes(name)) {
+      finalValue = formatNameInput(value);
+    } else if (name === "finCode") {
       finalValue = value.toUpperCase().slice(0, 7);
     }
     setFormData((prev) => ({
@@ -225,13 +228,13 @@ function AddTechnician({ onClose }) {
       const technicianData = {
         username: formData.username,
         password: formData.password,
-        name: formData.name,
-        surname: formData.surname,
+        name: formData.name ? formData.name.trim() : "",
+        surname: formData.surname ? formData.surname.trim() : "",
         finCode: formData.finCode,
         dateOfBirth: formData.dateOfBirth,
         phone: formData.phone,
         genderStatus: formData.genderStatus,
-        patronymic: formData.patronymic,
+        patronymic: formData.patronymic ? formData.patronymic.trim() : "",
         email: formData.email,
         phone2: formData.phone2 === "(000)-000-00-00" ? "" : formData.phone2,
         phone3: formData.phone3 === "(000)-000-00-00" ? "" : formData.phone3,
@@ -305,6 +308,7 @@ function AddTechnician({ onClose }) {
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
+                onKeyDown={handleNameKeyDown}
                 placeholder={errors.name || "Ad"}
                 style={{ borderColor: errors.name ? '#ef4444' : '' }}
               />
@@ -319,6 +323,7 @@ function AddTechnician({ onClose }) {
                 name="surname"
                 value={formData.surname}
                 onChange={handleInputChange}
+                onKeyDown={handleNameKeyDown}
                 placeholder={errors.surname || "Soyad"}
                 style={{ borderColor: errors.surname ? '#ef4444' : '' }}
               />
@@ -333,6 +338,7 @@ function AddTechnician({ onClose }) {
                 name="patronymic"
                 value={formData.patronymic}
                 onChange={handleInputChange}
+                onKeyDown={handleNameKeyDown}
                 placeholder={errors.patronymic || "Ata adı"}
                 style={{ borderColor: errors.patronymic ? '#ef4444' : '' }}
               />

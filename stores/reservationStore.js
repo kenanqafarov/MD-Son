@@ -25,7 +25,7 @@ const useReservationStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const data = await getAllReservations();
-      set({ reservations: data.data, loading: false });
+      set({ reservations: Array.isArray(data) ? data : (data?.data || []), loading: false });
     } catch (error) {
       set({ error: error.message || "Xəta baş verdi", loading: false });
     }

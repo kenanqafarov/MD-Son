@@ -45,16 +45,22 @@ const usePatientStore = create((set, get) => ({
     }
   },
 
-  // Add new patient - Optimistic update
+  // Add new patient
   addPatient: async (patientData) => {
     set({ loading: true, error: null });
     try {
       const newPatient = await createPatient(patientData);
-      // Optimistic update - bütün list-i yenidən fetch etmə
-      set((state) => ({
-        patients: [newPatient, ...state.patients],
-        loading: false,
-      }));
+      // Backend create does not return id, fetch full list to get accurate patient IDs
+      try {
+        const fullPatients = await readPatients();
+        if (Array.isArray(fullPatients)) {
+          set({ patients: fullPatients, loading: false });
+        } else {
+          set({ loading: false });
+        }
+      } catch (fetchErr) {
+        set({ loading: false });
+      }
       return newPatient;
     } catch (err) {
       set({ error: err.message, loading: false });
@@ -62,22 +68,25 @@ const usePatientStore = create((set, get) => ({
     }
   },
 
-  // Update patient - Optimistic update
+  // Update patient
   updatePatient: async (patientData) => {
     set({ loading: true, error: null });
     try {
       const updated = await editPatient(patientData);
-      // Optimistic update
-      set((state) => ({
-        patients: state.patients.map((p) =>
-          p.id === updated.id ? updated : p
-        ),
-        selectedPatient:
-          state.selectedPatient?.id === updated.id
-            ? updated
-            : state.selectedPatient,
-        loading: false,
-      }));
+      try {
+        const fullPatients = await readPatients();
+        if (Array.isArray(fullPatients)) {
+          set({
+            patients: fullPatients,
+            selectedPatient: updated?.id ? updated : get().selectedPatient,
+            loading: false,
+          });
+        } else {
+          set({ loading: false });
+        }
+      } catch (e) {
+        set({ loading: false });
+      }
       return updated;
     } catch (err) {
       set({ error: err.message, loading: false });

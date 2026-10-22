@@ -143,7 +143,7 @@ const DualSelectTable = ({ insuranceId, onOperationSelect, onCategoryAndOperatio
           {filteredOperations.length > 0 ? (
             <div className="space-y-2">
               {filteredOperations
-                .filter(op => op.status === 'ACTIVE')
+                .filter(op => !op.status || op.status === 'ACTIVE')
                 .map((item) => (
                   <div
                     key={item.id}

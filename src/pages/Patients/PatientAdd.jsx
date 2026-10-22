@@ -9,7 +9,10 @@ import usePatientStore from "../../../stores/patiendStore";
 import useBlackListResultStore from "../../../stores/blacklistReasonStore";
 import usePriceCategoryStore from "../../../stores/priceCategoryStore";
 import useSpecializationStore from "../../../stores/useSpecializationStore";
+import useInsuranceCompanyStore from "../../../stores/insuranceStore";
 import { toast, ToastContainer } from "react-toastify";
+import { formatNameInput, handleNameKeyDown } from "../../utils/textUtils";
+import { savePatientColor } from "../../utils/patientColorUtils";
 import "react-toastify/dist/ReactToastify.css";
 
 const PatientAdd = () => {
@@ -20,6 +23,7 @@ const PatientAdd = () => {
   const { categories: priceCategories, fetchCategories: fetchPriceCategories } =
     usePriceCategoryStore();
   const { specializations, fetchSpecializations } = useSpecializationStore();
+  const { insuranceCompanyList, fetchList: fetchInsuranceCompanies } = useInsuranceCompanyStore();
 
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -30,10 +34,12 @@ const PatientAdd = () => {
     surname: "",
     patronymic: "",
     finCode: "",
+    colorCode: "#3b82f6",
     genderStatus: "",
     dateOfBirth: "",
     priceCategoryName: "",
     specializationName: "",
+    insuranceCompanyId: "",
     doctorId: null,
     isVip: false,
     isBlacklisted: false,
@@ -70,7 +76,8 @@ const PatientAdd = () => {
     fetchBlacklistOptions();
     fetchPriceCategories();
     fetchSpecializations();
-  }, [fetchBlacklistOptions, fetchPriceCategories, fetchSpecializations]);
+    fetchInsuranceCompanies();
+  }, [fetchBlacklistOptions, fetchPriceCategories, fetchSpecializations, fetchInsuranceCompanies]);
 
   const formatPhoneNumber = (value) => {
     const cleaned = ("" + value).replace(/\D/g, "");
@@ -123,6 +130,11 @@ const PatientAdd = () => {
       if (errors.finCode) {
         setErrors((prev) => ({ ...prev, finCode: undefined }));
       }
+    } else if (["name", "surname", "patronymic"].includes(name)) {
+      newValue = formatNameInput(value);
+      if (errors[name]) {
+        setErrors((prev) => ({ ...prev, [name]: undefined }));
+      }
     } else if (["phone", "whatsapp", "workPhone", "homePhone"].includes(name)) {
       newValue = formatPhoneNumber(value);
     } else if (name === "dateOfBirth") {
@@ -138,9 +150,9 @@ const PatientAdd = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name) newErrors.name = "Ad tələb olunur";
-    if (!formData.surname) newErrors.surname = "Soyad tələb olunur";
-    if (!formData.patronymic) newErrors.patronymic = "Ata adı tələb olunur";
+    if (!formData.name || !formData.name.trim()) newErrors.name = "Ad tələb olunur";
+    if (!formData.surname || !formData.surname.trim()) newErrors.surname = "Soyad tələb olunur";
+    if (!formData.patronymic || !formData.patronymic.trim()) newErrors.patronymic = "Ata adı tələb olunur";
     if (!formData.genderStatus)
       newErrors.genderStatus = "Cinsiyyət tələb olunur";
     if (!formData.priceCategoryName)
@@ -188,8 +200,35 @@ const PatientAdd = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleCancel = () => {
+    setErrors({});
+    setFormData({
+      name: "",
+      surname: "",
+      patronymic: "",
+      finCode: "",
+      genderStatus: "",
+      dateOfBirth: "",
+      priceCategoryName: "",
+      specializationName: "",
+      doctorId: null,
+      isVip: false,
+      isBlacklisted: false,
+      blacklistCategory: "",
+      phone: "",
+      whatsapp: "",
+      workPhone: "",
+      homePhone: "",
+      email: "",
+      homeAddress: "",
+      workAddress: "",
+      recommender: "",
+    });
+    navigate(-1);
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
     console.log("Göndərilən formData:", formData);
 
@@ -203,6 +242,9 @@ const PatientAdd = () => {
 
     const dataToSend = {
       ...formData,
+      name: (formData.name || "").trim(),
+      surname: (formData.surname || "").trim(),
+      patronymic: (formData.patronymic || "").trim(),
       specializationName: formData.specializationName,
       doctorId: formData.doctorId ? formData.doctorId.toString() : "",
       priceCategoryName: formData.priceCategoryName,
@@ -222,6 +264,8 @@ const PatientAdd = () => {
       formData.workAddress === "" ? null : formData.workAddress;
     dataToSend.recommender =
       formData.recommender === "" ? null : formData.recommender;
+    dataToSend.insuranceCompanyId =
+      formData.insuranceCompanyId ? Number(formData.insuranceCompanyId) : null;
 
     setLoading(true);
     try {
@@ -229,6 +273,14 @@ const PatientAdd = () => {
       console.log("Pasiyent uğurla əlavə olundu:", response);
       toast.success("Pasiyent uğurla əlavə olundu!");
       
+      savePatientColor({
+        id: response?.id,
+        name: formData.name,
+        surname: formData.surname,
+        finCode: formData.finCode,
+        color: formData.colorCode || "#3b82f6",
+      });
+
       // Cache-i temizlə ki yeni pasiyent göstərilsin
       localStorage.removeItem("patients_cache");
       localStorage.removeItem("patients_cache_timestamp");
@@ -249,6 +301,42 @@ const PatientAdd = () => {
   return (
     <div className="patientsGroupWrapper">
       <ToastContainer position="top-right" autoClose={2000} />
+      
+      {/* Yuxarıda Sabit / Sticky Başlıq və Yadda Saxla düyməsi */}
+      <div className="patientAddStickyHeader">
+        <h2 className="patientAddTitle">Yeni pasiyent əlavə et</h2>
+        <div className="patientAddTopActions">
+          <button
+            type="button"
+            className="addPatientCancelButton"
+            onClick={handleCancel}
+          >
+            <img
+              src={cancelButton}
+              className="addPatientCancelBTN"
+              alt="Cancel"
+            />
+            İmtina et
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="addPatientVerifyButton"
+            disabled={loading}
+          >
+            <img src={verifyButton} className="addPatientVerifyBTN" alt="Save" />
+            {loading ? (
+              <>
+                <span className="loading-spinner"></span>
+                Yüklənir...
+              </>
+            ) : (
+              "Yadda saxla"
+            )}
+          </button>
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="patientsGroupContainer">
         <div className="patientsGroupLeft">
           <div className="patientsGroupField">
@@ -260,6 +348,7 @@ const PatientAdd = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
+              onKeyDown={handleNameKeyDown}
               placeholder={errors.name || "Ad daxil edin"}
               className={`patientsGroupInputText placeholder:text-xs ${
                 errors.name ? "border-red-500 border-2" : ""
@@ -280,6 +369,7 @@ const PatientAdd = () => {
               name="surname"
               value={formData.surname}
               onChange={handleChange}
+              onKeyDown={handleNameKeyDown}
               placeholder={errors.surname || "Soyad daxil edin"}
               className={`patientsGroupInputText placeholder:text-xs ${
                 errors.surname ? "border-red-500 border-2" : ""
@@ -300,6 +390,7 @@ const PatientAdd = () => {
               name="patronymic"
               value={formData.patronymic}
               onChange={handleChange}
+              onKeyDown={handleNameKeyDown}
               placeholder={errors.patronymic || "Ata adı daxil edin"}
               className={`patientsGroupInputText placeholder:text-xs ${
                 errors.patronymic ? "border-red-500 border-2" : ""
@@ -486,6 +577,32 @@ const PatientAdd = () => {
 
           <div className="patientsGroupField">
             <label className="patientsGroupLabel">
+              Sığorta şirkəti
+            </label>
+            <select
+              name="insuranceCompanyId"
+              value={formData.insuranceCompanyId}
+              onChange={handleChange}
+              className="patientsGroupSelect text-xs"
+              style={{ color: "#000" }}
+            >
+              <option value="" style={{ color: "#000" }}>
+                Yoxdur
+              </option>
+              {(insuranceCompanyList || []).map((company) => (
+                <option
+                  key={company.id}
+                  value={company.id}
+                  style={{ color: "#000" }}
+                >
+                  {company.companyName}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="patientsGroupField">
+            <label className="patientsGroupLabel">
               Həkim <span className="patientsGroupRequired">*</span>
             </label>
             <select
@@ -559,6 +676,22 @@ const PatientAdd = () => {
                 {errors.blacklistCategory}
               </span>
             )}
+          </div>
+
+          <div className="patientsGroupField">
+            <label className="patientsGroupLabel">Pasiyent rəngi</label>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                name="colorCode"
+                value={formData.colorCode || "#3b82f6"}
+                onChange={handleChange}
+                className="w-12 h-10 p-1 rounded border border-gray-300 cursor-pointer bg-white"
+              />
+              <span className="text-sm font-semibold text-gray-700">
+                {formData.colorCode || "#3b82f6"}
+              </span>
+            </div>
           </div>
         </div>
 
@@ -690,32 +823,7 @@ const PatientAdd = () => {
         <button
           type="button"
           className="addPatientCancelButton"
-          onClick={() => {
-            setErrors({});
-            setFormData({
-              name: "",
-              surname: "",
-              patronymic: "",
-              finCode: "",
-              genderStatus: "",
-              dateOfBirth: "",
-              priceCategoryName: "",
-              specializationName: "",
-              doctorId: null,
-              isVip: false,
-              isBlacklisted: false,
-              blacklistCategory: "",
-              phone: "",
-              whatsapp: "",
-              workPhone: "",
-              homePhone: "",
-              email: "",
-              homeAddress: "",
-              workAddress: "",
-              recommender: "",
-            });
-            navigate(-1);
-          }}
+          onClick={handleCancel}
         >
           <img
             src={cancelButton}

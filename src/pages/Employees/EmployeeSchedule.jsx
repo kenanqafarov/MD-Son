@@ -381,7 +381,7 @@ const EmployeeSchedule = () => {
                           emp.id,
                           d.key
                         );
-                        if (sched) {
+                        if (sched && typeof sched.startTime === "string" && typeof sched.finishTime === "string") {
                           const startHour = Number.parseInt(
                             sched.startTime.split(":")[0]
                           );
@@ -448,6 +448,8 @@ const EmployeeSchedule = () => {
                               interval.hour * 60 + interval.minute;
                             const isTimeSlotInSchedule =
                               sched &&
+                              typeof sched.startTime === "string" &&
+                              typeof sched.finishTime === "string" &&
                               intervalTime >=
                                 Number.parseInt(sched.startTime.split(":")[0]) *
                                   60 +

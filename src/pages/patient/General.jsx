@@ -15,6 +15,7 @@ import BlurLoader from "../../components/layout/BlurLoader";
 import { toast } from "react-toastify";
 import PatientForm from "./PatientEdit";
 import axiosInstance from "../../api/temp-axios-auth";
+import { getPatientColor } from "../../utils/patientColorUtils";
 
 const General = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -197,6 +198,19 @@ const General = () => {
                 />
               </div>
             ))}
+
+            <div className="main-form-group">
+              <label htmlFor="patientColor">Pasiyent rəngi</label>
+              <div className="flex items-center gap-3 py-1">
+                <span
+                  style={{ backgroundColor: getPatientColor(patient) || "#3b82f6" }}
+                  className="w-6 h-6 rounded-full inline-block border border-gray-300 shadow-sm"
+                />
+                <span className="font-semibold text-gray-700 text-sm">
+                  {getPatientColor(patient) || "#3b82f6"}
+                </span>
+              </div>
+            </div>
           </div>
  
           <div className="right">

@@ -31,20 +31,31 @@ export const updateOperationTypesStatus = async (id, statusData) => {
 };
 
 // ✔ Search
-export const searchOperationTypes = async (params) => {
+export const searchOperationTypes = async (params = {}) => {
   const response = await axiosInstance.get(
     `${API_BASE_URL}/operation-types/search`,
     {
-      params,
+      params: {
+        page: 0,
+        count: 1000,
+        ...params,
+      },
     }
   );
   return response.data;
 };
 
 // ✔ Read all
-export const readOperationTypes = async () => {
+export const readOperationTypes = async (params = {}) => {
   const response = await axiosInstance.get(
-    `${API_BASE_URL}/operation-types/read`
+    `${API_BASE_URL}/operation-types/read`,
+    {
+      params: {
+        page: 0,
+        count: 1000,
+        ...params,
+      },
+    }
   );
   return response.data;
 };

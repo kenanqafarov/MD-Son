@@ -255,14 +255,7 @@ const EmployeesList = () => {
             className="ml-2 w-40 border-1 border-gray-400 rounded-md pl-3 h-8"
             onKeyPress={(e) => e.key === "Enter" && handleSearch(searchParams)}
           />
-          <input
-            name="patronymic"
-            placeholder="Ata adı"
-            value={searchParams.patronymic}
-            onChange={handleInputChange}
-            className="ml-2 w-40 border-1 border-gray-400 rounded-md pl-3 h-8"
-            onKeyPress={(e) => e.key === "Enter" && handleSearch(searchParams)}
-          />
+
           <input
             name="phone"
             placeholder="Telefon"
@@ -336,13 +329,6 @@ const EmployeesList = () => {
                   <th>
                     <div className="th-content">
                       <span>
-                        <HiArrowsUpDown className="tableArrowIcon -ml-10 !text-sm"/> Ata adı
-                      </span>
-                    </div>
-                  </th>
-                  <th>
-                    <div className="th-content">
-                      <span>
                         <HiArrowsUpDown className="tableArrowIcon !text-sm -ml-14"/> Telefon
                       </span>
                     </div>
@@ -379,7 +365,6 @@ const EmployeesList = () => {
                     <td className="!text-left !pl-7">{emp.username}</td>
                     <td className="!text-left !pl-12">{emp.name}</td>
                     <td className="!text-left !pl-6">{emp.surname}</td>
-                    <td className="!text-left !pl-3">{emp.patronymic}</td>
                     <td className="!text-left !pl-1">{emp.phone}</td>
                     <td className="!text-left !pl-7">{emp.permissions?.join(", ")}</td>
                     <td>

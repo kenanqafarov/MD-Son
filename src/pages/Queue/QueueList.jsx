@@ -76,7 +76,7 @@ function QueueList() {
     }
   };
 
-  const filteredReservations = reservations.filter((reservation) => {
+  const filteredReservations = (Array.isArray(reservations) ? reservations : []).filter((reservation) => {
     const fullName = reservation.patient || "";
     const nameParts = fullName.toLowerCase().split(" ");
     const name = nameParts[0] || "";

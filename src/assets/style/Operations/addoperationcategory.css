@@ -1,6 +1,9 @@
 .addOperationWrapper {
-  height: 100vh;
+  min-height: auto;
+  height: auto;
   border-radius: 10px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .addOperationContainer {

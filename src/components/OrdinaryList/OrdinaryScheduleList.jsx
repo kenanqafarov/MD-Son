@@ -17,9 +17,11 @@ function OrdinaryScheduleList({ title, addText, addLink, exportLink, onAddClick 
         <Link onClick={onAddClick} to={addLink} className='addTextBTN'>
           <IoPersonAddOutline className='addBTN' /> {addText}
         </Link>
-        <Link target='_blank' className='exportDataNow' to={exportLink}>
-          <FiDownload className='exportDataBTN' />
-        </Link>
+        {exportLink && (
+          <Link target='_blank' className='exportDataNow' to={exportLink}>
+            <FiDownload className='exportDataBTN' />
+          </Link>
+        )}
       </div>
     </div>
   )

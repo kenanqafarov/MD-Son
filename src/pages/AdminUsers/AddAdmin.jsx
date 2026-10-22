@@ -5,6 +5,7 @@ import "../../assets/style/AdminUsers/addadmin.css";
 import AddPhotoIcon from "../../assets/icons/AddPhoto";
 import CloseIcon from "../../assets/icons/Close";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { formatNameInput, handleNameKeyDown } from "../../utils/textUtils";
 
 const PERMISSIONS = [
   { value: "FULL_PERMISSION", label: "TAM İCAZƏ" },
@@ -53,7 +54,11 @@ function AddAdmin() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let finalVal = value;
+    if (["name", "surname"].includes(name)) {
+      finalVal = formatNameInput(value);
+    }
+    setFormData((prev) => ({ ...prev, [name]: finalVal }));
   };
 
   const handlePermissionChange = (e) => {
@@ -134,6 +139,7 @@ function AddAdmin() {
             name="name"
             value={formData.name}
             onChange={handleInputChange}
+            onKeyDown={handleNameKeyDown}
             required
           />
         </div>
@@ -147,6 +153,7 @@ function AddAdmin() {
             name="surname"
             value={formData.surname}
             onChange={handleInputChange}
+            onKeyDown={handleNameKeyDown}
             required
           />
         </div>

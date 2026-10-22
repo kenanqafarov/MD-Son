@@ -94,14 +94,7 @@ function AddOperationCategory() {
     }
 
 
-    // Check all insurance percentages - they are all required
-    insuranceCompanyList.forEach((company) => {
-      const value = insurancePercentages[company.id];
-      if (!value || value.trim() === "") {
-        newErrors.insurances[company.id] = true;
-        hasError = true;
-      }
-    });
+    // Insurance percentages are optional
 
     if (hasError) {
       setErrors(newErrors);

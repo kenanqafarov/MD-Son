@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import "../../assets/style/Insurance/editinsurance.css";
 import acceptButton from "../../assets/images/EmployeesPage/verifyProcess.png";
 import cancelButton from "../../assets/images/EmployeesPage/cancelProcess.png";
-
 import useInsuranceCompanyStore from "../../../stores/insuranceStore";
 
 function EditInsurance() {
@@ -15,27 +14,21 @@ function EditInsurance() {
 
   const [formData, setFormData] = useState({
     companyName: "",
-    deductibleAmount: "",
     status: "ACTIVE",
   });
   const [formErrors, setFormErrors] = useState({});
 
-  // Məlumatı store-dan götür və formu doldur
   useEffect(() => {
     fetchById(id);
-
-    // Təmizləmə (unmount zamanı)
     return () => {
       clearSelected();
     };
   }, [id]);
 
-  // selectedCompany dəyişəndə formu yenilə
   useEffect(() => {
     if (selectedCompany) {
       setFormData({
         companyName: selectedCompany.companyName || "",
-        deductibleAmount: selectedCompany.deductibleAmount?.toString() || "",
         status: selectedCompany.status || "ACTIVE",
       });
     }
@@ -73,8 +66,6 @@ function EditInsurance() {
     const errors = {};
     if (!formData.companyName.trim())
       errors.companyName = "Sığorta şirkəti tələb olunur";
-    if (!formData.deductibleAmount.trim())
-      errors.deductibleAmount = "Azadolma məbləği tələb olunur";
     return errors;
   };
 
@@ -88,8 +79,7 @@ function EditInsurance() {
     }
 
     const payload = {
-      companyName: formData.companyName,
-      deductibleAmount: Number(formData.deductibleAmount),
+      companyName: formData.companyName.trim(),
       status: formData.status,
     };
 
@@ -123,23 +113,6 @@ function EditInsurance() {
           />
           {formErrors.companyName && (
             <span className="error">{formErrors.companyName}</span>
-          )}
-        </div>
-
-        <div className="editInsuranceInput">
-          <label>
-            Azadolma məbləği<span>*</span>
-          </label>
-          <input
-            type="number"
-            name="deductibleAmount"
-            placeholder="Azadolma məbləği"
-            value={formData.deductibleAmount}
-            onChange={handleChange}
-            required
-          />
-          {formErrors.deductibleAmount && (
-            <span className="error">{formErrors.deductibleAmount}</span>
           )}
         </div>
 

@@ -9,6 +9,8 @@ import Paginator from "../Paginator";
 const List = ({
   columns,
   data,
+  startIndex = 0,
+  totalCount,
   enableEdit = false,
   enableView = false,
   enableDelete = false,
@@ -19,9 +21,9 @@ const List = ({
   return (
     <div className="w-full rounded-lg shadow-md overflow-auto text-[14px]">
       {/* Header */}
-      <div className="bg-[#EEF2F6] p-4 flex items-center">
+      <div className="bg-[#EEF2F6] px-4 py-3 flex items-center">
         <div className="flex-1 flex items-center gap-4 font-semibold text-gray-700">
-          <span>{data.length===0?'0':`1-${data.length}`}</span>
+          <span>{totalCount !== undefined ? (totalCount === 0 ? '0' : `${startIndex + 1}-${startIndex + data.length}`) : (data.length===0?'0':`1-${data.length}`)}</span>
         </div>
         {columns.map((col) => (
           <div
@@ -40,8 +42,8 @@ const List = ({
       {/* List */}
       <div className="divide-y divide-gray-200">
         {data.map((item, index) => (
-          <div key={index} className="p-4 flex items-center hover:bg-gray-50">
-            <div className="flex-1 px-2">{index + 1}</div>
+          <div key={index} className="px-4 py-2.5 flex items-center hover:bg-gray-50 transition-colors">
+            <div className="flex-1 px-2">{startIndex + index + 1}</div>
             {columns.map((col) => (
               <div key={col.key} className="flex-1 px-2">
                 {item[col.key]}
@@ -85,6 +87,8 @@ const List = ({
 const SimpleList = ({
   columns,
   data,
+  startIndex = 0,
+  totalCount,
   startPage,
   endPage,
   currentPage,
@@ -101,6 +105,8 @@ const SimpleList = ({
       <List
         columns={columns}
         data={data}
+        startIndex={startIndex}
+        totalCount={totalCount}
         enableEdit={enableEdit}
         enableView={enableView}
         enableDelete={enableDelete}

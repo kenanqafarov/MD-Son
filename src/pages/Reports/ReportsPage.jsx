@@ -224,10 +224,11 @@ function ReportsPage() {
             setToDate('');
         } else {
             setSelectedPeriod('bu_ay');
-            const d = new Date();
-            d.setDate(d.getDate() - 30);
-            setFromDate(getLocalDateString(d));
-            setToDate(getLocalDateString(new Date()));
+            const now = new Date();
+            const from = new Date(now.getFullYear(), now.getMonth(), 1);
+            const to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            setFromDate(getLocalDateString(from));
+            setToDate(getLocalDateString(to));
         }
     }, [activeTab]);
 
@@ -416,17 +417,22 @@ function ReportsPage() {
         } else {
             const now = new Date();
             let from = new Date();
+            let to = new Date();
             if (val === 'bu_hefte') {
                 const day = now.getDay();
                 const diff = now.getDate() - day + (day === 0 ? -6 : 1);
-                from = new Date(now.setDate(diff));
+                from = new Date(now.getFullYear(), now.getMonth(), diff);
+                to = new Date(from);
+                to.setDate(from.getDate() + 6);
             } else if (val === 'bu_ay') {
                 from = new Date(now.getFullYear(), now.getMonth(), 1);
+                to = new Date(now.getFullYear(), now.getMonth() + 1, 0);
             } else if (val === 'bu_il') {
                 from = new Date(now.getFullYear(), 0, 1);
+                to = new Date(now.getFullYear(), 11, 31);
             }
             setFromDate(getLocalDateString(from));
-            setToDate(getLocalDateString(new Date()));
+            setToDate(getLocalDateString(to));
         }
     };
 
@@ -452,10 +458,9 @@ function ReportsPage() {
         setLabStatus('all');
         setLabCategory('all');
         setLabSearch('');
-        const d = new Date();
-        d.setDate(d.getDate() - 30);
-        setFromDate(getLocalDateString(d));
-        setToDate(getLocalDateString(new Date()));
+        setSelectedPeriod('all');
+        setFromDate('');
+        setToDate('');
     };
 
     const defaultDashboardData = {
@@ -505,7 +510,10 @@ function ReportsPage() {
                 const [year, month, day] = timestamp;
                 return `${String(day).padStart(2, '0')}.${String(month).padStart(2, '0')}.${year}`;
             }
-            // If it's a string in YYYY-MM-DD or other format
+            if (typeof timestamp === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(timestamp)) {
+                const [y, m, d] = timestamp.split('-');
+                return `${d}.${m}.${y}`;
+            }
             const date = new Date(timestamp);
             if (isNaN(date.getTime())) return String(timestamp);
             const day = String(date.getDate()).padStart(2, "0");
@@ -1397,9 +1405,12 @@ function ReportsPage() {
                                                 onChange={(option) => setLabStatus(option.value)}
                                                 options={[
                                                     { value: 'all', label: 'Bütün statuslar' },
-                                                    { value: 'PENDING', label: 'PENDING' },
-                                                    { value: 'SENT', label: 'SENT' },
-                                                    { value: 'READY', label: 'READY' }
+                                                    { value: 'PENDING', label: 'Gözləmədə (PENDING)' },
+                                                    { value: 'IN_PROGRESS', label: 'Hazırlanır (IN_PROGRESS)' },
+                                                    { value: 'SENT', label: 'Göndərildi (SENT)' },
+                                                    { value: 'RECEIVED_FROM_TECHNICIAN', label: 'Texnikdən alındı' },
+                                                    { value: 'SENT_TO_DOCTOR', label: 'Həkimə təhvil verildi' },
+                                                    { value: 'READY', label: 'Hazırdır (READY)' }
                                                 ]}
                                                 placeholder="Status seçin"
                                             />
@@ -1476,17 +1487,30 @@ function ReportsPage() {
                                                             <td className="p-3.5 text-center border-r border-[#CDD5DF] font-bold text-gray-900">{index + 1 + labCurrentPage * 10}</td>
                                                             <td className="p-3.5">{formatDate(item.checkDate)}</td>
                                                             <td className="p-3.5">{formatDate(item.deliveryDate)}</td>
-                                                            <td className="p-3.5 font-bold text-gray-900">{item.doctor}</td>
-                                                            <td className="p-3.5 font-bold text-gray-900">{item.technician}</td>
-                                                            <td className="p-3.5 font-bold text-gray-900">{item.patient}</td>
-                                                            <td className="p-3.5 text-center font-bold text-purple-600">{item.dentalWorkType}</td>
+                                                            <td className="p-3.5 font-bold text-gray-900">{item.doctor || "-"}</td>
+                                                            <td className="p-3.5 font-bold text-gray-900">{item.technician || "-"}</td>
+                                                            <td className="p-3.5 font-bold text-gray-900">
+                                                                <div>{item.patient || "-"}</div>
+                                                                {item.description && <div className="text-[10px] text-gray-400 font-normal truncate max-w-[180px]">{item.description}</div>}
+                                                            </td>
+                                                            <td className="p-3.5 text-center font-bold text-purple-600">
+                                                                <span className="bg-purple-50 text-purple-700 px-2 py-0.5 rounded text-[11px] font-semibold border border-purple-100">
+                                                                    {item.dentalWorkType}
+                                                                </span>
+                                                                {item.teethList && item.teethList.length > 0 && (
+                                                                    <div className="text-[10px] text-gray-400 mt-0.5">
+                                                                        Dişlər: {item.teethList.map(t => typeof t === 'object' ? t.toothNumber : t).join(', ')}
+                                                                    </div>
+                                                                )}
+                                                            </td>
                                                             <td className="p-3.5 text-center">
-                                                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                                                                     item.dentalWorkStatus === 'READY' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                                                                    item.dentalWorkStatus === 'SENT' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                                                                    item.dentalWorkStatus === 'SENT' || item.dentalWorkStatus === 'SENT_TO_DOCTOR' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                                                                    item.dentalWorkStatus === 'IN_PROGRESS' || item.dentalWorkStatus === 'RECEIVED_FROM_TECHNICIAN' ? 'bg-indigo-50 text-indigo-700 border border-indigo-200' :
                                                                     'bg-amber-50 text-amber-700 border border-amber-200'
                                                                 }`}>
-                                                                    {item.dentalWorkStatus}
+                                                                    {item.dentalWorkStatus || 'PENDING'}
                                                                 </span>
                                                             </td>
                                                             <td className="p-3.5 text-right font-bold text-emerald-600">₼{item.price ? Number(item.price).toLocaleString('en-US', { minimumFractionDigits: 2 }) : "0.00"}</td>

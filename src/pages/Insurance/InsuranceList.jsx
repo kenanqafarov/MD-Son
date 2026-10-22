@@ -11,6 +11,7 @@ import { usePermission } from "../../hooks/usePermission";
 function InsuranceList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("Sığorta şirkətləri", "CREATE");
@@ -19,7 +20,7 @@ function InsuranceList() {
   const canStatus = hasPermission("Sığorta şirkətləri", "STATUS");
 
   const {
-    insuranceCompanies, // artıq bu düz massivdir
+    insuranceCompanies,
     fetchAll,
     remove,
     updateStatus,
@@ -29,10 +30,11 @@ function InsuranceList() {
     fetchAll();
   }, []);
 
-  // Məlumat artıq düz massiv olduğu üçün:
-  const filteredData = (insuranceCompanies || []).filter((row) =>
-    row.companyName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredData = (insuranceCompanies || []).filter((row) => {
+    const matchesSearch = row.companyName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = selectedStatus === "" || row.status === selectedStatus;
+    return matchesSearch && matchesStatus;
+  });
 
   const handleEdit = (row) => {
     navigate(`edit/${row.id}`);
@@ -66,7 +68,7 @@ function InsuranceList() {
     <div className="insurancePageWrapper">
       <div className="insuranceCategoryQuickSearch">
         <div className="insuranceCategoryLeftPart">
-          <select>
+          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
             <option value="">Status</option>
             <option value="ACTIVE">Aktiv</option>
             <option value="PASSIVE">Passiv</option>
@@ -107,7 +109,7 @@ function InsuranceList() {
               </th>
               <th>
                 <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Azadolma məbləği
+                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Əməliyyat növləri
                 </span>
               </th>
               <th>
@@ -129,8 +131,33 @@ function InsuranceList() {
               filteredData.map((row, index) => (
                 <tr key={row.id}>
                   <td>{index + 1}</td>
-                  <td className="insuranceNameCol">{row.companyName}</td>
-                  <td>{row.deductibleAmount} ₼</td>
+                  <td className="insuranceNameCol">
+                    <Link
+                      to={`/insurance/${row.id}/operations`}
+                      style={{ color: "inherit", textDecoration: "none", fontWeight: "600", cursor: "pointer" }}
+                    >
+                      {row.companyName}
+                    </Link>
+                  </td>
+                  <td>
+                    <Link
+                      to={`/insurance/${row.id}/operations`}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        color: "#2563EB",
+                        backgroundColor: "#EFF6FF",
+                        padding: "4px 10px",
+                        borderRadius: "6px",
+                        textDecoration: "none",
+                        fontWeight: "500",
+                        fontSize: "13px"
+                      }}
+                    >
+                      Əməliyyat növlərinə bax →
+                    </Link>
+                  </td>
                   <td>
                     <span
                       className={`statusBadge ${

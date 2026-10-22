@@ -8,6 +8,8 @@ import "../../assets/style/EmployeesPage/employeeworkscheduleadd.css";
 import acceptProcess from "../../assets/images/EmployeesPage/verifyProcess.png";
 import cancelProcess from "../../assets/images/EmployeesPage/cancelProcess.png";
 
+import { toast } from "react-toastify";
+
 function EmployeeWorkScheduleEdit() {
   const { id } = useParams(); // schedule id
   const navigate = useNavigate();
@@ -33,6 +35,15 @@ function EmployeeWorkScheduleEdit() {
     { value: "SUNDAY", label: "Bazar" },
   ];
 
+  const formatT = (t) => {
+    if (!t) return "";
+    if (typeof t === "string") return t.slice(0, 5);
+    if (typeof t === "object" && t.hour !== undefined) {
+      return `${String(t.hour).padStart(2, "0")}:${String(t.minute).padStart(2, "0")}`;
+    }
+    return "";
+  };
+
   useEffect(() => {
     fetchCabinets(); // kabinetləri gətir
     if (schedules.length === 0) {
@@ -40,41 +51,51 @@ function EmployeeWorkScheduleEdit() {
     } else {
       const sched = schedules.find((s) => s.id.toString() === id);
       if (sched) {
-        setWeekDay(sched.weekDay);
-        setCabinetName(sched.cabinetName);
-        setStartTime(sched.startTime.slice(0, 5));
-        setFinishTime(sched.finishTime.slice(0, 5));
-        setUserId(sched.userId); // userId-ni təyin et
+        setWeekDay(sched.weekDay || "");
+        setCabinetName(sched.cabinetName || "");
+        setStartTime(formatT(sched.startTime));
+        setFinishTime(formatT(sched.finishTime));
+        setUserId(sched.userId || "");
       }
     }
   }, [id, schedules, fetchSchedules, fetchCabinets]);
 
   // Form göndərmə funksiyası
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!weekDay || !cabinetName) {
-      alert("Zəhmət olmasa, bütün * işarəli xanaları doldurun.");
+      toast.error("Zəhmət olmasa, bütün * işarəli xanaları doldurun.");
       return;
     }
 
     const updatedData = {
-      id: Number(id), // Əgər id UUID-dirsə sadəcə `id`
+      id: Number(id),
       weekDay,
       cabinetName,
-      startTime: startTime + ":00",
-      finishTime: finishTime + ":00",
+      startTime: startTime ? startTime + ":00" : "00:00:00",
+      finishTime: finishTime ? finishTime + ":00" : "00:00:00",
     };
 
-    updateSchedule(updatedData);
-    navigate(`/employees/work-schedule/${userId}`);
+    try {
+      await updateSchedule(updatedData);
+      toast.success("İş qrafiki uğurla yeniləndi!");
+      navigate(userId ? `/employees/work-schedule/${userId}` : -1);
+    } catch (err) {
+      toast.error("Qrafiki yeniləmək mümkün olmadı");
+    }
   };
 
   // Silmə funksiyası
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm("Qrafiki silmək istədiyinizə əminsiniz?")) {
-      removeSchedule(Number(id));
-      navigate(`/employees/work-schedule/${userId}`);
+      try {
+        await removeSchedule(Number(id));
+        toast.success("Qrafik uğurla silindi!");
+        navigate(userId ? `/employees/work-schedule/${userId}` : -1);
+      } catch (err) {
+        toast.error("Qrafiki silmək mümkün olmadı");
+      }
     }
   };
 
@@ -150,7 +171,7 @@ function EmployeeWorkScheduleEdit() {
           <button
             type="button"
             className="employeeAddCancelProcess"
-            onClick={() => navigate(`/employees/work-schedule/${userId}`)}
+            onClick={() => navigate(userId ? `/employees/work-schedule/${userId}` : -1)}
           >
             <img src={cancelProcess} alt="İmtina et" />
             İmtina et

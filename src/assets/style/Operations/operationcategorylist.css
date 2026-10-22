@@ -1,20 +1,27 @@
 .operationsList-container {
-  height: 100vh;
+  min-height: calc(100vh - 160px);
+  height: auto;
   border-radius: 10px;
   background-color: #fff;
-  padding-bottom: 20px;
+  padding: 24px;
+  padding-bottom: 32px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .operationsList-page-title {
   font-size: 24px;
   color: #333;
   margin-bottom: 20px;
-  padding: 20px 20px 0;
+  padding: 0;
 }
 
 .operationsList-controls-section {
-  padding: 20px;
+  padding: 10px 0 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -103,11 +110,17 @@
 
 
 .operationsList-table-section {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 8px;
+  background-color: #fff;
 }
 
 .operationsList-table {
   width: 100%;
+  min-width: 700px;
   border-collapse: collapse;
   font-size: 14px;
 }
@@ -151,6 +164,7 @@
 
 .operationsList-table td {
   color: #333;
+  word-break: break-word;
 }
 
 .operationsList-table td a {

@@ -78,6 +78,7 @@ const EditOperation = () => {
       operationCode,
       showTechnic: visibleInTechnicians,
       price: parseFloat(price) || 0,
+      status: selectedOperationItemsType?.status || "ACTIVE",
       insurances: insuranceData
         .filter((item) => item.insuranceName || item.specificCode || item.amount)
         .map((ins) => ({

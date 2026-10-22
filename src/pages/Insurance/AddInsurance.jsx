@@ -8,7 +8,6 @@ import useInsuranceCompanyStore from "../../../stores/insuranceStore";
 function AddInsurance() {
   const [formData, setFormData] = useState({
     companyName: "",
-    deductibleAmount: "",
     status: "ACTIVE",
   });
 
@@ -30,11 +29,6 @@ function AddInsurance() {
     if (!formData.companyName.trim()) {
       errors.companyName = "Şirkət adı tələb olunur.";
     }
-    if (!formData.deductibleAmount) {
-      errors.deductibleAmount = "Azadolma məbləği tələb olunur.";
-    } else if (isNaN(Number(formData.deductibleAmount))) {
-      errors.deductibleAmount = "Yalnız rəqəm olmalıdır.";
-    }
     return errors;
   };
 
@@ -49,12 +43,11 @@ function AddInsurance() {
 
     const payload = {
       companyName: formData.companyName.trim(),
-      deductibleAmount: Number(formData.deductibleAmount),
       status: formData.status,
     };
 
     try {
-      await createInsurance(payload); // zustand-dakı create funksiyası ilə submit
+      await createInsurance(payload);
       alert("Sığorta uğurla əlavə edildi!");
       navigate("/insurance");
     } catch (err) {
@@ -100,30 +93,13 @@ function AddInsurance() {
         </div>
 
         <div className="addInsuranceInput">
-          <p>
-            Azadolma məbləği<span>*</span>
-          </p>
-          <input
-            type="number"
-            placeholder="Azadolma məbləği"
-            name="deductibleAmount"
-            value={formData.deductibleAmount}
-            onChange={handleChange}
-            required
-          />
-          {formErrors.deductibleAmount && (
-            <small className="error">{formErrors.deductibleAmount}</small>
-          )}
-        </div>
-
-        <div className="addInsuranceInput">
           <p>Status</p>
           <select
             name="status"
             value={formData.status}
             onChange={handleStatusChange}>
             <option value="ACTIVE">Aktiv</option>
-            <option value="passive">Passiv</option>
+            <option value="PASSIVE">Passiv</option>
           </select>
         </div>
 
@@ -134,7 +110,6 @@ function AddInsurance() {
             onClick={() =>
               setFormData({
                 companyName: "",
-                deductibleAmount: "",
                 status: "ACTIVE",
               })
             }>

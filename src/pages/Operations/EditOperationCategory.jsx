@@ -65,6 +65,8 @@ function EditOperationCategory() {
 
     const payload = {
       categoryName: operationCategoryName,
+      categoryCode: selectedOperationType?.categoryCode,
+      status: selectedOperationType?.status || "ACTIVE",
       colorSelection: isColorSelection,
       implantSelection: isImplantSelection,
       insurances,

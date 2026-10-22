@@ -27,12 +27,15 @@ const initialSearch = {
 };
 
 // Memoized table row component
-const PatientRow = React.memo(({ item, onInfoClick, onDeleteClick, canDelete }) => {
+const PatientRow = React.memo(({ item, index, currentPage, itemsPerPage, onInfoClick, onDeleteClick, canDelete }) => {
+  const fullName = [item.name, item.surname].filter(Boolean).join(" ").trim();
+  const rowNumber = (currentPage - 1) * itemsPerPage + index + 1;
+
   return (
     <tr onClick={() => onInfoClick(item)} style={{ cursor: "pointer" }}>
+      <td>{rowNumber}</td>
       <td>{item.id}</td>
-      <td>{item.id}</td>
-      <td>{item.name}</td>
+      <td>{fullName || item.name}</td>
       <td>{item.finCode}</td>
       <td>{item.genderStatus === "MAN" ? "Kişi" : "Qadın"}</td>
       <td>{item.phone}</td>
@@ -61,7 +64,7 @@ const PatientRow = React.memo(({ item, onInfoClick, onDeleteClick, canDelete }) 
       </td>
     </tr>
   );
-}, (prevProps, nextProps) => prevProps.item.id === nextProps.item.id && prevProps.canDelete === nextProps.canDelete);
+}, (prevProps, nextProps) => prevProps.item.id === nextProps.item.id && prevProps.canDelete === nextProps.canDelete && prevProps.index === nextProps.index && prevProps.currentPage === nextProps.currentPage);
 
 PatientRow.displayName = 'PatientRow';
 
@@ -136,28 +139,26 @@ function PatientsList() {
     return [...data].reverse();
   }, [data]);
 
+  // Category options from loaded patients
+  const statusOptions = useMemo(() => {
+    const categoriesFromData = data
+      .map((item) => item.priceCategoryName)
+      .filter(Boolean);
+    return Array.from(new Set(categoriesFromData));
+  }, [data]);
+
   // Memoized filtered data - use debouncedSearch for filtering
   const filteredData = useMemo(() => {
-    return reversedData.filter(
-      (item) =>
-        (item.name || "")
-          .toLowerCase()
-          .includes(debouncedSearch.name.toLowerCase()) &&
-        (item.surname || "")
-          .toLowerCase()
-          .includes(debouncedSearch.surname.toLowerCase()) &&
-        (item.patronymic || "")
-          .toLowerCase()
-          .includes(debouncedSearch.patronymic.toLowerCase()) &&
-        (item.finCode || "")
-          .toLowerCase()
-          .includes(debouncedSearch.fin.toLowerCase()) &&
-        (item.phone || "")
-          .toLowerCase()
-          .includes(debouncedSearch.phone.toLowerCase()) &&
-        (debouncedSearch.gender ? item.genderStatus === debouncedSearch.gender : true) &&
-        (debouncedSearch.status ? item.priceCategoryName === debouncedSearch.status : true)
-    );
+    return reversedData.filter((item) => {
+      const nameTerm = (debouncedSearch.name || "").toLowerCase().trim();
+      const fullName = `${item.name || ""} ${item.surname || ""}`.toLowerCase();
+      const matchesName = !nameTerm || fullName.includes(nameTerm);
+      const matchesFin = !debouncedSearch.fin || (item.finCode || "").toLowerCase().includes(debouncedSearch.fin.toLowerCase().trim());
+      const matchesPhone = !debouncedSearch.phone || (item.phone || "").toLowerCase().includes(debouncedSearch.phone.toLowerCase().trim());
+      const matchesGender = !debouncedSearch.gender || item.genderStatus === debouncedSearch.gender;
+      const matchesStatus = !debouncedSearch.status || item.priceCategoryName === debouncedSearch.status;
+      return matchesName && matchesFin && matchesPhone && matchesGender && matchesStatus;
+    });
   }, [reversedData, debouncedSearch]);
 
   // Memoized pagination
@@ -253,9 +254,10 @@ function PatientsList() {
                 setSearch({ ...search, status: e.target.value })
               }
             >
-              <option value="">Status</option>
-              <option value="Vip">Vip</option>
-              <option value="Standard">Standard</option>
+              <option value="">Kateqoriya</option>
+              {statusOptions.map((cat, i) => (
+                <option key={i} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -264,7 +266,7 @@ function PatientsList() {
           <table className="employeeTable">
             <thead>
               <tr>
-               <th>1-8</th>
+               <th>{data.length === 0 ? "0" : `1-${data.length}`}</th>
                 <th>
                   <div className="th-content">
                     <span className="!flex !items-center gap-1">
@@ -313,10 +315,13 @@ function PatientsList() {
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((item) => (
+              {currentItems.map((item, index) => (
                 <PatientRow
                   key={item.id}
                   item={item}
+                  index={index}
+                  currentPage={currentPage}
+                  itemsPerPage={itemsPerPage}
                   onInfoClick={handleInfoClick}
                   onDeleteClick={handleDeleteClick}
                   canDelete={canDelete}
