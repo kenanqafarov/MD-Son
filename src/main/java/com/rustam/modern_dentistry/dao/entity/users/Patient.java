@@ -55,6 +55,9 @@ public class Patient {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "specialization_category_id")
     SpecializationCategory specializationCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "insurance_company_id")
+    com.rustam.modern_dentistry.dao.entity.settings.InsuranceCompany insuranceCompany;
     String phone;
     String email;
     Boolean enabled;

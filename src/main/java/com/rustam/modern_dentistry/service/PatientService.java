@@ -45,6 +45,7 @@ public class PatientService {
     PriceCategoryService priceCategoryService;
     ValidationUtilService validationUtilService;
     SpecializationCategoryService specializationCategoryService;
+    com.rustam.modern_dentistry.service.settings.InsuranceCompanyService insuranceCompanyService;
 
     public PatientCreateResponse create(PatientCreateRequest patientCreateRequest) {
         String email = StringUtils.trimToNull(patientCreateRequest.getEmail());
@@ -71,6 +72,13 @@ public class PatientService {
             } catch (Exception ignored) {}
         }
 
+        com.rustam.modern_dentistry.dao.entity.settings.InsuranceCompany insuranceCompany = null;
+        if (patientCreateRequest.getInsuranceCompanyId() != null && patientCreateRequest.getInsuranceCompanyId() > 0) {
+            try {
+                insuranceCompany = insuranceCompanyService.getInsuranceById(patientCreateRequest.getInsuranceCompanyId());
+            } catch (Exception ignored) {}
+        }
+
         Patient patient = Patient.builder()
                 .name(patientCreateRequest.getName() != null ? patientCreateRequest.getName().trim() : null)
                 .surname(patientCreateRequest.getSurname() != null ? patientCreateRequest.getSurname().trim() : null)
@@ -88,6 +96,7 @@ public class PatientService {
                 .genderStatus(patientCreateRequest.getGenderStatus())
                 .priceCategory(priceCategory)
                 .specializationCategory(specializationCategory)
+                .insuranceCompany(insuranceCompany)
                 .registrationDate(LocalDate.now())
                 .build();
         patientRepository.save(patient);
@@ -122,6 +131,16 @@ public class PatientService {
                 SpecializationCategory specializationCategory = specializationCategoryService.findByName(request.getSpecializationName());
                 patient.setSpecializationCategory(specializationCategory);
             } catch (Exception ignored) {}
+        }
+
+        if (request.getInsuranceCompanyId() != null && request.getInsuranceCompanyId() > 0) {
+            try {
+                com.rustam.modern_dentistry.dao.entity.settings.InsuranceCompany insuranceCompany =
+                        insuranceCompanyService.getInsuranceById(request.getInsuranceCompanyId());
+                patient.setInsuranceCompany(insuranceCompany);
+            } catch (Exception ignored) {}
+        } else {
+            patient.setInsuranceCompany(null);
         }
 
         if (request.getDoctorId() != null && !request.getDoctorId().isBlank()) {

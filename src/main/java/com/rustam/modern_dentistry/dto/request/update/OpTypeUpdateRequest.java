@@ -22,5 +22,6 @@ public class OpTypeUpdateRequest {
     String categoryCode;
     boolean colorSelection;
     boolean implantSelection;
+    Long insuranceCompanyId;
     List<OpTypeInsuranceRequest> insurances;
 }

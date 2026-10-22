@@ -38,6 +38,10 @@ public class OpType {
     @OneToMany(mappedBy = "opType", cascade = ALL, fetch = LAZY, orphanRemoval = true)
     List<OpTypeInsurance> insurances;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "insurance_company_id")
+    com.rustam.modern_dentistry.dao.entity.settings.InsuranceCompany insuranceCompany;
+
     @OneToMany(mappedBy = "opType", cascade = ALL,fetch = LAZY)
     List<OpTypeItem> opTypeItems;
 }

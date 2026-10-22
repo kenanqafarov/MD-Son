@@ -24,6 +24,8 @@ public class PatientReadResponse {
     LocalDate dateOfBirth;
     String priceCategoryName;
     String specializationCategoryName;
+    Long insuranceCompanyId;
+    String insuranceCompanyName;
     String baseUser;
     String phone;
     String workPhone;

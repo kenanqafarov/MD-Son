@@ -31,8 +31,9 @@ public class OperationTypeController {
     }
 
     @GetMapping("/read")
-    public ResponseEntity<PageResponse<OpTypeReadResponse>> read(PageCriteria pageCriteria) {
-        return ResponseEntity.ok(operationTypeService.read(pageCriteria));
+    public ResponseEntity<PageResponse<OpTypeReadResponse>> read(PageCriteria pageCriteria,
+                                                                 @RequestParam(required = false) Long insuranceCompanyId) {
+        return ResponseEntity.ok(operationTypeService.read(pageCriteria, insuranceCompanyId));
     }
 
     @GetMapping("/read-by-id/{id}")

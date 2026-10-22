@@ -46,6 +46,11 @@ public class OperationTypeService {
     @Transactional
     public void create(OpTypeCreateRequest request) {
         var opType = OP_TYPE_MAPPER.toEntity(request);
+        if (request.getInsuranceCompanyId() != null && request.getInsuranceCompanyId() > 0) {
+            opType.setInsuranceCompany(insuranceCompanyService.getInsuranceById(request.getInsuranceCompanyId()));
+        } else {
+            opType.setInsuranceCompany(null);
+        }
         if (request.getInsurances() != null) {
             var insurances = getInsurances(request.getInsurances(), opType);
             opType.setInsurances(insurances);
@@ -53,8 +58,14 @@ public class OperationTypeService {
         repository.save(opType);
     }
 
-    public PageResponse<OpTypeReadResponse> read(PageCriteria pageCriteria) {
-        var response = repository.findAll(PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount()));
+    public PageResponse<OpTypeReadResponse> read(PageCriteria pageCriteria, Long insuranceCompanyId) {
+        org.springframework.data.domain.Page<OpType> response;
+        var pageable = PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount());
+        if (insuranceCompanyId != null && insuranceCompanyId > 0) {
+            response = repository.findByInsuranceCompanyId(insuranceCompanyId, pageable);
+        } else {
+            response = repository.findByInsuranceCompanyIsNull(pageable);
+        }
         var content = getContent(response.getContent());
         return new PageResponse<>(response.getTotalPages(), response.getTotalElements(), content);
     }
@@ -78,6 +89,13 @@ public class OperationTypeService {
     public void update(Long id, OpTypeUpdateRequest request) {
         var opType = getOperationTypeById(id);
         OP_TYPE_MAPPER.updateOpType(opType, request);
+        if (request.getInsuranceCompanyId() != null) {
+            if (request.getInsuranceCompanyId() > 0) {
+                opType.setInsuranceCompany(insuranceCompanyService.getInsuranceById(request.getInsuranceCompanyId()));
+            } else {
+                opType.setInsuranceCompany(null);
+            }
+        }
         if (request.getInsurances() != null) {
             var updatedInsurances = updateOpTypeInsurance(request.getInsurances(), opType);
             opType.setInsurances(updatedInsurances);

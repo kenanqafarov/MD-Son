@@ -43,8 +43,14 @@ public interface OperationTypeRepository extends JpaRepository<OpType, Long>, Jp
 
     Optional<OpType> findByCategoryName(String operationCategoryName);
 
+    @EntityGraph(attributePaths = {"opTypeItems"})
+    Page<OpType> findByInsuranceCompanyId(Long insuranceCompanyId, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"opTypeItems"})
+    Page<OpType> findByInsuranceCompanyIsNull(Pageable pageable);
+
     @Query(value = """
-            SELECT
+            SELECT 
                 ot.id as categoryId,
                 ot.category_name as categoryName,
                 ot.category_code as categoryCode,
@@ -52,25 +58,16 @@ public interface OperationTypeRepository extends JpaRepository<OpType, Long>, Jp
                 opi.operation_name as name,
                 opi.amount as amount,
                 opi.operation_code as operationCode,
-                opi.status as status
+                COALESCE(opi.status, 'ACTIVE') as status
             FROM op_types ot
             INNER JOIN op_type_items opi ON ot.id = opi.op_type_id
-            WHERE (
-                    (COALESCE(:insuranceId, 0) > 0
-                     AND EXISTS (
-                         SELECT 1
-                         FROM op_type_item_insurances opii
-                         WHERE opii.op_type_item_id = opi.id
-                         AND opii.insurance_id = :insuranceId
-                     ))
-                    OR
-                    (COALESCE(:insuranceId, 0) = 0
-                     AND NOT EXISTS (
-                         SELECT 1
-                         FROM op_type_item_insurances opii
-                         WHERE opii.op_type_item_id = opi.id
-                     ))
-                )
+            WHERE (ot.status IS NULL OR ot.status = 'ACTIVE')
+              AND (opi.status IS NULL OR opi.status = 'ACTIVE')
+              AND (
+                  (:insuranceId IS NOT NULL AND :insuranceId > 0 AND ot.insurance_company_id = :insuranceId)
+                  OR ((:insuranceId IS NULL OR :insuranceId = 0) AND ot.insurance_company_id IS NULL)
+              )
+            ORDER BY ot.id, opi.id
             """, nativeQuery = true)
-    List<OperationCategoryProjection> findAllByInsuranceToCategoryOfOperations(Long insuranceId);
+    List<OperationCategoryProjection> findAllByInsuranceToCategoryOfOperations(@Param("insuranceId") Long insuranceId);
 }

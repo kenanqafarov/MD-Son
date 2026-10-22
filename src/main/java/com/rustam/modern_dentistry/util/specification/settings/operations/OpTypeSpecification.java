@@ -21,6 +21,11 @@ public class OpTypeSpecification {
             if (request.getCategoryName() != null && !request.getCategoryName().isEmpty()) {
                 predicates.add(cb.like(cb.lower(root.get("categoryName")), "%" + request.getCategoryName().toLowerCase() + "%"));
             }
+            if (request.getInsuranceCompanyId() != null && request.getInsuranceCompanyId() > 0) {
+                predicates.add(cb.equal(root.get("insuranceCompany").get("id"), request.getInsuranceCompanyId()));
+            } else {
+                predicates.add(cb.isNull(root.get("insuranceCompany")));
+            }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

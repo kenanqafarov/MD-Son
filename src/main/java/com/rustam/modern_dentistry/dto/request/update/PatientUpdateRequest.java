@@ -44,6 +44,7 @@ public class PatientUpdateRequest {
     LocalDate dateOfBirth;
     String priceCategoryName;
     String specializationName;
+    Long insuranceCompanyId;
     String doctorId;
     @Pattern(
             regexp = "^\\((?!000)\\d{3}\\)-(?!000-00-00)(?!000-0000)(?!0000000)\\d{3}-(?:\\d{2}-\\d{2}|\\d{4})$",

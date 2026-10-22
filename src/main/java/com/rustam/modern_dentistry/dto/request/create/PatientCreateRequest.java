@@ -50,6 +50,7 @@ public class PatientCreateRequest {
     @NotNull(message = "Zəhmət olmasa qiymət kateqoriyasını daxil edin")
     String priceCategoryName;
     String specializationName;
+    Long insuranceCompanyId;
     @NotNull(message = "Zəhmət olmasa həkimi seçin")
     String doctorId; //doctor_id -sine gore gedib tapacaq
     @Pattern(

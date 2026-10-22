@@ -29,6 +29,8 @@ public interface PatientMapper {
     @Mapping(target = "baseUser", expression = "java(mapDoctorToString(patient.getBaseUser()))")
     @Mapping(target = "priceCategoryName", expression = "java(patient.getPriceCategory() != null ? patient.getPriceCategory().getName() : null)")
     @Mapping(target = "specializationCategoryName", expression = "java(patient.getSpecializationCategory() != null ? patient.getSpecializationCategory().getName() : null)")
+    @Mapping(target = "insuranceCompanyId", expression = "java(patient.getInsuranceCompany() != null ? patient.getInsuranceCompany().getId() : null)")
+    @Mapping(target = "insuranceCompanyName", expression = "java(patient.getInsuranceCompany() != null ? patient.getInsuranceCompany().getCompanyName() : null)")
     PatientReadResponse toRead(Patient patient);
 
     @Named("mapDoctorToString")

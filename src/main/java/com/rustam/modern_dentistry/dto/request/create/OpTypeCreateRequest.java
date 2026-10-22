@@ -21,5 +21,6 @@ public class OpTypeCreateRequest {
     Status status;
     boolean colorSelection;
     boolean implantSelection;
+    Long insuranceCompanyId;
     List<OpTypeInsuranceRequest> insurances;
 }

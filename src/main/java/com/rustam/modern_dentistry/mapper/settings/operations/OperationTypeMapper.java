@@ -34,9 +34,11 @@ public interface OperationTypeMapper {
 
     @Mapping(target = "insurances", ignore = true)
     @Mapping(target = "opTypeItemCount", expression = "java(countOpTypeItems(entity))")
+    @Mapping(target = "insuranceCompanyId", expression = "java(entity.getInsuranceCompany() != null ? entity.getInsuranceCompany().getId() : null)")
     OpTypeReadResponse toReadDto(OpType entity);
 
     @Mapping(target = "insurances", ignore = true)
+    @Mapping(target = "insuranceCompanyId", expression = "java(entity.getInsuranceCompany() != null ? entity.getInsuranceCompany().getId() : null)")
     OpTypeReadResponse toReadByIdDto(OpType entity);
 
     @Mapping(target = "opTypeItemCount", expression = "java(countOpTypeItems(entity))")

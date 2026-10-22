@@ -68,6 +68,7 @@ public class OperationTypeItemService {
         var toReadDto = OP_TYPE_ITEM_MAPPER.toReadByIdDto(operationType);
         toReadDto.setInsurances(repository.findInsurancesByOpTypeItemId(id));
         toReadDto.setPrice(operationType.getAmount());
+        toReadDto.setShowTechnic(operationType.isShowTechnic());
         return toReadDto;
     }
 
@@ -82,8 +83,17 @@ public class OperationTypeItemService {
 
         opTypeItem.setOperationName(request.getOperationName());
         opTypeItem.setOperationCode(request.getOperationCode());
-        opTypeItem.setStatus(request.getStatus());
-        opTypeItem.setAmount(request.getPrice());
+        if (request.getStatus() != null) {
+            opTypeItem.setStatus(request.getStatus());
+        } else if (opTypeItem.getStatus() == null) {
+            opTypeItem.setStatus(ACTIVE);
+        }
+        if (request.getPrice() != null) {
+            opTypeItem.setAmount(request.getPrice());
+        }
+        if (request.getShowTechnic() != null) {
+            opTypeItem.setShowTechnic(request.getShowTechnic());
+        }
 
         if (request.getInsurances() != null) {
             opTypeItem.getInsurances().clear();

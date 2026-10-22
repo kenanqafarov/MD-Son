@@ -23,5 +23,6 @@ public class OpTypeItemUpdateRequest {
     String operationCode;
     Status status;
     BigDecimal price;
+    Boolean showTechnic;
     List<OpTypeItemInsuranceUpdateRequest> insurances;
 }

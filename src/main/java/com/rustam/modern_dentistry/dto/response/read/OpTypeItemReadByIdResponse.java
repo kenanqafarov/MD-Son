@@ -23,5 +23,6 @@ public class OpTypeItemReadByIdResponse {
     String operationCode;
     Status status;
     BigDecimal price;
+    boolean showTechnic;
     List<OpTypeItemInsuranceDto> insurances;
 }

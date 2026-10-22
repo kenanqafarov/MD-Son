@@ -25,6 +25,7 @@ public class OpTypeReadResponse {
     boolean implantSelection;
     Status status;
     Long opTypeItemCount;
+    Long insuranceCompanyId;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     List<OpInsuranceReadResponse> insurances;
 }

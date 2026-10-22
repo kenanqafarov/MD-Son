@@ -16,4 +16,5 @@ public class OperationTypeSearchRequest {
     @NotBlank(message = "Anamnezin adını daxil edin.")
     String categoryName;
     Status status;
+    Long insuranceCompanyId;
 }
