@@ -1,0 +1,132 @@
+package com.rustam.modern_dentistry.service.settings.operations;
+
+import com.rustam.modern_dentistry.dao.entity.settings.operations.OpType;
+import com.rustam.modern_dentistry.dao.entity.settings.operations.OpTypeItem;
+import com.rustam.modern_dentistry.dao.entity.settings.operations.OpTypeItemInsurance;
+import com.rustam.modern_dentistry.dao.entity.settings.operations.OpTypeItemPrice;
+import com.rustam.modern_dentistry.dao.repository.settings.operations.OperationTypeItemRepository;
+import com.rustam.modern_dentistry.dto.request.create.OpTypeItemCreateRequest;
+import com.rustam.modern_dentistry.dto.request.criteria.PageCriteria;
+import com.rustam.modern_dentistry.dto.request.read.OpTypeItemSearchRequest;
+import com.rustam.modern_dentistry.dto.request.update.OpTypeItemUpdateRequest;
+import com.rustam.modern_dentistry.dto.response.excel.OpTypeItemExcelResponse;
+import com.rustam.modern_dentistry.dto.response.read.OpTypeItemReadByIdResponse;
+import com.rustam.modern_dentistry.dto.response.read.OpTypeItemReadResponse;
+import com.rustam.modern_dentistry.dto.response.read.PageResponse;
+import com.rustam.modern_dentistry.exception.custom.NotFoundException;
+import com.rustam.modern_dentistry.mapper.settings.operations.OperationTypeItemMapper;
+import com.rustam.modern_dentistry.util.ExcelUtil;
+import com.rustam.modern_dentistry.util.specification.settings.operations.OpTypeItemSearchSpec;
+import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayInputStream;
+import java.util.List;
+
+import static com.rustam.modern_dentistry.dao.entity.enums.status.Status.ACTIVE;
+import static com.rustam.modern_dentistry.dao.entity.enums.status.Status.PASSIVE;
+import static com.rustam.modern_dentistry.mapper.settings.operations.OperationTypeItemMapper.OP_TYPE_ITEM_MAPPER;
+import static org.springframework.data.domain.PageRequest.of;
+
+@Service
+@RequiredArgsConstructor
+public class OperationTypeItemService {
+    private final OperationTypeItemRepository repository;
+    private final OperationTypeItemHelperService helperService;
+    private final OperationTypeService operationTypeService;
+
+    @Transactional
+    public void create(OpTypeItemCreateRequest request) {
+        var opTypeItem = OP_TYPE_ITEM_MAPPER.toEntity(request);
+        var opType = operationTypeService.getOperationTypeById(request.getOpTypeId());
+        var insurances = helperService.getOpTypeItemInsurances(request.getInsurances(), opTypeItem);
+        opTypeItem.setOpType(opType);
+        opTypeItem.setAmount(request.getAmount());
+        opTypeItem.setInsurances(insurances);
+        repository.save(opTypeItem);
+    }
+
+    public PageResponse<OpTypeItemReadResponse> read(Long id, PageCriteria pageCriteria) {
+        var response = repository.findByOpTypeId(id, of(pageCriteria.getPage(), pageCriteria.getCount()));
+        var list = helperService.getContent(response.getContent());
+        return new PageResponse<>(response.getTotalPages(), response.getTotalElements(), list);
+    }
+
+    public PageResponse<OpTypeItemReadResponse> search(OpTypeItemSearchRequest request, PageCriteria pageCriteria) {
+        var response = repository.findAll(
+                OpTypeItemSearchSpec.filterBy(request),
+                PageRequest.of(pageCriteria.getPage(), pageCriteria.getCount()));
+        var content = helperService.getContent(response.getContent());
+        return new PageResponse<>(response.getTotalPages(), response.getTotalElements(), content);
+    }
+
+    public OpTypeItemReadByIdResponse readById(Long id) {
+        var operationType = helperService.getOperationTypeItemById(id);
+        var toReadDto = OP_TYPE_ITEM_MAPPER.toReadByIdDto(operationType);
+        toReadDto.setInsurances(repository.findInsurancesByOpTypeItemId(id));
+        toReadDto.setPrice(operationType.getAmount());
+        toReadDto.setShowTechnic(operationType.isShowTechnic());
+        return toReadDto;
+    }
+
+    public OpTypeItem findById(Long id) {
+        return helperService.getOperationTypeItemById(id);
+    }
+
+    @Transactional
+    public void update(Long id, OpTypeItemUpdateRequest request) {
+        OpTypeItem opTypeItem = repository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Operation type item not found"));
+
+        opTypeItem.setOperationName(request.getOperationName());
+        opTypeItem.setOperationCode(request.getOperationCode());
+        if (request.getStatus() != null) {
+            opTypeItem.setStatus(request.getStatus());
+        } else if (opTypeItem.getStatus() == null) {
+            opTypeItem.setStatus(ACTIVE);
+        }
+        if (request.getPrice() != null) {
+            opTypeItem.setAmount(request.getPrice());
+        }
+        if (request.getShowTechnic() != null) {
+            opTypeItem.setShowTechnic(request.getShowTechnic());
+        }
+
+        if (request.getInsurances() != null) {
+            opTypeItem.getInsurances().clear();
+            List<OpTypeItemInsurance> newInsurances = helperService.updateOpTypeInsurance(
+                    request.getInsurances(),
+                    opTypeItem
+            );
+            opTypeItem.getInsurances().addAll(newInsurances);
+        }
+
+        repository.save(opTypeItem);
+    }
+
+    public void updateStatus(Long id) {
+        var operationType = helperService.getOperationTypeItemById(id);
+        var status = operationType.getStatus() == ACTIVE ? PASSIVE : ACTIVE;
+        operationType.setStatus(status);
+        repository.save(operationType);
+    }
+
+    public void delete(Long id) {
+        var operationType = helperService.getOperationTypeItemById(id);
+        repository.delete(operationType);
+    }
+
+    public InputStreamResource exportReservationsToExcel() {
+        List<OpTypeItem> operations = repository.findAll();
+        var list = operations.stream().map(OP_TYPE_ITEM_MAPPER::toExcelDto).toList();
+        ByteArrayInputStream excelFile = ExcelUtil.dataToExcel(list, OpTypeItemExcelResponse.class);
+        return new InputStreamResource(excelFile);
+    }
+
+    public List<OpTypeItemReadResponse> readAll() {
+        return OP_TYPE_ITEM_MAPPER.toDtos(repository.findAll());
+    }
+}

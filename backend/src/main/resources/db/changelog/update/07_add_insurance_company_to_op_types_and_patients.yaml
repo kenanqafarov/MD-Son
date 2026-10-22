@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: 07-add-insurance-company-to-op-types-and-patients
+      author: rustam
+      changes:
+        - addColumn:
+            tableName: op_types
+            columns:
+              - column:
+                  name: insurance_company_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_op_types_insurance_company
+                    references: insurance_companies(id)
+        - addColumn:
+            tableName: patients
+            columns:
+              - column:
+                  name: insurance_company_id
+                  type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_patients_insurance_company
+                    references: insurance_companies(id)

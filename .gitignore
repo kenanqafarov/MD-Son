@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+backend/build/
+bin/
+backend/bin/
+*.zip
+*.jar
+*.war
+
+# IDE & OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+*.log
+.gradle/
+backend/.gradle/
+
+# Scratch & temporary
+scratch/
+frontend/scratch/
+.git_bk
