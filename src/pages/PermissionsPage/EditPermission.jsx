@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import usePermissionStore from "../../../stores/permissionStore";
+import { toast } from "react-toastify";
+import { SUPER_ADMIN_ROLE } from "../../hooks/usePermission";
 import "../../assets/style/PermissionPage/editpermission.css";
 
 const permissionsList = [
@@ -229,6 +231,15 @@ function EditPermission() {
   };
 
   const handleSave = async () => {
+    // Başqa rolu SUPER_ADMIN adlandırmaq bütün yoxlamaları açar
+    const isRenamingToSuperAdmin =
+      name.trim().toUpperCase() === SUPER_ADMIN_ROLE &&
+      selectedPermission?.permissionName !== SUPER_ADMIN_ROLE;
+    if (isRenamingToSuperAdmin) {
+      toast.error(`"${SUPER_ADMIN_ROLE}" adı sistem üçün qorunur`);
+      return;
+    }
+
     const permissions = [];
 
     Object.entries(checked).forEach(([moduleUrl, actionMap]) => {
@@ -261,6 +272,7 @@ function EditPermission() {
       navigate("/permissions");
     } catch (error) {
       console.error("Xəta baş verdi:", error);
+      toast.error(error?.response?.data?.message || "İcazə yenilənərkən xəta baş verdi");
     }
   };
 

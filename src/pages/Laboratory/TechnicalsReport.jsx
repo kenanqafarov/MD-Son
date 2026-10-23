@@ -6,7 +6,6 @@ import "../../assets/style/LaboratoryPage/sentorders.css";
 
 // Icons
 import { CiSearch } from "react-icons/ci";
-import { FiDownload } from "react-icons/fi";
 import { CiCircleInfo } from "react-icons/ci";
 import { HiArrowsUpDown } from "react-icons/hi2";
 import { FaPlus } from "react-icons/fa6";
@@ -32,13 +31,6 @@ function TechnicalsReport() {
     fetchPayments();
   }, [fetchPayments]);
 
-  // Log the payments data to the console
-  useEffect(() => {
-    if (payments.length > 0) {
-      console.log("Fetched Payments Data:", payments);
-    }
-  }, [payments]);
-
   // Cədvəl başlıqları API cavabına uyğunlaşdırıldı
   const tableHead = [
     "Adı",
@@ -58,13 +50,16 @@ function TechnicalsReport() {
   ];
 
   // Axtarış filtri: "Tam adı" sahəsi üzrə axtarış edir.
-  const filteredData = payments.filter((row) => {
-    const fullNameMatch = row.fullName
-      ?.toLowerCase()
-      .includes(searchQuery.toLowerCase());
+  // fullName boş olan texniklər də siyahıda qalsın.
+  const filteredData = (Array.isArray(payments) ? payments : []).filter((row) =>
+    (row.fullName ?? "").toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-    return fullNameMatch;
-  });
+  // 0 da real məbləğdir — "-" yalnız dəyər yoxdursa
+  const formatAmount = (value) =>
+    value === null || value === undefined || value === ""
+      ? "-"
+      : `${Number(value).toFixed(2)} AZN`;
 
   if (isLoading) {
     return (
@@ -105,10 +100,8 @@ function TechnicalsReport() {
               <FaPlus className="plusBTN" /> Yenisini əlavə et
             </p>
           )}
-          <FiDownload
-            className="exportDataNow"
-            onClick={() => navigate("/data/export")}
-          />
+          {/* Export düyməsi "/data/export"-a aparırdı — belə route yoxdur (404).
+              Backend-də texnik export endpoint-i olanda geri qaytarılmalıdır. */}
         </div>
       </div>
 
@@ -165,13 +158,13 @@ function TechnicalsReport() {
                     <td style={{ textAlign: "left" }}>{firstName}</td>
                     <td style={{ textAlign: "left" }}>{lastName}</td>
                     <td style={{ textAlign: "right" }}>
-                      {row.totalDebt ? `${row.totalDebt} AZN` : "-"}
+                      {formatAmount(row.totalDebt)}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      {row.totalPaid ? `${row.totalPaid} AZN` : "-"}
+                      {formatAmount(row.totalPaid)}
                     </td>
                     <td style={{ textAlign: "right" }}>
-                      {row.totalRemaining ? `${row.totalRemaining} AZN` : "-"}
+                      {formatAmount(row.totalRemaining)}
                     </td>
                     {icons.length > 0 && (
                       <td className="actions" style={{ textAlign: "center" }}>
