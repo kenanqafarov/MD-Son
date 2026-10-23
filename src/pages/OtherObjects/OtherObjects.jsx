@@ -7,6 +7,7 @@ import { FaPlus } from "react-icons/fa";
 import "../../assets/style/OtherObjects/otherobjects.css"
 import { CiExport } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
+import { usePermission } from "../../hooks/usePermission";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -19,6 +20,10 @@ const OtherObjects = () => {
   const [search, setSearch] = useState("");
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Digər obyektlər", "CREATE");
+  const canUpdate = hasPermission("Digər obyektlər", "UPDATE");
+  const canDelete = hasPermission("Digər obyektlər", "DELETE");
 
   useEffect(() => {
     const stored = localStorage.getItem("MD_OTHER_OBJECTS");
@@ -81,9 +86,11 @@ const OtherObjects = () => {
             </div>
             </div>
             <div className="rightPartOfTop">
+            {canCreate && (
             <Link to={'add'} className="addNewOtherObjectItem">
                 <FaPlus /> Yenisini əlavə et
             </Link>
+            )}
             <Link className="exportDataOfOtherObjects" title="Export">
                 <CiExport size={22} className="exportOtherObjectDataIcon" />
             </Link>
@@ -105,7 +112,7 @@ const OtherObjects = () => {
                     <HiArrowsUpDown className="tableArrowIcon" /> Status
                     </span>
                 </th>
-                <th>Düzəliş</th>
+                {(canUpdate || canDelete) && <th>Düzəliş</th>}
                 </tr>
             </thead>
             <tbody>
@@ -122,12 +129,14 @@ const OtherObjects = () => {
                         {item.status}
                     </span>
                     </td>
+                    {(canUpdate || canDelete) && (
                     <td>
                     <div className="icons flex gap-3 cursor-pointer">
-                        <FiEdit3 className="edit" onClick={() => handleEdit(item.id)} />
-                        <GoTrash className="delete" onClick={() => handleDelete(item.id)} />
+                        {canUpdate && <FiEdit3 className="edit" onClick={() => handleEdit(item.id)} />}
+                        {canDelete && <GoTrash className="delete" onClick={() => handleDelete(item.id)} />}
                     </div>
                     </td>
+                    )}
                 </tr>
                 ))}
                 {filteredOtherObjectItems.length === 0 && (

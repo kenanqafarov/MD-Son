@@ -6,9 +6,13 @@ import DownloadIcon from "../../assets/icons/Download";
 import { FiEdit2 } from "react-icons/fi";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { TbCoins } from "react-icons/tb";
+import { usePermission } from "../../hooks/usePermission";
 
 function InfoTechnician() {
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Texniklər", "UPDATE");
+  const canDelete = hasPermission("Texniklər", "DELETE");
   const { id } = useParams();
   const [selectedImage, setSelectedImage] = useState(null);
 
@@ -86,12 +90,16 @@ function InfoTechnician() {
     <div className="infoTechnicianContainer">
       <div className="infoHeader">
         <div className="actionButtons">
-          <button className="iconButton" onClick={handleEdit} title="Redaktə et">
-            <FiEdit2 size={20} />
-          </button>
-          <button className="iconButton" onClick={handleDelete} title="Sil">
-            <RiDeleteBin6Line size={20} />
-          </button>
+          {canUpdate && (
+            <button className="iconButton" onClick={handleEdit} title="Redaktə et">
+              <FiEdit2 size={20} />
+            </button>
+          )}
+          {canDelete && (
+            <button className="iconButton" onClick={handleDelete} title="Sil">
+              <RiDeleteBin6Line size={20} />
+            </button>
+          )}
           <button className="iconButton" onClick={handlePrices} title="Qiymətlər">
             <TbCoins size={20} />
           </button>

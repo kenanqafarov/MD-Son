@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Table, Card, Button, Popconfirm, message, Space } from 'antd';
 import { DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 
-const PlansTable = ({ data = [], onDelete, onSelectionChange, onConfirmSelection, externalSelectedRowKeys = null }) => {
+const PlansTable = ({ data = [], onDelete, onSelectionChange, onConfirmSelection, externalSelectedRowKeys = null, showConfirm = true }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [expandedRowKeys, setExpandedRowKeys] = useState([]);
@@ -282,7 +282,7 @@ const PlansTable = ({ data = [], onDelete, onSelectionChange, onConfirmSelection
       />
       
       {/* Table-in altında təsdiq buttonu - yalnız seçim edildikdə görünsün */}
-      {selectedRowKeys.length > 0 && (
+      {showConfirm && selectedRowKeys.length > 0 && (
         <div className="mt-4 flex justify-start">
           <Button
             type="primary"

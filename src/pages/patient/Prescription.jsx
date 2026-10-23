@@ -5,11 +5,16 @@ import { useNavigate, useParams } from "react-router-dom";
 import usePatientRecipeStore from "../../../stores/usePatientRecipeStore";
 import { toast } from "react-toastify";
 import Modal from "../../components/Modal"; // Import your Modal component
+import { usePermission } from "../../hooks/usePermission";
 
 const Prescription = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const currentPatientId = parseInt(id);
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Reseptləri", "CREATE");
+  const canUpdate = hasPermission("Reseptləri", "UPDATE");
+  const canDelete = hasPermission("Reseptləri", "DELETE");
 
   const {
     patientRecipes,
@@ -137,12 +142,14 @@ const Prescription = () => {
           />
         </div>
         <div className="flex gap-4">
-          <button
-            onClick={() => navigate(`add?patientId=${currentPatientId}`)}
-            className="flex justify-center items-center bg-transparent text-[#155EEF] w-[178px] h-[36px] rounded-lg p-2 border border-[#155EEF] hover:bg-[#155EEF] hover:text-white transition-all duration-300"
-          >
-            + Yenisini əlavə et
-          </button>
+          {canCreate && (
+            <button
+              onClick={() => navigate(`add?patientId=${currentPatientId}`)}
+              className="flex justify-center items-center bg-transparent text-[#155EEF] w-[178px] h-[36px] rounded-lg p-2 border border-[#155EEF] hover:bg-[#155EEF] hover:text-white transition-all duration-300"
+            >
+              + Yenisini əlavə et
+            </button>
+          )}
           <button>
             <DownloadIcon />
           </button>
@@ -156,8 +163,8 @@ const Prescription = () => {
             startPage={1}
             endPage={1}
             pageSize={10}
-            enableEdit={true}
-            enableDelete={true}
+            enableEdit={canUpdate}
+            enableDelete={canDelete}
             enableView={true}
             handleEdit={(id) => {
               navigate(`${id}/edit?patientId=${currentPatientId}`);

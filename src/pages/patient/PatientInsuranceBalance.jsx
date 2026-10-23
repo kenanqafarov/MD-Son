@@ -7,10 +7,15 @@ import InfoIcon from "../../assets/icons/Info";
 import usePatientInsuranceBalanceStore from "../../../stores/PatientInsuranceBalanceStore";
 import BlurLoader from "../../components/layout/BlurLoader";
 import { toast } from "react-toastify";
+import { usePermission } from "../../hooks/usePermission";
 
 const PatientInsuranceBalance = () => {
     const navigate = useNavigate();
     const { id: insuranceId } = useParams();
+    const { hasPermission } = usePermission();
+    const canCreate = hasPermission("Sığortaları", "CREATE");
+    const canUpdate = hasPermission("Sığortaları", "UPDATE");
+    const canDelete = hasPermission("Sığortaları", "DELETE");
     
     const {
         balances,
@@ -113,12 +118,14 @@ const PatientInsuranceBalance = () => {
                     </div>
 
                     <div className="flex gap-4">
-                        <button
-                            onClick={handleAddNew}
-                            className="flex items-center justify-center border border-[#155EEF] text-[#155EEF] px-4 h-[40px] rounded-lg text-sm font-medium hover:bg-[#155EEF] hover:text-white transition-all duration-300"
-                        >
-                            <span className="mr-2">+</span> Yenisini əlavə et
-                        </button>
+                        {canCreate && (
+                            <button
+                                onClick={handleAddNew}
+                                className="flex items-center justify-center border border-[#155EEF] text-[#155EEF] px-4 h-[40px] rounded-lg text-sm font-medium hover:bg-[#155EEF] hover:text-white transition-all duration-300"
+                            >
+                                <span className="mr-2">+</span> Yenisini əlavə et
+                            </button>
+                        )}
                         <button
                             onClick={() => console.log("Məlumatlar yükləndi")}
                             className="flex items-center justify-center border border-[#E0E0E0] text-gray-700 w-[36px] h-[40px] rounded-lg text-sm font-medium hover:bg-gray-100 transition-all duration-300"
@@ -183,20 +190,24 @@ const PatientInsuranceBalance = () => {
                                             >
                                                 <InfoIcon />
                                             </button>
-                                            <button
-                                                onClick={() => handleEdit(balance.id)}
-                                                className="text-[#667085] hover:text-yellow-600 transition-colors duration-200"
-                                                title="Redaktə et"
-                                            >
-                                                <EditIcon />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(balance.id)}
-                                                className="text-[#667085] hover:text-red-600 transition-colors duration-200"
-                                                title="Sil"
-                                            >
-                                                <DeleteIcon />
-                                            </button>
+                                            {canUpdate && (
+                                                <button
+                                                    onClick={() => handleEdit(balance.id)}
+                                                    className="text-[#667085] hover:text-yellow-600 transition-colors duration-200"
+                                                    title="Redaktə et"
+                                                >
+                                                    <EditIcon />
+                                                </button>
+                                            )}
+                                            {canDelete && (
+                                                <button
+                                                    onClick={() => handleDelete(balance.id)}
+                                                    className="text-[#667085] hover:text-red-600 transition-colors duration-200"
+                                                    title="Sil"
+                                                >
+                                                    <DeleteIcon />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

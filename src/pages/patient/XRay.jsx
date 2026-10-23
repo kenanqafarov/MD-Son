@@ -12,10 +12,15 @@ import 'swiper/css/navigation';
 import TitleUpdater from "../../components/TitleUpdater";
 import XRayCard from "../../components/XRayCard";
 import usePatientXrayStore from "../../../stores/patient-xrayStore";
+import { usePermission } from "../../hooks/usePermission";
 
 const XRay = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { hasPermission } = usePermission();
+    const canCreate = hasPermission("Rentgen", "CREATE");
+    const canUpdate = hasPermission("Rentgen", "UPDATE");
+    const canDelete = hasPermission("Rentgen", "DELETE");
 
     const { xrays, fetchXrays, deleteXray, loading } = usePatientXrayStore();
 
@@ -105,14 +110,16 @@ const XRay = () => {
         <div className="flex flex-wrap gap-6 p-6 justify-center min-h-screen relative pt-[7rem]">
             <TitleUpdater title="X-Rays" />
 
-            <div className="absolute top-6 right-6 z-10">
-                <button
-                    onClick={handleAddNewXRay}
-                    className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 font-semibold"
-                >
-                    <FaPlus className="mr-2" /> Yenisini əlavə et
-                </button>
-            </div>
+            {canCreate && (
+                <div className="absolute top-6 right-6 z-10">
+                    <button
+                        onClick={handleAddNewXRay}
+                        className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 font-semibold"
+                    >
+                        <FaPlus className="mr-2" /> Yenisini əlavə et
+                    </button>
+                </div>
+            )}
 
             {loading ? (
                 <div className="flex justify-center items-center w-full h-64 text-xl">Məlumat yüklənir...</div>
@@ -125,6 +132,8 @@ const XRay = () => {
                         date={xray.date}
                         handleClick={() => handleOpenSlideshow(xray.id)}
                         onDelete={handleDelete}
+                        canUpdate={canUpdate}
+                        canDelete={canDelete}
                     />
                 ))
             ) : (

@@ -5,6 +5,7 @@ import { GoTrash } from "react-icons/go";
 import { HiOutlineArrowsUpDown } from "react-icons/hi2";
 import { HiChevronDown } from "react-icons/hi";
 import useWorkersScheduleStore from "../../../stores/workersScheduleStore";
+import { usePermission } from "../../hooks/usePermission";
 
 import "../../assets/style/EmployeesPage/employeeworkschedulelist.css";
 import OrdinaryScheduleList from "../../components/OrdinaryList/OrdinaryScheduleList";
@@ -23,6 +24,10 @@ function EmployeeWorkScheduleList() {
   const navigate = useNavigate();
   const { id } = useParams();
   const { schedules, loading, error, fetchSchedules, removeSchedule } = useWorkersScheduleStore();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Həkimlərin iş qrafiki", "CREATE");
+  const canUpdate = hasPermission("Həkimlərin iş qrafiki", "UPDATE");
+  const canDelete = hasPermission("Həkimlərin iş qrafiki", "DELETE");
 
   const [selectedDay, setSelectedDay] = useState("");
   const [isOpen, setIsOpen] = useState(false); 
@@ -53,6 +58,7 @@ function EmployeeWorkScheduleList() {
         title="İş qrafiki"
         addText="Yenisini əlavə et"
         addLink="./add"
+        showAdd={canCreate}
         // exportLink="/employees/export"
       />
       <div
@@ -142,14 +148,18 @@ function EmployeeWorkScheduleList() {
                   <td className="!text-center" style={{ textAlign: 'left' }}>{formatTime(row.finishTime)}</td>
                   <td className="!text-center" style={{ textAlign: 'left' }}>
                     <div className="anamnesisList-action-icons !flex !justify-center gap-1">
+                      {canUpdate && (
                       <FiEdit3
                         className="anamnesisList-edit-button text-blue-400"
                         onClick={() => handleEdit(row)}
                       />
+                      )}
+                      {canDelete && (
                       <GoTrash
                         className="anamnesisList-delete-button text-red-500"
                         onClick={() => handleDelete(row)}
                       />
+                      )}
                     </div>
                   </td>
                 </tr>

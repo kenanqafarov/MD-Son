@@ -4,6 +4,7 @@ import "../../assets/style/PermissionPage/infopermission.css";
 import { FiEdit3, FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import usePermissionStore from "../../../stores/permissionStore";
+import { usePermission } from "../../hooks/usePermission";
 
 const permissions = [
   {
@@ -53,6 +54,8 @@ const actionMap = {
 function InfoPermission() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("İcazələr", "UPDATE");
   const { selectedPermission, fetchPermissionById, loading } = usePermissionStore();
 
   const [name, setName] = useState("");
@@ -103,9 +106,11 @@ function InfoPermission() {
   return (
     <div className="infoPermissionContainer">
       <div className="infoPermissionWrapper">
-        <div className="editIconForInfoPermissionContainer">
-          <FiEdit3 className='editIconForInfoPermission' onClick={() => navigate(`../permissions/edit/${id}`)} />
-        </div>
+        {canUpdate && (
+          <div className="editIconForInfoPermissionContainer">
+            <FiEdit3 className='editIconForInfoPermission' onClick={() => navigate(`../permissions/edit/${id}`)} />
+          </div>
+        )}
         <form className="infoPermissionForm" onSubmit={e => e.preventDefault()}>
           <div className="infoTopPartForm">
             <label htmlFor="name">İcazənin adı <span style={{ color: 'red' }}>*</span></label>
@@ -194,13 +199,15 @@ function InfoPermission() {
             >
               <RxCross2 /> İmtina et
             </button>
-            <button
-              type="button"
-              className="saveBtn"
-              onClick={() => navigate(`../permissions/edit/${id}`)}
-            >
-              <FiCheck /> Redaktə et
-            </button>
+            {canUpdate && (
+              <button
+                type="button"
+                className="saveBtn"
+                onClick={() => navigate(`../permissions/edit/${id}`)}
+              >
+                <FiCheck /> Redaktə et
+              </button>
+            )}
           </div>
         </form>
       </div>

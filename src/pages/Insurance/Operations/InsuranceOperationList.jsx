@@ -15,10 +15,10 @@ const InsuranceOperationList = () => {
   const navigate = useNavigate();
 
   const { hasPermission } = usePermission();
-  const canCreate = hasPermission("Əməliyyat növləri", "CREATE");
-  const canUpdate = hasPermission("Əməliyyat növləri", "UPDATE");
-  const canDelete = hasPermission("Əməliyyat növləri", "DELETE");
-  const canStatus = hasPermission("Əməliyyat növləri", "STATUS");
+  const canCreate = hasPermission("Sığorta şirkətləri", "CREATE");
+  const canUpdate = hasPermission("Sığorta şirkətləri", "UPDATE");
+  const canDelete = hasPermission("Sığorta şirkətləri", "DELETE");
+  const canStatus = hasPermission("Sığorta şirkətləri", "STATUS");
 
   const {
     operationItemsType,

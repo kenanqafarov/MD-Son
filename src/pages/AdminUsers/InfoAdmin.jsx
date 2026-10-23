@@ -4,9 +4,12 @@ import { FaDownload } from "react-icons/fa";
 import EditIcon from "../../assets/icons/Edit";
 import { Link, useParams } from "react-router-dom";
 import "../../assets/style/AdminUsers/infoadmin.css";
+import { usePermission } from "../../hooks/usePermission";
 
 const InfoAdmin = ({ showEdit = true }) => {
   const { id } = useParams();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Admin istifadəçiləri", "UPDATE");
 
   const [infoData, setInfoData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +79,7 @@ const InfoAdmin = ({ showEdit = true }) => {
 
   return (
     <div className="infoAdminFormContainer h-screen">
-      {showEdit && (
+      {showEdit && canUpdate && (
         <div className="infoAdminEditIcon">
           <Link to={`../admin-users/edit/${id}`} title="Redaktə et">
             <EditIcon style={{ cursor: "pointer" }} />

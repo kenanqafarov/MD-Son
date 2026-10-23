@@ -3,10 +3,14 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { LuPenLine } from "react-icons/lu"; // Yeni Edit iconu
 import { GoTrash } from "react-icons/go"; // Yeni Delete iconu
+import { usePermission } from "../../hooks/usePermission";
 
 // patientId və insuranceId proplarını qəbul edirik
 const InfoInsurancePatient = ({ patientId = 2, insuranceId = 1 }) => { // Nümunə dəyərlər
     const navigate = useNavigate();
+    const { hasPermission } = usePermission();
+    const canUpdate = hasPermission("Sığortaları", "UPDATE");
+    const canDelete = hasPermission("Sığortaları", "DELETE");
 
     // Məlumatı hardansa almalıyıq (məsələn, API-dən və ya prop kimi)
     // Nümunə məlumatı:
@@ -39,20 +43,24 @@ const InfoInsurancePatient = ({ patientId = 2, insuranceId = 1 }) => { // Nümun
         <div className="flex flex-col gap-6 p-6 bg-white rounded-lg shadow-md max-w-100% mx-auto my-8">
             <div className="flex justify-end items-center mb-4">
                 <div className="flex gap-4">
-                    <button
-                        onClick={handleEdit}
-                        className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                        title="Dəyişiklik et"
-                    >
-                        <LuPenLine className="h-6 w-6 text-blue-600" />
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
-                        title="Sil"
-                    >
-                        <GoTrash className="h-6 w-6 text-red-600" />
-                    </button>
+                    {canUpdate && (
+                        <button
+                            onClick={handleEdit}
+                            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                            title="Dəyişiklik et"
+                        >
+                            <LuPenLine className="h-6 w-6 text-blue-600" />
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            onClick={handleDelete}
+                            className="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                            title="Sil"
+                        >
+                            <GoTrash className="h-6 w-6 text-red-600" />
+                        </button>
+                    )}
                 </div>
             </div>
 

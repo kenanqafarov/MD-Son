@@ -7,10 +7,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/style/Teeth/infooperationpicture.css";
 import useTeethOperationStore from "../../../stores/teeth-opetaionStore";
+import { usePermission } from "../../hooks/usePermission";
 
 const InfoOperationPicture = () => {
   const { id: teethId, operationId } = useParams();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Digər", "UPDATE");
+  const canDelete = hasPermission("Digər", "DELETE");
   const location = useLocation();
   const { removeTeethOperations, loading } = useTeethOperationStore();
 
@@ -52,9 +56,11 @@ const InfoOperationPicture = () => {
       <div className="infoOperationPictureWrapper">
         <div className="infoOperationPictureHeader">
           <h2>Əməliyyat Detalları</h2>
-          <button className="infoOperationPictureEditIconButton" onClick={handleEdit}>
-            <FiEdit3 className="infoOperationPictureEditIcon" />
-          </button>
+          {canUpdate && (
+            <button className="infoOperationPictureEditIconButton" onClick={handleEdit}>
+              <FiEdit3 className="infoOperationPictureEditIcon" />
+            </button>
+          )}
         </div>
 
         <div className="infoOperationPictureContent">
@@ -84,22 +90,26 @@ const InfoOperationPicture = () => {
             <RxCross2 style={{ marginRight: 8 }} />
             İmtina et
           </button>
-          <button
-            className="infoOperationPictureDeleteButton"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            <GoTrash style={{ marginRight: 8 }} />
-            Sil
-          </button>
-          <button
-            className="infoOperationPictureConfirmButton"
-            onClick={handleEdit}
-            disabled={loading}
-          >
-            <FiCheck style={{ marginRight: 8 }} />
-            Düzəlt
-          </button>
+          {canDelete && (
+            <button
+              className="infoOperationPictureDeleteButton"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              <GoTrash style={{ marginRight: 8 }} />
+              Sil
+            </button>
+          )}
+          {canUpdate && (
+            <button
+              className="infoOperationPictureConfirmButton"
+              onClick={handleEdit}
+              disabled={loading}
+            >
+              <FiCheck style={{ marginRight: 8 }} />
+              Düzəlt
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -11,6 +11,7 @@ import PlansTable from './Components/Page/plansTable';
 import usePatientInsuranceStore from '../../../../stores/patientInsuranceStore';
 import usePlansStore from '../../../../stores/plans';
 import usePatientPlansControllerStore from '../../../../stores/patient-plans-controller'; 
+import { usePermission } from '../../../hooks/usePermission';
 
 // LocalStorage helpers for draft plans
 const getDraftPlans = (patientId) => {
@@ -38,6 +39,10 @@ const removeDraftPlan = (patientId, planId) => {
 };
 const Plans = () => {     
   const { id: patientId } = useParams();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Planları", "CREATE");
+  const canUpdate = hasPermission("Planları", "UPDATE");
+  const canDelete = hasPermission("Planları", "DELETE");
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -495,14 +500,16 @@ const Plans = () => {
             ) : plans.length === 1 ? (
               <div className='flex items-center gap-4'>
                 <div className='text-lg font-semibold'>{plans[0]['Plan Adı']}</div>
-                <Button 
-                  type="link" 
-                  icon={<EditOutlined />} 
-                  onClick={() => showModal(plans[0])}
-                >
-                  Düzəlt
-                </Button>
-                {plans[0].isSave === true && (
+                {canUpdate && (
+                  <Button 
+                    type="link" 
+                    icon={<EditOutlined />} 
+                    onClick={() => showModal(plans[0])}
+                  >
+                    Düzəlt
+                  </Button>
+                )}
+                {canDelete && plans[0].isSave === true && (
                   <Popconfirm
                     title="Planı silmək istədiyinizə əminsiniz?"
                     onConfirm={() => handleDeletePlan(plans[0].id)}
@@ -536,14 +543,16 @@ const Plans = () => {
                 {selectedPlan && (
                   <div className='flex items-center gap-4 mt-2'>
                     <div className='text-lg font-semibold'>{selectedPlan['Plan Adı']}</div>
-                    <Button 
-                      type="link" 
-                      icon={<EditOutlined />} 
-                      onClick={() => showModal(selectedPlan)}
-                    >
-                      Düzəlt
-                    </Button>
-                    {selectedPlan.isSave === true && (
+                    {canUpdate && (
+                      <Button 
+                        type="link" 
+                        icon={<EditOutlined />} 
+                        onClick={() => showModal(selectedPlan)}
+                      >
+                        Düzəlt
+                      </Button>
+                    )}
+                    {canDelete && selectedPlan.isSave === true && (
                       <Popconfirm
                         title="Planı silmək istədiyinizə əminsiniz?"
                         onConfirm={() => handleDeletePlan(selectedPlan.id)}
@@ -566,9 +575,11 @@ const Plans = () => {
               </div>
             )}
           </div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal(null)}>
-            Plan Əlavə Et
-          </Button>
+          {canCreate && (
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => showModal(null)}>
+              Plan Əlavə Et
+            </Button>
+          )}
         </div>
         <Modal
           title={editingPlan ? "Planı Düzəlt" : "Plan Əlavə Et"}
@@ -599,7 +610,8 @@ const Plans = () => {
           <Divider />
           
           {/* Plan təsdiqləmə buttonu - ən azı bir isSave false olarsa görünsün, hamısı true olsa görünməsin */}
-          {selectedPlan && 
+          {canUpdate &&
+           selectedPlan && 
            hasUnsavedItems && 
            patientPlansData && 
            patientPlansData.length > 0 && (
@@ -625,6 +637,7 @@ const Plans = () => {
 
                 {/* secilen disleri ve kategori, emelyatlari backe gonderme buttonu */}
                 <div className='flex justify-between flex-col gap-3 items-center mb-4'>
+                  {canCreate && (
                   <Button 
                     type="default" 
                     icon={<UnorderedListOutlined />}
@@ -633,6 +646,7 @@ const Plans = () => {
                   >
                     Kateqoriya və Əməliyyat seçimi
                   </Button>
+                  )}
                   
                   {/* Seçilmiş əməliyyat məlumatı info card */}
                   {selectedOperationInfo && (
@@ -663,6 +677,7 @@ const Plans = () => {
                     </Card>
                   )}
                   
+                  {canCreate && (
                   <Button 
                     type="primary" 
                     icon={<SaveOutlined />}
@@ -672,6 +687,7 @@ const Plans = () => {
                   >
                     Göndər
                   </Button>
+                  )}
                 </div>
 
                 {/* Drawer - Kategoriyalar ve Emelyatlar */}
@@ -727,6 +743,7 @@ const Plans = () => {
               <Divider />
               <PlansTable 
                 data={patientPlansData} 
+                canDelete={canDelete}
                 onDelete={async (id) => {
                   setDeletingPlanItem(true);
                   try {

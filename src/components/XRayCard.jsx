@@ -4,7 +4,7 @@ import InfoIcon from "../assets/icons/Info";
 import DeleteIcon from "../assets/icons/Delete";
 import EditIcon from "../assets/icons/Edit";
 
-const XRayCard = ({ image_url, date, handleClick, xrayId, onDelete }) => {
+const XRayCard = ({ image_url, date, handleClick, xrayId, onDelete, canUpdate = true, canDelete = true }) => {
     const navigate = useNavigate();
 
     const handleInfoClick = (e) => {
@@ -36,18 +36,22 @@ const XRayCard = ({ image_url, date, handleClick, xrayId, onDelete }) => {
                     >
                         <InfoIcon />
                     </button>
-                    <button
-                        className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center"
-                        onClick={handleEditClick}
-                    >
-                        <EditIcon />
-                    </button>
-                    <button
-                        className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center"
-                        onClick={handleDeleteClick}
-                    >
-                        <DeleteIcon />
-                    </button>
+                    {canUpdate && (
+                        <button
+                            className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center"
+                            onClick={handleEditClick}
+                        >
+                            <EditIcon />
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center"
+                            onClick={handleDeleteClick}
+                        >
+                            <DeleteIcon />
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center h-[208px]" onClick={handleClick}>

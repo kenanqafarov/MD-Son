@@ -12,9 +12,14 @@ import "swiper/css/navigation";
 // components/TitleUpdater.jsx və components/XRayCard.jsx yollarının düzgün olduğuna əmin olun
 import TitleUpdater from "../../components/TitleUpdater";
 import XRayCard from "../../components/XRayCard";
+import { usePermission } from "../../hooks/usePermission";
 const Images = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Fotolar", "CREATE");
+  const canUpdate = hasPermission("Fotolar", "UPDATE");
+  const canDelete = hasPermission("Fotolar", "DELETE");
 
   const [showSlideshow, setShowSlideshow] = useState(false);
   const [currentSlideshowImages, setCurrentSlideshowImages] = useState([]);
@@ -151,11 +156,13 @@ const Images = () => {
       <div className="absolute top-6 right-6 z-10">
         {" "}
         {/* z-10 əlavə edildi ki, kartların üstündə qalsın */}
-        <button
-          onClick={handleAddNewXRay}
-          className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 font-semibold">
-          <FaPlus className="mr-2" /> Yenisini əlavə et
-        </button>
+        {canCreate && (
+          <button
+            onClick={handleAddNewXRay}
+            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200 font-semibold">
+            <FaPlus className="mr-2" /> Yenisini əlavə et
+          </button>
+        )}
       </div>
 
       {xrayData.map((xray) => (
@@ -165,6 +172,8 @@ const Images = () => {
           image_url={xray.url || null}
           date={xray.date}
           handleClick={() => handleOpenSlideshow(xray.id)}
+          canUpdate={canUpdate}
+          canDelete={canDelete}
         />
       ))}
     </div>

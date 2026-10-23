@@ -6,11 +6,17 @@ import { GoTrash } from 'react-icons/go';
 import "../../assets/style/StockExport/stockexports.css";
 import { useNavigate, useLocation } from 'react-router-dom';
 import useWarehouseRemovalProductsStore from '../../../stores/warehouseRemovalProductsStore';
+import { usePermission } from "../../hooks/usePermission";
 
 function StockExports() {
     const navigate = useNavigate();
     const location = useLocation();
+    const { hasPermission } = usePermission();
+    const canCreate = hasPermission("Anbardan maxaric", "CREATE");
+    const canUpdate = hasPermission("Anbardan maxaric", "UPDATE");
+    const canDelete = hasPermission("Anbardan maxaric", "DELETE");
 
+    const pathParts = location.pathname.split("/").filter(Boolean);
     const urlId = pathParts[pathParts.length - 1]; 
     const filterById = !isNaN(urlId) && parseInt(urlId) > 0 ? parseInt(urlId) : null;
 
@@ -84,9 +90,11 @@ function StockExports() {
                         <CiSearch />
                     </button>
                 </div>
-                <button onClick={() => navigate('add')} className="stockExportsAddButton">
-                    + Yenisini əlavə et
-                </button>
+                {canCreate && (
+                    <button onClick={() => navigate('add')} className="stockExportsAddButton">
+                        + Yenisini əlavə et
+                    </button>
+                )}
             </div>
             
             <div className="stockExportsTableContainer">
@@ -118,14 +126,18 @@ function StockExports() {
                                                 onClick={() => navigate(`detail/${row.groupId}`)}
                                                 className="stockExportsInfoIcon"
                                             />
+                                            {canUpdate && (
                                             <FiEdit3
                                                 className="stockExportsEditIcon"
                                                 onClick={() => navigate(`edit/${row.groupId}`)}
                                             />
+                                            )}
+                                            {canDelete && (
                                             <GoTrash
                                                 className="stockExportsDeleteIcon"
                                                 onClick={() => handleDelete(row.id)}
                                             />
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Table, Card, Button, Popconfirm, message } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-const PlansTable = ({ data = [], onDelete }) => {
+const PlansTable = ({ data = [], onDelete, canDelete = true }) => {
   // Gələn datanı cədvəl formatına çevir
   const tableData = data.flatMap((item) => {
     const { patientPlansDto } = item;
@@ -94,7 +94,7 @@ const PlansTable = ({ data = [], onDelete }) => {
         </Popconfirm>
       ),
     },
-  ];
+  ].filter((col) => canDelete || col.key !== 'action');
 
   return (
     <Card title="Plan Əməliyyatları">

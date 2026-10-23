@@ -9,6 +9,7 @@ import UserForm from "../../components/UserForm";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import BeatLoader from "react-spinners/BeatLoader";
+import { usePermission } from "../../hooks/usePermission";
 
 function EmployeeDetails() {
   const { id } = useParams();
@@ -16,6 +17,7 @@ function EmployeeDetails() {
   const { data, isLoading, error } = useWorker(id);
   const { mutate: updateWorker, isPending: isUpdating } = useUpdateWorker();
   const { mutate: deleteWorker, isPending: isDeleting } = useDeleteWorker();
+  const { hasPermission } = usePermission();
 
   const handleUpdate = (formData) => {
     const updateData = {
@@ -77,6 +79,8 @@ function EmployeeDetails() {
           userData={data}
           onSubmit={handleUpdate}
           onDelete={handleDelete}
+          canUpdate={hasPermission("Həkimlər", "UPDATE")}
+          canDelete={hasPermission("Həkimlər", "DELETE")}
         />
       </div>
     </div>

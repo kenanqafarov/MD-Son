@@ -10,6 +10,7 @@ import ListWithSubtotal from "../../components/list/ListwithSubtotal";
 import EditIcon from "../../assets/icons/Edit";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import MultiFileForm from "../../components/MultiFileForm";
+import { usePermission } from "../../hooks/usePermission";
 import axios from "axios";
 import useOrdersFromWarehouseStore from "../../../stores/orderFromWarehouseStore";
 import useWorkerStore from "../../../stores/workerStore";
@@ -21,6 +22,7 @@ import "../../assets/style/StockOrder/stockorderedit.css";
 const StockOrderDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { hasPermission } = usePermission();
   const { register, setValue, control } = useForm();
 
   const { rooms, fetchRooms } = useCalendarStore();
@@ -198,12 +200,14 @@ const StockOrderDetail = () => {
   return (
     <div className="stockOrderFormWrapper">
       <div className="stockOrderTopPartIcons">
+        {hasPermission("Anbara sifariş", "UPDATE") && (
         <Link
           to={`/stock/order/edit/${id}`}
           className="stockOrderTopPartIcons__link"
         >
           <EditIcon className="stockOrderTopPartIcons__editIcon" />
         </Link>
+        )}
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
