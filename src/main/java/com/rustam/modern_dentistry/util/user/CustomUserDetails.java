@@ -1,6 +1,7 @@
 package com.rustam.modern_dentistry.util.user;
 
 import com.rustam.modern_dentistry.dao.entity.enums.PermissionAction;
+import com.rustam.modern_dentistry.dao.entity.enums.status.Status;
 import com.rustam.modern_dentistry.dao.entity.settings.permission.Permission;
 import com.rustam.modern_dentistry.dao.entity.users.BaseUser;
 import lombok.Getter;
@@ -20,14 +21,17 @@ public record CustomUserDetails(BaseUser user) implements UserDetails {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
         boolean isSuperAdmin = user.getPermissions().stream()
-                .anyMatch(p -> "SUPER_ADMIN".equals(p.getPermissionName()));
+                .anyMatch(p -> AccessGuard.SUPER_ADMIN.equals(p.getPermissionName()));
 
         if (isSuperAdmin) {
-            authorities.add(new SimpleGrantedAuthority("SUPER_ADMIN"));
+            authorities.add(new SimpleGrantedAuthority(AccessGuard.SUPER_ADMIN));
             return authorities;
         }
 
-        user.getPermissions().forEach(permission ->
+        // Deaktiv (PASSIVE) rol heç bir hüquq vermir
+        user.getPermissions().stream()
+                .filter(permission -> permission.getStatus() == Status.ACTIVE)
+                .forEach(permission ->
                 permission.getModulePermissions().forEach(module ->
                         module.getActions().forEach(action -> {
                             String auth = module.getModuleUrl() + ":" + action.name();

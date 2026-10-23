@@ -8,3 +8,7 @@ spring:
     redis:
       host: localhost
       port: 6379
+  application:
+    jwt:
+      # Yalnız lokal inkişaf üçün. Prod-da JWT_SECRET mühit dəyişəni verilməlidir
+      secret-key: ${JWT_SECRET:f109465814cf8bd99262759ff7eefd7d1ba8ba4de7d8d196ce4007b0f1629c6ffda062f24d6334c3b3302d59914ddf4859ef02c34ade808d0de84d6f49f832ec}

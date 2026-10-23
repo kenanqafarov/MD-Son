@@ -245,6 +245,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ExceptionResponseMessages> forbiddenException(ForbiddenException ex) {
+        return new ResponseEntity<>(
+                new ExceptionResponseMessages(ex.getClass().getName(), ex.getMessage(), HttpStatus.FORBIDDEN),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
     // For unhandled exceptions:
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ExceptionResponseMessages> generalExceptionHandler(Exception ex){

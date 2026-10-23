@@ -17,6 +17,8 @@ import com.rustam.modern_dentistry.exception.custom.NotFoundException;
 import com.rustam.modern_dentistry.mapper.settings.permission.PermissionMapper;
 import com.rustam.modern_dentistry.util.UtilService;
 import com.rustam.modern_dentistry.util.specification.settings.permission.PermissionSpecification;
+import com.rustam.modern_dentistry.exception.custom.ForbiddenException;
+import com.rustam.modern_dentistry.util.user.AccessGuard;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +40,9 @@ public class PermissionService {
 
     @Transactional
     public PermissionResponse create(PermissionCreateRequest permissionCreateRequest) {
+        if (AccessGuard.isReservedName(permissionCreateRequest.getPermissionName())) {
+            throw new ForbiddenException("\"" + AccessGuard.SUPER_ADMIN + "\" adı sistem üçün qorunur");
+        }
         Permission permission = new Permission();
         permission.setPermissionName(permissionCreateRequest.getPermissionName());
         permission.setStatus(Status.ACTIVE);
@@ -74,7 +79,20 @@ public class PermissionService {
 
     @Transactional
     public List<PermissionResponse> read() {
-        return permissionMapper.toDtos(permissionRepository.findAllWithModulePermissions());
+        List<PermissionResponse> all = permissionMapper.toDtos(permissionRepository.findAllWithModulePermissions());
+        if (AccessGuard.currentHasAuthority("İcazələr:READ")) {
+            return all;
+        }
+        // İcazələr modulunu oxuya bilməyən istifadəçi yalnız öz rollarını görür
+        // (frontend giriş yoxlaması üçün bu kifayətdir)
+        Set<String> ownRoles = AccessGuard.currentUser()
+                .map(u -> u.getPermissions().stream()
+                        .map(Permission::getPermissionName)
+                        .collect(Collectors.toSet()))
+                .orElse(Collections.emptySet());
+        return all.stream()
+                .filter(p -> ownRoles.contains(p.getPermissionName()))
+                .toList();
     }
 
     @Transactional
@@ -109,12 +127,14 @@ public class PermissionService {
     @Transactional
     public void delete(Long id) {
         Permission permission = findById(id);
+        requireNotSuperAdminRole(permission);
         permissionRepository.delete(permission);
     }
 
     @Transactional
     public PermissionResponse statusUpdated(PermissionStatusUpdatedRequest permissionStatusUpdatedRequest) {
         Permission permission = findById(permissionStatusUpdatedRequest.getId());
+        requireNotSuperAdminRole(permission);
         permission.setStatus(permissionStatusUpdatedRequest.getStatus());
         permissionRepository.save(permission);
         return permissionMapper.toResponse(permission);
@@ -123,6 +143,12 @@ public class PermissionService {
     @Transactional
     public PermissionCreateResponse update(PermissionUpdateRequest request) {
         Permission permission = findById(request.getId());
+        boolean renaming = request.getPermissionName() != null
+                && !request.getPermissionName().trim().isEmpty()
+                && !request.getPermissionName().equals(permission.getPermissionName());
+        if (renaming && (AccessGuard.isSuperAdminRole(permission) || AccessGuard.isReservedName(request.getPermissionName()))) {
+            throw new ForbiddenException("\"" + AccessGuard.SUPER_ADMIN + "\" adı sistem üçün qorunur");
+        }
 
         utilService.updateFieldIfPresent(request.getPermissionName(), permission::setPermissionName);
 
@@ -177,4 +203,10 @@ public class PermissionService {
 
 
 
+
+    private void requireNotSuperAdminRole(Permission permission) {
+        if (AccessGuard.isSuperAdminRole(permission)) {
+            throw new ForbiddenException("Sistem rolu " + AccessGuard.SUPER_ADMIN + " silinə və ya deaktiv edilə bilməz");
+        }
+    }
 }

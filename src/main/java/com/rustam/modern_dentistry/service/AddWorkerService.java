@@ -17,6 +17,7 @@ import com.rustam.modern_dentistry.mapper.AddWorkerMapper;
 import com.rustam.modern_dentistry.service.settings.PermissionService;
 import com.rustam.modern_dentistry.util.UtilService;
 import com.rustam.modern_dentistry.util.specification.UserSpecification;
+import com.rustam.modern_dentistry.util.user.AccessGuard;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -92,6 +93,7 @@ public class AddWorkerService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
+        AccessGuard.requireSuperAdminToAssign(newPermissions);
 
         BaseUser baseUser = addWorkerMapper.dtoToEntity(new BaseUser(), dto);
         baseUser.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -152,6 +154,7 @@ public class AddWorkerService {
 
         BaseUser baseUser = baseUserRepository.findByIdWithPermissions(dto.getId())
                 .orElseThrow(() -> new UserNotFountException("İstifadəçi tapılmadı."));
+        AccessGuard.requireSuperAdminToModify(baseUser);
 
         Set<Permission> newPermissions = (dto.getPermissions() == null)
                 ? new HashSet<>()
@@ -170,6 +173,7 @@ public class AddWorkerService {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
+        AccessGuard.requireSuperAdminToAssign(newPermissions);
 
         if (dto.getFinCode() != null) {
             if (baseUserRepository.existsByFinCodeIgnoreCaseAndIdNot(dto.getFinCode(), dto.getId())) {
@@ -199,6 +203,7 @@ public class AddWorkerService {
     public void delete(UUID id) {
         BaseUser baseUser = baseUserRepository.findById(id)
                 .orElseThrow(() -> new UserNotFountException("No such user found."));
+        AccessGuard.requireSuperAdminToModify(baseUser);
         baseUserRepository.delete(baseUser);
     }
 
@@ -206,6 +211,16 @@ public class AddWorkerService {
     public AddWorkerReadResponse info(UUID id) {
         BaseUser baseUser = baseUserRepository.findById(id)
                 .orElseThrow(() -> new UserNotFountException("No such user found."));
+        // Hər kəs öz profilini görür. Başqasının tam profili (əlaqə, FIN, rollar)
+        // üçün Həkimlər:READ lazımdır, qalanlarına yalnız ad qaytarılır
+        boolean isSelf = id.toString().equals(utilService.getCurrentUserId());
+        if (!isSelf && !AccessGuard.currentHasAuthority("Həkimlər:READ")) {
+            return AddWorkerReadResponse.builder()
+                    .id(baseUser.getId())
+                    .name(baseUser.getName())
+                    .surname(baseUser.getSurname())
+                    .build();
+        }
         return addWorkerMapper.toResponse(baseUser);
     }
 

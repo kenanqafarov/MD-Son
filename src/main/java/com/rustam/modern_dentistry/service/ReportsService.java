@@ -159,6 +159,17 @@ public class ReportsService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             paymentsMethod.add(new PaymentMethodItem(method, methodPayments.size(), amount, color));
         }
+        // Siyahıda olmayan ödəniş üsulları itməsin: diaqram ümumi məbləğə bərabər olsun
+        List<Payment> otherPayments = payments.stream()
+                .filter(p -> p.getPaymentMethod() == null || !Arrays.asList(methods).contains(p.getPaymentMethod()))
+                .toList();
+        if (!otherPayments.isEmpty()) {
+            BigDecimal otherAmount = otherPayments.stream()
+                    .map(Payment::getAmount)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            paymentsMethod.add(new PaymentMethodItem("Digər", otherPayments.size(), otherAmount, "#9CA3AF"));
+        }
 
         // 7. Professionals Invoicing Breakdown
         Map<String, List<Invoice>> byProfessional = invoices.stream()
