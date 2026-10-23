@@ -8,6 +8,7 @@ import {
   IoIosArrowForward as IoIosChevronRight,
 } from "react-icons/io";
 import { usePermission } from "../hooks/usePermission";
+import { isPathAllowed } from "../utils/routePermissions";
 
 // Style
 import "../assets/style/sidebar-menu.css";
@@ -26,59 +27,6 @@ import WarehouseIcon from "./sidebar-icons/WarehouseIcon.jsx";
 import SettingsIcon from "./sidebar-icons/SettingsIcon.jsx";
 import ExitIcon from "./sidebar-icons/ExitIcon.jsx";
 
-const routeModuleMap = {
-  // Employees
-  "/employees": { module: "Həkimlər", action: "READ" },
-  "/employees/employee-schedule": { module: "Həkimlərin iş qrafiki", action: "READ" },
-  "/employees/employee-add": { module: "Həkimlər", action: "CREATE" },
-  
-  // Appointments & Queue
-  "/appointments": { module: "Ümumi təqvim", action: "READ" },
-  "/queue": { module: "Növbə gözləyənlər", action: "READ" },
-  
-  // Patients
-  "/patients": { module: "Pasientlər", action: "READ" },
-  
-  // Reports
-  "/reports": { module: "Hesabat", action: "READ" },
-  "reports": { module: "Hesabat", action: "READ" },
-  
-  // Lab
-  "/sent-orders": { module: "Göndərilən sifarişlər", action: "READ" },
-  "/received-orders": { module: "Gələn sifarişlər", action: "READ" },
-  "/technicals-report": { module: "Texniklər üzrə hesabat", action: "READ" },
-  
-  // Stock
-  "/stock/clinic": { module: "Klinikanın stoku", action: "READ" },
-  "/stock/cabinet": { module: "Kabinet/Obyekt stoku", action: "READ" },
-  "/stock/import": { module: "Anbara maddəxil", action: "READ" },
-  "/stock/order": { module: "Anbara sifariş", action: "READ" },
-  "/stock/export": { module: "Anbardan maxaric", action: "READ" },
-  "/stock/entry": { module: "Anbardan daxilolmalar", action: "READ" },
-  "/stock/delete": { module: "Anbardan silinmə", action: "READ" },
-  "/stock/usage": { module: "Məhsul istifadəsi", action: "READ" },
-  
-  // Settings
-  "/permissions": { module: "İcazələr", action: "READ" },
-  "/technicians": { module: "Texniklər", action: "READ" },
-  "/appointment-types": { module: "Randevu tipləri", action: "READ" },
-  "/checklist": { module: "Müayinə siyahısı", action: "READ" },
-  "/operations": { module: "Əməliyyat növləri", action: "READ" },
-  "/colors": { module: "Rənglər", action: "READ" },
-  "/implants": { module: "İmplantlar", action: "READ" },
-  "/dental-set": { module: "Qarnirlar", action: "READ" },
-  "/insurance": { module: "Sığorta şirkətləri", action: "READ" },
-  "/price-category": { module: "Qiymət kateqoriyaları", action: "READ" },
-  "/cabinets": { module: "Kabinetlər", action: "READ" },
-  "/recepts": { module: "Reseptlər", action: "READ" },
-  "/anamnesis": { module: "Anamnez siyahısı", action: "READ" },
-  "/specialities": { module: "İxtisaslar", action: "READ" },
-  "/product-categories": { module: "Məhsul kateqoriyaları", action: "READ" },
-  "/blacklist-reasons": { module: "Qara siyahı səbəbləri", action: "READ" },
-  "/general-settings": { module: "Ümumi tənzimləmələr", action: "READ" },
-  "/metals": { module: "Digər", action: "READ" },
-  "/ceramics": { module: "Digər", action: "READ" },
-};
 
 // Props olaraq isCollapsed və toggleSidebar qəbul edirik
 const SidebarMenu = ({ isCollapsed, toggleSidebar }) => {
@@ -270,17 +218,14 @@ const SidebarMenu = ({ isCollapsed, toggleSidebar }) => {
 
   const isActive = (path) => location.pathname === path;
 
-  const { hasPermission } = usePermission();
+  const { hasPermission, isSuperAdmin } = usePermission();
 
   const filterMenuItems = (items) => {
     return items
       .map((item) => {
-        if (item.path) {
-          const mapInfo = routeModuleMap[item.path];
-          if (mapInfo) {
-            const allowed = hasPermission(mapInfo.module, mapInfo.action);
-            if (!allowed) return null;
-          }
+        // Route guard ilə eyni qaydalar (src/utils/routePermissions.js)
+        if (item.path && !isSuperAdmin && !isPathAllowed(item.path, hasPermission)) {
+          return null;
         }
 
         if (item.children && item.children.length > 0) {

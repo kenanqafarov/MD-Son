@@ -28,9 +28,27 @@ function isTokenExpired(token) {
   }
 }
 
+function readCachedUser() {
+  try {
+    const cached = localStorage.getItem("user");
+    return cached ? JSON.parse(cached) : null;
+  } catch {
+    return null;
+  }
+}
+
+const hasRoleList = (user) => Array.isArray(user?.permissions);
+
+// İlk render-dən token/user hazır olsun ki, route guard səhifəni
+// icazə yoxlanmadan göstərməsin.
+const initialToken = localStorage.getItem("token");
+const initialUser = initialToken ? readCachedUser() : null;
+
 const useAuthStore = create((set) => ({
-  user: null,
-  token: null,
+  user: initialUser,
+  token: initialToken,
+  // İstifadəçinin rolları (user.permissions) məlumdurmu: loading | loaded | failed
+  userInfoStatus: hasRoleList(initialUser) ? "loaded" : initialToken ? "loading" : "idle",
   loading: false,
   error: null,
 
@@ -54,12 +72,17 @@ const useAuthStore = create((set) => ({
           localStorage.setItem("userId", userId);
         }
 
+        // Əvvəlki istifadəçinin keşlənmiş məlumatı (rolları) yeni sessiyaya keçməsin
+        localStorage.removeItem("user");
+
         let userData = { id: userId, username: decoded?.username || username };
+        let userInfoStatus = "failed";
         try {
           if (userId) {
             const workerInfo = await getWorkerInfo(userId);
             userData = { ...userData, ...workerInfo };
             localStorage.setItem("user", JSON.stringify(userData));
+            userInfoStatus = "loaded";
           }
         } catch (err) {
           console.error("Failed to fetch user info during login:", err);
@@ -68,6 +91,7 @@ const useAuthStore = create((set) => ({
         set({
           token,
           user: userData,
+          userInfoStatus,
           loading: false,
         });
 
@@ -112,15 +136,15 @@ const useAuthStore = create((set) => ({
         localStorage.removeItem(key);
       }
     });
-    set({ user: null, token: null });
+    set({ user: null, token: null, userInfoStatus: "idle" });
   },
 
   loadTokenFromStorage: async () => {
     const token = localStorage.getItem("token");
     const userId = localStorage.getItem("userId");
-    const cachedUser = localStorage.getItem("user");
+    const cachedUser = readCachedUser();
     if (token) {
-      let userData = cachedUser ? JSON.parse(cachedUser) : { id: userId };
+      let userData = cachedUser || { id: userId };
       set({ token, user: userData });
 
       if (userId) {
@@ -128,10 +152,14 @@ const useAuthStore = create((set) => ({
           const workerInfo = await getWorkerInfo(userId);
           userData = { ...userData, ...workerInfo };
           localStorage.setItem("user", JSON.stringify(userData));
-          set({ user: userData });
+          set({ user: userData, userInfoStatus: "loaded" });
         } catch (err) {
           console.error("Failed to fetch fresh user info on storage load:", err);
+          // Keşdə rollar varsa onlarla davam et, yoxdursa guard xəta göstərsin
+          set({ userInfoStatus: hasRoleList(userData) ? "loaded" : "failed" });
         }
+      } else {
+        set({ userInfoStatus: hasRoleList(userData) ? "loaded" : "failed" });
       }
     }
   },

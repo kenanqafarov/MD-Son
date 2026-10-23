@@ -15,12 +15,32 @@ const usePermissionStore = create((set) => ({
   loading: false,
   error: null,
 
+  // Giriş yoxlaması (usePermission) üçün rolların ayrıca nüsxəsi.
+  // `permissions` İcazələr səhifəsində axtarış nəticələri ilə əvəz olunur —
+  // giriş yoxlaması ona baxsaydı, axtarış zamanı istifadəçinin hüquqları dəyişərdi.
+  accessRoles: [],
+  accessRolesStatus: "idle", // idle | loading | loaded | failed
+
+  fetchAccessRoles: async () => {
+    set({ accessRolesStatus: "loading" });
+    try {
+      const data = await apiFetchPermissions();
+      set({
+        accessRoles: Array.isArray(data) ? data : [],
+        accessRolesStatus: "loaded",
+      });
+    } catch (error) {
+      console.error("Giriş rollarını gətirmək olmadı:", error);
+      set({ accessRolesStatus: "failed" });
+    }
+  },
+
   // ✅ Bütün icazələri gətir
   fetchPermissions: async () => {
     set({ loading: true, error: null });
     try {
       const data = await apiFetchPermissions();
-      set({ permissions: data, loading: false });
+      set({ permissions: data, accessRoles: Array.isArray(data) ? data : [], loading: false });
     } catch (error) {
       set({
         error: error.message || "İcazələri gətirə bilmədik",
@@ -53,6 +73,7 @@ const usePermissionStore = create((set) => ({
       }));
     } catch (error) {
       set({ error: error.message || "Yaratmaqda xəta", loading: false });
+      throw error;
     }
   },
 
@@ -69,6 +90,7 @@ const usePermissionStore = create((set) => ({
       }));
     } catch (error) {
       set({ error: error.message || "Yeniləməkdə xəta", loading: false });
+      throw error;
     }
   },
 
@@ -88,6 +110,7 @@ const usePermissionStore = create((set) => ({
         error: error.message || "Statusu yeniləməkdə xəta",
         loading: false,
       });
+      throw error;
     }
   },
 
@@ -113,6 +136,7 @@ const usePermissionStore = create((set) => ({
       }));
     } catch (error) {
       set({ error: error.message || "Silinmədə xəta", loading: false });
+      throw error;
     }
   },
 }));

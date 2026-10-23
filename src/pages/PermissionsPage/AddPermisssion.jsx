@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
 import usePermissionStore from "../../../stores/permissionStore";
+import { toast } from "react-toastify";
+import { SUPER_ADMIN_ROLE } from "../../hooks/usePermission";
 import "../../assets/style/PermissionPage/addpermission.css";
 
 const permissions = [
@@ -125,6 +127,12 @@ function AddPermission() {
       setError("İcazənin adı mütləq doldurulmalıdır");
       return;
     }
+    // Bu adlı rol bütün icazə yoxlamalarından keçir — yalnız sistem rolu ola bilər
+    if (name.trim().toUpperCase() === SUPER_ADMIN_ROLE) {
+      setName("");
+      setError(`"${SUPER_ADMIN_ROLE}" adı sistem üçün qorunur`);
+      return;
+    }
 
     const transformedPermissions = Object.keys(checked).reduce((acc, item) => {
       const selectedActions = Object.keys(checked[item]).filter(
@@ -161,6 +169,7 @@ function AddPermission() {
       navigate("/permissions");
     } catch (error) {
       console.error("İcazə yaratmaqda xəta:", error);
+      toast.error(error?.response?.data?.message || "İcazə yaradılarkən xəta baş verdi");
     }
   };
 
