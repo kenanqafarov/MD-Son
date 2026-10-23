@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { fetchDashboardReports, fetchDetailedReports, exportDetailedReports, exportPaymentsReports, fetchLaboratoryReports, exportLaboratoryReports } from "../../api/reports";
 import { toast } from "react-toastify";
 import { HiArrowsUpDown } from "react-icons/hi2";
@@ -34,125 +34,6 @@ import usePriceCategoryStore from '../../../stores/priceCategoryStore';
 import useOperationTypesStore from '../../../stores/operationsTypeStore';
 import useOperationItemsTypeStore from '../../../stores/operationItemTypeStore';
 
-// Mock database mapping periods to numbers and listings
-const periodData = {
-    "bu_ay": {
-        cashCollected: 1927.50,
-        patientCredit: 0.00,
-        production: 2615.00,
-        avgTicket: 321.25,
-        paymentsCount: 6,
-        treatmentsCount: 22,
-        totalInvoiced: 1995.00,
-        outstandingBalance: 477.50,
-        overdueInvoicesCount: 1,
-        collectionsTotal: 1450.00,
-        newPatients: 11,
-        noShowRate: 0.0,
-        agingReceivables: 687.50,
-        collectionsChart: [
-            { date: "Jul 06", value: 250 },
-            { date: "Jul 07", value: 400 },
-            { date: "Jul 08", value: 380 },
-            { date: "Jul 09", value: 620 },
-            { date: "Jul 10", value: 810 },
-            { date: "Jul 11", value: 1100 },
-            { date: "Jul 12", value: 1450 }
-        ],
-        doctorsProduction: [
-            { name: "Dr. Məryəm Səfərova", treatments: 21, amount: 2435.00, pct: 100 },
-            { name: "Dr. Elvin Əliyev", treatments: 1, amount: 180.00, pct: 15 }
-        ],
-        paymentsMethod: [
-            { name: "Direct debit", count: 1, amount: 780.00, color: "#6B7280" },
-            { name: "Kart", count: 3, amount: 641.50, color: "#3B82F6" },
-            { name: "Bank köçürməsi", count: 1, amount: 410.00, color: "#1D4ED8" },
-            { name: "Nəğd", count: 1, amount: 96.00, color: "#10B981" }
-        ],
-        overdueInvoices: [
-            { id: "FAC-2026-0007", client: "Muñoz Blanco, José Luis", dueDate: "İyun 29, 2026", daysOverdue: 15, amount: 410.00 }
-        ],
-        professionals: [
-            { name: "Dr. Laura Sánchez Pérez", count: 5, amount: 1995.00 }
-        ]
-    },
-    "bu_hefte": {
-        cashCollected: 540.00,
-        patientCredit: 120.00,
-        production: 820.00,
-        avgTicket: 135.00,
-        paymentsCount: 4,
-        treatmentsCount: 6,
-        totalInvoiced: 640.00,
-        outstandingBalance: 100.00,
-        overdueInvoicesCount: 0,
-        collectionsTotal: 450.00,
-        newPatients: 3,
-        noShowRate: 0.0,
-        agingReceivables: 100.00,
-        collectionsChart: [
-            { date: "Mon", value: 80 },
-            { date: "Tue", value: 150 },
-            { date: "Wed", value: 240 },
-            { date: "Thu", value: 310 },
-            { date: "Fri", value: 450 }
-        ],
-        doctorsProduction: [
-            { name: "Dr. Məryəm Səfərova", treatments: 5, amount: 640.00, pct: 100 },
-            { name: "Dr. Elvin Əliyev", treatments: 1, amount: 180.00, pct: 28 }
-        ],
-        paymentsMethod: [
-            { name: "Kart", count: 2, amount: 320.00, color: "#3B82F6" },
-            { name: "Bank köçürməsi", count: 1, amount: 150.00, color: "#1D4ED8" },
-            { name: "Nəğd", count: 1, amount: 70.00, color: "#10B981" }
-        ],
-        overdueInvoices: [],
-        professionals: [
-            { name: "Dr. Laura Sánchez Pérez", count: 2, amount: 640.00 }
-        ]
-    },
-    "bu_il": {
-        cashCollected: 24850.00,
-        patientCredit: 1200.00,
-        production: 32400.00,
-        avgTicket: 345.00,
-        paymentsCount: 85,
-        treatmentsCount: 242,
-        totalInvoiced: 26950.00,
-        outstandingBalance: 2100.00,
-        overdueInvoicesCount: 3,
-        collectionsTotal: 21000.00,
-        newPatients: 142,
-        noShowRate: 4.8,
-        agingReceivables: 3400.00,
-        collectionsChart: [
-            { date: "Jan-Mar", value: 5000 },
-            { date: "Apr-Jun", value: 11000 },
-            { date: "Jul-Sep", value: 16500 },
-            { date: "Oct-Dec", value: 21000 }
-        ],
-        doctorsProduction: [
-            { name: "Dr. Məryəm Səfərova", treatments: 180, amount: 21400.00, pct: 100 },
-            { name: "Dr. Elvin Əliyev", treatments: 62, amount: 11000.00, pct: 51 }
-        ],
-        paymentsMethod: [
-            { name: "Direct debit", count: 12, amount: 8400.00, color: "#6B7280" },
-            { name: "Kart", count: 48, amount: 9250.00, color: "#3B82F6" },
-            { name: "Bank köçürməsi", count: 15, amount: 5100.00, color: "#1D4ED8" },
-            { name: "Nəğd", count: 22, amount: 2100.00, color: "#10B981" }
-        ],
-        overdueInvoices: [
-            { id: "FAC-2026-0007", client: "Muñoz Blanco, José Luis", dueDate: "İyun 29, 2026", daysOverdue: 15, amount: 410.00 },
-            { id: "FAC-2026-0012", client: "Elnur Quliyev", dueDate: "İyun 15, 2026", daysOverdue: 29, amount: 850.00 },
-            { id: "FAC-2026-0015", client: "Aysel Məmmədova", dueDate: "May 10, 2026", daysOverdue: 65, amount: 840.00 }
-        ],
-        professionals: [
-            { name: "Dr. Laura Sánchez Pérez", count: 52, amount: 19950.00 },
-            { name: "Dr. Məryəm Səfərova", count: 33, amount: 7000.00 }
-        ]
-    }
-};
-
 function ReportsPage() {
     const { doctors, fetchDoctors } = useGeneralCalendarStore();
     const { categories, fetchCategories } = usePriceCategoryStore();
@@ -171,12 +52,18 @@ function ReportsPage() {
     const [activeTab, setActiveTab] = useState('analitika');
     const [selectedPeriod, setSelectedPeriod] = useState('bu_ay');
     const [isLoading, setIsLoading] = useState(false);
+    // "bu_ay" ilə uyğun gəlsin, əks halda ilk render-də iki sorğu gedir
     const [fromDate, setFromDate] = useState(() => {
-        const d = new Date();
-        d.setDate(d.getDate() - 30);
-        return getLocalDateString(d);
+        const now = new Date();
+        return getLocalDateString(new Date(now.getFullYear(), now.getMonth(), 1));
     });
-    const [toDate, setToDate] = useState(() => getLocalDateString(new Date()));
+    const [toDate, setToDate] = useState(() => {
+        const now = new Date();
+        return getLocalDateString(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+    });
+
+    // Yalnız ən son sorğunun cavabı state-ə yazılır (köhnə cavab yenisini əzməsin)
+    const requestIdRef = useRef(0);
 
     // Detailed view states (Original filters)
     const [plannerDoctor, setPlannerDoctor] = useState(null);
@@ -192,6 +79,8 @@ function ReportsPage() {
     const [labStatus, setLabStatus] = useState('all');
     const [labCategory, setLabCategory] = useState('all');
     const [labSearch, setLabSearch] = useState('');
+    // Sorğuya gedən axtarış mətni — yalnız "Axtar"/Enter basılanda yenilənir
+    const [appliedLabSearch, setAppliedLabSearch] = useState('');
 
     // Backend states
     const [dashboardData, setDashboardData] = useState(null);
@@ -253,24 +142,52 @@ function ReportsPage() {
     const selectedCategoryOption = formattedCategories.find(opt => String(opt.value) === String(category)) || null;
     const selectedOperationOption = formattedOperations.find(opt => opt.value === operation) || null;
 
-    const loadDashboard = async () => {
-        setIsLoading(true);
+    // Tarixləri lokal günün əvvəli/sonu kimi göndər. new Date("YYYY-MM-DD") UTC
+    // gecə yarısıdır və son günün böyük hissəsini kənarda qoyurdu.
+    const buildDetailedCriteria = () => {
+        const selectedCategoryObj = operationTypes.find(op => String(op.id) === String(category));
+        const categoryName = selectedCategoryObj ? selectedCategoryObj.categoryName : (category || undefined);
+
+        return {
+            plannerDoctor: plannerDoctor || undefined,
+            executorDoctor: executorDoctor || undefined,
+            category: categoryName,
+            operationName: operation || undefined,
+            startDate: fromDate ? new Date(`${fromDate}T00:00:00`).getTime() : undefined,
+            endDate: toDate ? new Date(`${toDate}T23:59:59.999`).getTime() : undefined,
+        };
+    };
+
+    const beginRequest = (silent) => {
+        const requestId = ++requestIdRef.current;
+        if (!silent) setIsLoading(true);
+        return requestId;
+    };
+
+    const isLatestRequest = (requestId) => requestId === requestIdRef.current;
+
+    const loadDashboard = async (silent = false) => {
+        const requestId = beginRequest(silent);
         try {
             const data = await fetchDashboardReports({
                 period: selectedPeriod,
                 fromDate,
                 toDate
             });
+            if (!isLatestRequest(requestId)) return;
             setDashboardData(data);
         } catch (error) {
+            if (!isLatestRequest(requestId)) return;
             console.error("Failed to load dashboard data:", error);
+            setDashboardData(null);
+            if (!silent) toast.error("Hesabat məlumatları yüklənərkən xəta baş verdi.");
         } finally {
-            setIsLoading(false);
+            if (isLatestRequest(requestId)) setIsLoading(false);
         }
     };
 
-    const loadLaboratoryReports = async (page = 0) => {
-        setIsLoading(true);
+    const loadLaboratoryReports = async (page = 0, silent = false) => {
+        const requestId = beginRequest(silent);
         try {
             const data = await fetchLaboratoryReports({
                 period: selectedPeriod,
@@ -278,43 +195,33 @@ function ReportsPage() {
                 toDate,
                 status: labStatus === 'all' ? undefined : labStatus,
                 category: labCategory === 'all' ? undefined : labCategory,
-                search: labSearch || undefined,
+                search: appliedLabSearch || undefined,
                 page,
                 size: 10
             });
+            if (!isLatestRequest(requestId)) return;
             setLabReportData(data);
             setLabOrders(data.content || []);
             setLabCurrentPage(data.page || 0);
             setLabTotalPages(data.totalPages || 0);
         } catch (error) {
+            if (!isLatestRequest(requestId)) return;
             console.error("Failed to load laboratory reports:", error);
-            toast.error("Laboratoriya hesabatı yüklənərkən xəta baş verdi.");
+            if (!silent) toast.error("Laboratoriya hesabatı yüklənərkən xəta baş verdi.");
         } finally {
-            setIsLoading(false);
+            if (isLatestRequest(requestId)) setIsLoading(false);
         }
     };
 
-    const loadDetailedReports = async (page = 0) => {
-        setIsLoading(true);
+    const loadDetailedReports = async (page = 0, silent = false) => {
+        const requestId = beginRequest(silent);
         try {
-            // Seçilmiş kateqoriyanın adını tap
-            const selectedCategoryObj = operationTypes.find(op => String(op.id) === String(category));
-            const categoryName = selectedCategoryObj ? selectedCategoryObj.categoryName : (category || undefined);
-
-            const criteria = {
-                plannerDoctor: plannerDoctor || undefined,
-                executorDoctor: executorDoctor || undefined,
-                category: categoryName,
-                operationName: operation || undefined,
-                startDate: fromDate ? new Date(fromDate).getTime() : undefined,
-                endDate: toDate ? new Date(toDate).getTime() : undefined,
-            };
-
             const response = await fetchDetailedReports({
-                criteria,
+                criteria: buildDetailedCriteria(),
                 page,
                 size: 10
             });
+            if (!isLatestRequest(requestId)) return;
             setDetailedLogs(response.content || []);
             setCurrentPage(response.number || 0);
             setTotalPages(response.totalPages || 0);
@@ -322,11 +229,26 @@ function ReportsPage() {
             setTotalDiscount(response.totalDiscount || 0);
             setTotalNetPrice(response.totalNetPrice || 0);
         } catch (error) {
+            if (!isLatestRequest(requestId)) return;
             console.error("Failed to load detailed reports:", error);
-            toast.error("Ətraflı hesabat məlumatları yüklənərkən xəta baş verdi.");
+            if (!silent) toast.error("Ətraflı hesabat məlumatları yüklənərkən xəta baş verdi.");
         } finally {
-            setIsLoading(false);
+            if (isLatestRequest(requestId)) setIsLoading(false);
         }
+    };
+
+    // responseType: "blob" olduqda backend xətası da Blob kimi gəlir — mesajı oxu
+    const readBlobErrorMessage = async (err) => {
+        const data = err?.response?.data;
+        if (data instanceof Blob) {
+            try {
+                const parsed = JSON.parse(await data.text());
+                return parsed?.message;
+            } catch {
+                return undefined;
+            }
+        }
+        return data?.message;
     };
 
     const handleExportExcel = async () => {
@@ -336,18 +258,7 @@ function ReportsPage() {
             let fileName = "maliyyə_hesabatı.xlsx";
 
             if (activeTab === "detailed") {
-                const selectedCategoryObj = operationTypes.find(op => String(op.id) === String(category));
-                const categoryName = selectedCategoryObj ? selectedCategoryObj.categoryName : (category || undefined);
-
-                const criteria = {
-                    plannerDoctor: plannerDoctor || undefined,
-                    executorDoctor: executorDoctor || undefined,
-                    category: categoryName,
-                    operationName: operation || undefined,
-                    startDate: fromDate ? new Date(fromDate).getTime() : undefined,
-                    endDate: toDate ? new Date(toDate).getTime() : undefined,
-                };
-                blobData = await exportDetailedReports(criteria);
+                blobData = await exportDetailedReports(buildDetailedCriteria());
                 fileName = "etraflı_log_hesabatı.xlsx";
             } else if (activeTab === "sifarisler") {
                 blobData = await exportLaboratoryReports({
@@ -356,7 +267,7 @@ function ReportsPage() {
                     toDate,
                     status: labStatus === 'all' ? undefined : labStatus,
                     category: labCategory === 'all' ? undefined : labCategory,
-                    search: labSearch || undefined
+                    search: appliedLabSearch || undefined
                 });
                 fileName = "laboratoriya_sifarisleri_hesabati.xlsx";
             } else {
@@ -368,23 +279,29 @@ function ReportsPage() {
                 fileName = `maliyya_hesabati_${selectedPeriod}.xlsx`;
             }
 
-            const url = window.URL.createObjectURL(new Blob([blobData]));
+            const url = window.URL.createObjectURL(new Blob([blobData], {
+                type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            }));
             const link = document.createElement("a");
             link.href = url;
             link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             link.remove();
+            setTimeout(() => window.URL.revokeObjectURL(url), 0);
             toast.success("Excel faylı uğurla yükləndi!");
         } catch (err) {
             console.error("Excel export failed:", err);
-            toast.error("Excel faylını yükləyərkən xəta baş verdi.");
+            const message = await readBlobErrorMessage(err);
+            toast.error(message || "Excel faylını yükləyərkən xəta baş verdi.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    // Load data based on tab and period changes
+    // Load data based on tab and period changes.
+    // Axtarış mətni (labSearch) burada yoxdur: hər hərfdə sorğu göndərib inputu unmount edirdi.
+    // Axtarış "Axtar" düyməsi və ya Enter ilə işləyir.
     useEffect(() => {
         if (activeTab === 'detailed') {
             loadDetailedReports(0);
@@ -393,21 +310,22 @@ function ReportsPage() {
         } else {
             loadDashboard();
         }
-    }, [activeTab, selectedPeriod, fromDate, toDate, labStatus, labCategory, plannerDoctor, executorDoctor, category, operation, labSearch]);
+    }, [activeTab, selectedPeriod, fromDate, toDate, labStatus, labCategory, plannerDoctor, executorDoctor, category, operation, appliedLabSearch]);
 
-    // Real-time synchronization polling every 30 seconds
+    // Real-time synchronization polling every 30 seconds (səssiz — spinner göstərmir,
+    // filtrləri unmount etmir)
     useEffect(() => {
         const interval = setInterval(() => {
             if (activeTab === 'detailed') {
-                loadDetailedReports(currentPage);
+                loadDetailedReports(currentPage, true);
             } else if (activeTab === 'sifarisler') {
-                loadLaboratoryReports(labCurrentPage);
+                loadLaboratoryReports(labCurrentPage, true);
             } else {
-                loadDashboard();
+                loadDashboard(true);
             }
         }, 30000);
         return () => clearInterval(interval);
-    }, [activeTab, selectedPeriod, fromDate, toDate, currentPage, labCurrentPage, labStatus, labCategory, plannerDoctor, executorDoctor, category, operation, labSearch]);
+    }, [activeTab, selectedPeriod, fromDate, toDate, currentPage, labCurrentPage, labStatus, labCategory, plannerDoctor, executorDoctor, category, operation, appliedLabSearch]);
 
     const handlePeriodChange = (val) => {
         setSelectedPeriod(val);
@@ -451,13 +369,18 @@ function ReportsPage() {
     };
 
     const handleLabSearch = () => {
-        loadLaboratoryReports(0);
+        if (labSearch === appliedLabSearch) {
+            loadLaboratoryReports(0);
+        } else {
+            setAppliedLabSearch(labSearch);
+        }
     };
 
     const handleLabReset = () => {
         setLabStatus('all');
         setLabCategory('all');
         setLabSearch('');
+        setAppliedLabSearch('');
         setSelectedPeriod('all');
         setFromDate('');
         setToDate('');
@@ -492,16 +415,27 @@ function ReportsPage() {
         professionals: []
     };
 
-    const rawActiveData = dashboardData || periodData[selectedPeriod] || defaultDashboardData;
-    const activeData = {
-        ...defaultDashboardData,
-        ...rawActiveData,
-        collectionsChart: rawActiveData.collectionsChart || [],
-        doctorsProduction: rawActiveData.doctorsProduction || [],
-        paymentsMethod: rawActiveData.paymentsMethod || [],
-        overdueInvoices: rawActiveData.overdueInvoices || [],
-        professionals: rawActiveData.professionals || [],
+    // Backend null göndərsə belə render çökməsin: rəqəmləri 0-a, adları ""-ə endir
+    const toNumber = (value) => {
+        const n = Number(value ?? 0);
+        return Number.isFinite(n) ? n : 0;
     };
+    const normalizeItems = (items) => (Array.isArray(items) ? items : []).map(item => ({
+        ...item,
+        name: item?.name ?? "",
+        amount: toNumber(item?.amount),
+        count: toNumber(item?.count),
+        value: toNumber(item?.value),
+    }));
+
+    const rawActiveData = dashboardData || defaultDashboardData;
+    const activeData = { ...defaultDashboardData, ...rawActiveData };
+    Object.keys(defaultDashboardData).forEach(key => {
+        activeData[key] = Array.isArray(defaultDashboardData[key])
+            ? normalizeItems(rawActiveData[key])
+            : toNumber(rawActiveData[key]);
+    });
+    activeData.invoicesCount = toNumber(rawActiveData.invoicesCount);
 
     const formatDate = (timestamp) => {
         if (!timestamp) return "-";
@@ -858,11 +792,21 @@ function ReportsPage() {
                                                 <div className="sm:col-span-5 flex justify-center relative">
                                                     <svg className="w-32 h-32" viewBox="0 0 100 100">
                                                         <circle cx="50" cy="50" r="40" fill="transparent" stroke="#F3F4F6" strokeWidth="12" />
-                                                        {/* Simple dynamic dash slices based on mock percentages */}
-                                                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#3B82F6" strokeWidth="12" strokeDasharray="140 251" strokeDashoffset="0" strokeLinecap="round" />
-                                                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#1D4ED8" strokeWidth="12" strokeDasharray="60 251" strokeDashoffset="-140" strokeLinecap="round" />
-                                                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#10B981" strokeWidth="12" strokeDasharray="40 251" strokeDashoffset="-200" strokeLinecap="round" />
-                                                        <circle cx="50" cy="50" r="40" fill="transparent" stroke="#6B7280" strokeWidth="12" strokeDasharray="11 251" strokeDashoffset="-240" strokeLinecap="round" />
+                                                        {/* Ödəniş üsullarının real paylarına görə dilimlər */}
+                                                        {(() => {
+                                                            const circumference = 2 * Math.PI * 40;
+                                                            const total = activeData.paymentsMethod.reduce((sum, item) => sum + item.amount, 0);
+                                                            if (total <= 0) return null;
+                                                            let offset = 0;
+                                                            return activeData.paymentsMethod.map((item, i) => {
+                                                                const length = (item.amount / total) * circumference;
+                                                                const slice = (
+                                                                    <circle key={i} cx="50" cy="50" r="40" fill="transparent" stroke={item.color || "#6B7280"} strokeWidth="12" strokeDasharray={`${length} ${circumference}`} strokeDashoffset={-offset} />
+                                                                );
+                                                                offset += length;
+                                                                return slice;
+                                                            });
+                                                        })()}
                                                     </svg>
                                                     <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                                                         <span className="text-[9px] font-bold text-gray-400 uppercase">Total</span>
@@ -927,16 +871,12 @@ function ReportsPage() {
                                         {/* New Patients Card */}
                                         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                                             <p className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">NEW PATIENTS</p>
-                                            <h3 className="text-4xl font-extrabold text-gray-900 mt-2">{activeData.newPatients}</h3>
-                                            <p className="text-xs text-gray-400 mt-1 font-medium">68.8% of total appointments</p>
-                                        </div>
+                                            <h3 className="text-4xl font-extrabold text-gray-900 mt-2">{activeData.newPatients}</h3>                                        </div>
 
                                         {/* No-Show Rate Card */}
                                         <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                                             <p className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">NO-SHOW RATE</p>
-                                            <h3 className="text-4xl font-extrabold text-gray-900 mt-2">{activeData.noShowRate}%</h3>
-                                            <p className="text-xs text-gray-400 mt-1 font-medium">100.0% completed</p>
-                                        </div>
+                                            <h3 className="text-4xl font-extrabold text-gray-900 mt-2">{activeData.noShowRate}%</h3>                                        </div>
                                     </div>
 
                                     {/* Right Column: Aging Receivables */}
@@ -1003,7 +943,7 @@ function ReportsPage() {
                                     <div className="bg-white rounded-2xl shadow-sm p-5 border border-gray-100 hover:shadow-md transition-all">
                                         <p className="text-[10px] font-bold tracking-wider text-gray-400 uppercase">Total invoiced</p>
                                         <h3 className="text-3xl font-extrabold text-gray-900 mt-2">₼{activeData.totalInvoiced.toLocaleString('en-US', { minimumFractionDigits: 2 })}</h3>
-                                        <p className="text-xs text-gray-400 mt-1 font-medium">{selectedPeriod === 'bu_il' ? '52 invoices' : '5 invoices'}</p>
+                                        <p className="text-xs text-gray-400 mt-1 font-medium">{activeData.invoicesCount} invoices</p>
                                     </div>
 
                                     {/* Total Collected */}
@@ -1436,6 +1376,7 @@ function ReportsPage() {
                                                 value={labSearch}
                                                 type="text"
                                                 onChange={(e) => setLabSearch(e.target.value)}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handleLabSearch(); }}
                                                 placeholder="Pasiyent, Həkim, Texnik və ya açıqlama..."
                                                 className="w-full text-xs border border-gray-200 rounded-xl px-3 py-2.5 focus:ring-1 focus:ring-pink-500 bg-white"
                                             />

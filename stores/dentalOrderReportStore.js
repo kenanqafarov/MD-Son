@@ -37,10 +37,10 @@ export const useLaboratoryPaymentStore = create((set, get) => ({
       // After a successful creation, re-fetch the payments to update the list.
       await get().fetchPayments();
     } catch (error) {
-      set({
-        error: error.message || "Failed to create payment.",
-        isLoading: false,
-      });
+      // error-u list səhifəsində göstərmirik (fetchPayments onu sıfırlayır);
+      // çağıran tərəf xətanı tutub istifadəçiyə göstərsin
+      set({ isLoading: false });
+      throw error;
     }
   },
 }));

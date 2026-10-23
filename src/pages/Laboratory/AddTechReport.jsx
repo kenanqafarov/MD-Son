@@ -33,9 +33,14 @@ function AddTechReport() {
       return;
     }
 
-    const amountNumber = parseFloat(amount.trim());
-    if (isNaN(amountNumber)) {
+    // Number() "12abc"-ni rədd edir (parseFloat onu 12 kimi qəbul edirdi)
+    const amountNumber = Number(amount.trim().replace(",", "."));
+    if (!Number.isFinite(amountNumber)) {
       toast.error("Ödəniş miqdarı rəqəm olmalıdır!");
+      return;
+    }
+    if (amountNumber <= 0) {
+      toast.error("Ödəniş miqdarı 0-dan böyük olmalıdır!");
       return;
     }
 
@@ -54,7 +59,7 @@ function AddTechReport() {
       navigate("/technicals-report");
     } catch (error) {
       console.error("Ödəniş əlavə edilərkən xəta:", error);
-      toast.error("Ödəniş əlavə edilərkən xəta baş verdi!");
+      toast.error(error?.response?.data?.message || "Ödəniş əlavə edilərkən xəta baş verdi!");
     }
   };
 
