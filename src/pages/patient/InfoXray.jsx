@@ -9,10 +9,14 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import usePatientXrayStore from "../../../stores/patient-xrayStore";
+import { usePermission } from "../../hooks/usePermission";
 
 const InfoXray = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { hasPermission } = usePermission();
+    const canUpdate = hasPermission("Rentgen", "UPDATE");
+    const canDelete = hasPermission("Rentgen", "DELETE");
     
     const { selectedXray, fetchXrayById, deleteXray, loading, error } = usePatientXrayStore();
     
@@ -96,20 +100,24 @@ const InfoXray = () => {
 
             <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-7xl h-auto border border-gray-200">
                 <div className="flex justify-end items-center mb-6 gap-3">
-                    <button
-                        onClick={handleEditClick}
-                        className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
-                        aria-label="Düzəliş et"
-                    >
-                        <EditIcon />
-                    </button>
-                    <button
-                        onClick={handleDeleteClick}
-                        className="p-2 rounded-lg hover:bg-red-50 transition-colors duration-200"
-                        aria-label="Sil"
-                    >
-                        <DeleteIcon />
-                    </button>
+                    {canUpdate && (
+                        <button
+                            onClick={handleEditClick}
+                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                            aria-label="Düzəliş et"
+                        >
+                            <EditIcon />
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            onClick={handleDeleteClick}
+                            className="p-2 rounded-lg hover:bg-red-50 transition-colors duration-200"
+                            aria-label="Sil"
+                        >
+                            <DeleteIcon />
+                        </button>
+                    )}
                 </div>
 
                 {/* Rentgenin Tarixi */}

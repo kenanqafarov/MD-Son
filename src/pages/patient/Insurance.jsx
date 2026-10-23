@@ -7,15 +7,16 @@ import DeleteIcon from "../../assets/icons/Delete";
 import { HiOutlineArrowsUpDown } from "react-icons/hi2";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import usePatientInsuranceStore from "../../../stores/patientInsuranceStore";
+import { usePermission } from "../../hooks/usePermission";
 
-const StatusToggle = ({ status, onToggle }) => {
+const StatusToggle = ({ status, onToggle, disabled = false }) => {
   const bgColor = status === "ACTIVE" ? "#40BC2B" : "#FD4A3D";
   const text = status === "ACTIVE" ? "Aktiv" : "Passiv";
 
   return (
     <button
-      onClick={onToggle}
-      style={{ backgroundColor: bgColor }}
+      onClick={disabled ? undefined : onToggle}
+      style={{ backgroundColor: bgColor, cursor: disabled ? "default" : "pointer" }}
       className="inline-flex items-center justify-center px-4 py-2 rounded-lg text-white font-medium hover:opacity-90 transition-opacity duration-200">
       {text}
     </button>
@@ -25,6 +26,11 @@ const StatusToggle = ({ status, onToggle }) => {
 const Insurance = () => {
   const navigate = useNavigate();
   const { id: patientId } = useParams();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Sığortaları", "CREATE");
+  const canUpdate = hasPermission("Sığortaları", "UPDATE");
+  const canDelete = hasPermission("Sığortaları", "DELETE");
+  const canStatus = hasPermission("Sığortaları", "STATUS");
   const {
     patientInsurance,
     fetchPatientInsurance,
@@ -105,11 +111,13 @@ const Insurance = () => {
           </button>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => navigate("add")}>
-            <div className="flex items-center justify-center border border-[#155EEF] text-[#155EEF] w-[178px] h-[36px] rounded-lg p-2 hover:bg-[#155EEF] hover:text-white transition-all duration-300">
-              + Yenisini əlavə et
-            </div>
-          </button>
+          {canCreate && (
+            <button onClick={() => navigate("add")}>
+              <div className="flex items-center justify-center border border-[#155EEF] text-[#155EEF] w-[178px] h-[36px] rounded-lg p-2 hover:bg-[#155EEF] hover:text-white transition-all duration-300">
+                + Yenisini əlavə et
+              </div>
+            </button>
+          )}
           <button>
             <DownloadIcon />
           </button>
@@ -210,6 +218,7 @@ const Insurance = () => {
                     <StatusToggle
                       status={item.status}
                       onToggle={() => handleStatusToggle(item.id)}
+                      disabled={!canStatus}
                     />
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-center text-sm font-medium">
@@ -220,18 +229,22 @@ const Insurance = () => {
                         title="Bax">
                         <InfoIcon />
                       </button>
-                      <button
-                        onClick={() => handleEdit(item.id)}
-                        className="text-[#667085] hover:text-yellow-600 transition-colors duration-200"
-                        title="Düzəlt">
-                        <EditIcon />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="text-[#667085] hover:text-red-600 transition-colors duration-200"
-                        title="Sil">
-                        <DeleteIcon />
-                      </button>
+                      {canUpdate && (
+                        <button
+                          onClick={() => handleEdit(item.id)}
+                          className="text-[#667085] hover:text-yellow-600 transition-colors duration-200"
+                          title="Düzəlt">
+                          <EditIcon />
+                        </button>
+                      )}
+                      {canDelete && (
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-[#667085] hover:text-red-600 transition-colors duration-200"
+                          title="Sil">
+                          <DeleteIcon />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

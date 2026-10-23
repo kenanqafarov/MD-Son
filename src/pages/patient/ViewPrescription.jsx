@@ -4,12 +4,15 @@ import DownloadIcon from '../../assets/icons/Download';
 import CustomDropdown from '../../components/CustomDropdown';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import usePatientRecipeStore from '../../../stores/usePatientRecipeStore'; // Adjust path if necessary
+import { usePermission } from '../../hooks/usePermission';
 
 const ViewPrescription = () => {
     const { prescriptionId } = useParams(); // This 'id' is the patientRecipeId (e.g., 4)
     let id = prescriptionId
     const navigate = useNavigate();
     const location = useLocation();
+    const { hasPermission } = usePermission();
+    const canUpdate = hasPermission("Reseptləri", "UPDATE");
 
     // We still need patientId to properly fetch/filter patient recipes from the store
     const patientId = new URLSearchParams(location.search).get('patientId');
@@ -96,9 +99,11 @@ const ViewPrescription = () => {
         <div className='flex flex-col gap-4'>
             {/* These buttons are for view mode and allow navigation to edit */}
             <div className='flex self-end gap-4'>
-                <button onClick={() => navigate(`edit?patientId=${patientId}`)}>
-                    <EditIcon />
-                </button>
+                {canUpdate && (
+                    <button onClick={() => navigate(`edit?patientId=${patientId}`)}>
+                        <EditIcon />
+                    </button>
+                )}
                 <button>
                     <DownloadIcon />
                 </button>

@@ -12,10 +12,13 @@ import usePatientInsuranceStore from '../../../../stores/patientInsuranceStore';
 import usePlansStore from '../../../../stores/plans';
 import usePatientPlansControllerStore from '../../../../stores/patient-plans-controller';
 import useTreatmentStore from '../../../../stores/treatmentStore'; 
+import { usePermission } from '../../../hooks/usePermission';
 
 const Plans = () => {     
   const { id: patientId } = useParams();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Müalicələr", "CREATE");
   const [form] = Form.useForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -565,7 +568,7 @@ const Plans = () => {
           <Divider />
           
           {/* Plan təsdiqləmə buttonu - yalnız data varsa görünsün */}
-          {patientPlansData && patientPlansData.length > 0 && (
+          {canCreate && patientPlansData && patientPlansData.length > 0 && (
             <div className='mb-4 flex justify-end'>
               <Button 
                 type="primary" 
@@ -685,6 +688,7 @@ const Plans = () => {
               <Divider />
               <PlansTable 
                 data={patientPlansData} 
+                showConfirm={canCreate}
                 externalSelectedRowKeys={useExternalSelection ? (tableSelectedRowKeys.length > 0 ? tableSelectedRowKeys : []) : null}
                 onSelectionChange={(selectedIds, selectedRowsData) => {
                   isTableSelectionRef.current = true; // Flag set et

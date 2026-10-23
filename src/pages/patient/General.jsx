@@ -16,10 +16,14 @@ import { toast } from "react-toastify";
 import PatientForm from "./PatientEdit";
 import axiosInstance from "../../api/temp-axios-auth";
 import { getPatientColor } from "../../utils/patientColorUtils";
+import { usePermission } from "../../hooks/usePermission";
 
 const General = () => {
   const [isEditing, setIsEditing] = useState(false);
   const { id } = useParams();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Pasientlər", "UPDATE");
+  const canDelete = hasPermission("Pasientlər", "DELETE");
 
   const { data: patient, isLoading, error } = usePatient(id);
   const { mutate: deletePatient, isPending: deletingPatient } =
@@ -107,12 +111,16 @@ const General = () => {
     <BlurLoader isLoading={isLoading || deletingPatient || updatingPatient}>
       <div className="flex flex-col gap-2">
         <div className="flex self-end gap-4">
-          <button onClick={handleInfo}>
-            <FontAwesomeIcon icon={faPen} />
-          </button>
-          <button onClick={handleDelete}>
-            <DeleteIcon />
-          </button>
+          {canUpdate && (
+            <button onClick={handleInfo}>
+              <FontAwesomeIcon icon={faPen} />
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={handleDelete}>
+              <DeleteIcon />
+            </button>
+          )}
         
         </div>
 

@@ -6,10 +6,14 @@ import DeleteIcon from "../../assets/icons/Delete";
 import usePatientInsuranceBalanceStore from "../../../stores/PatientInsuranceBalanceStore";
 import BlurLoader from "../../components/layout/BlurLoader";
 import { toast } from "react-toastify";
+import { usePermission } from "../../hooks/usePermission";
 
 const PatientInsuranceBalanceInfo = () => {
     const navigate = useNavigate();
     const { id: insuranceId, balanceId } = useParams(); 
+    const { hasPermission } = usePermission();
+    const canUpdate = hasPermission("Sığortaları", "UPDATE");
+    const canDelete = hasPermission("Sığortaları", "DELETE");
 
     const { 
         fetchBalanceById, 
@@ -66,22 +70,26 @@ const PatientInsuranceBalanceInfo = () => {
         <BlurLoader isLoading={loading}>
             <div className="flex flex-col h-full bg-white rounded-lg p-6 shadow-md">
                 <div className="flex justify-end gap-3 mb-4">
-                    <button
-                        type="button"
-                        onClick={handleEditClick}
-                        className="flex items-center justify-center p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
-                        title="Redaktə et"
-                    >
-                        <EditIcon /> 
-                    </button>
-                    <button
-                        type="button"
-                        onClick={handleDeleteClick}
-                        className="flex items-center justify-center p-2 rounded-full text-red-600 hover:bg-red-100 transition-colors duration-200"
-                        title="Sil"
-                    >
-                        <DeleteIcon /> 
-                    </button>
+                    {canUpdate && (
+                        <button
+                            type="button"
+                            onClick={handleEditClick}
+                            className="flex items-center justify-center p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200"
+                            title="Redaktə et"
+                        >
+                            <EditIcon /> 
+                        </button>
+                    )}
+                    {canDelete && (
+                        <button
+                            type="button"
+                            onClick={handleDeleteClick}
+                            className="flex items-center justify-center p-2 rounded-full text-red-600 hover:bg-red-100 transition-colors duration-200"
+                            title="Sil"
+                        >
+                            <DeleteIcon /> 
+                        </button>
+                    )}
                 </div>
 
                 <div className="flex-grow">

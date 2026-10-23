@@ -11,6 +11,7 @@ import useExaminationStore from "../../../stores/examinationStore";
 import { toast } from "react-toastify";
 import BlurLoader from "../../components/layout/BlurLoader";
 import { readAllTeeth, createTooth } from "../../api/teeth";
+import { usePermission } from "../../hooks/usePermission";
 
 const parseFDINumber = (toothNo) => {
   const t = Number(toothNo);
@@ -31,6 +32,9 @@ const Examination = () => {
   const [mode, setMode] = useState("view");
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Müayinələri", "CREATE");
+  const canDelete = hasPermission("Müayinələri", "DELETE");
 
   const {
     teethExaminations,
@@ -167,10 +171,12 @@ const Examination = () => {
           </div>
           <div className="flex gap-3">
             {mode === "view" ? (
+              canCreate && (
               <button className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2" onClick={handleModeToggle}>
                 <FontAwesomeIcon icon={faPen} />
                 <span>Yeni Müayinə</span>
               </button>
+              )
             ) : (
               <div className="flex gap-2">
                 <button className="bg-green-600 text-white px-4 py-2 rounded-lg" onClick={handleSubmit}>
@@ -201,7 +207,7 @@ const Examination = () => {
               { key: "date", label: "Tarix" },
             ]} 
             data={mappedExaminations} 
-            enableDelete={true}
+            enableDelete={canDelete}
             handleDelete={handleDelete}
           />
         </div>

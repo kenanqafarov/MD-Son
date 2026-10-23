@@ -2,8 +2,12 @@ import React, { useEffect, useState } from "react";
 import EditIcon from "../../assets/icons/Edit";
 import DeleteIcon from "../../assets/icons/Delete";
 import { useNavigate } from "react-router-dom";
+import { usePermission } from "../../hooks/usePermission";
 const PlanCompare = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Planları", "UPDATE");
+  const canDelete = hasPermission("Planları", "DELETE");
   const [selectedPlans, setSelectedPlans] = useState([]);
 console.log('RENDERERDDDD')
   useEffect(() => {
@@ -25,14 +29,18 @@ console.log('RENDERERDDDD')
             {plan.label}
             <div className="flex gap-2">
                 
+            {canUpdate && (
             <button className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center"
             onClick={() => navigate(`/patient/edit-plan/${plan.id}`)}
             >
                <EditIcon />
              </button>
+            )}
+            {canDelete && (
              <button className="flex w-[40px] h-[40px] bg-white border rounded-lg items-center justify-center">
                <DeleteIcon />
              </button>
+            )}
             </div>
             </div>
             <ul>

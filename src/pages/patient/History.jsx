@@ -4,6 +4,7 @@ import axiosInstance from '../../api/temp-axios-auth';
 import './history.css';
 import useAnamnesisStore from '../../../stores/anamnesisStore'; // Zustand store'u import edirik
 import { FaFolder, FaTrash } from "react-icons/fa";
+import { usePermission } from '../../hooks/usePermission';
 
 // Inline SVG Icons (dəyişməyib)
 const ArrowDownIcon = () => (
@@ -32,6 +33,10 @@ const TriangleDownIcon = () => (
 
 const History = () => {
   const { id } = useParams();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Anamnez", "CREATE");
+  const canUpdate = hasPermission("Anamnez", "UPDATE");
+  const canDelete = hasPermission("Anamnez", "DELETE");
 
   const {
     anamnesisList,
@@ -178,9 +183,11 @@ const History = () => {
             </div>
           </div>
           <div className="card-footer">
-            <button onClick={handleStoreClick} disabled={!selectedAnamnesis || !activeCategory}>
-              Yadda saxla
-            </button>
+            {canCreate && (
+              <button onClick={handleStoreClick} disabled={!selectedAnamnesis || !activeCategory}>
+                Yadda saxla
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -207,10 +214,12 @@ const History = () => {
             <TriangleDownIcon />
             Tarix
           </div>
-          <div className="header-item">
-            <TriangleDownIcon />
-            Düzəliş
-          </div>
+          {(canUpdate || canDelete) && (
+            <div className="header-item">
+              <TriangleDownIcon />
+              Düzəliş
+            </div>
+          )}
         </div>
         <div className="history-table-body">
           {isLoading ? (
@@ -223,12 +232,16 @@ const History = () => {
                 <div className="table-cell">{row.anamnesisName}</div>
                 <div className="table-cell">{row.addedByName}</div>
                 <div className="table-cell">{row.addedDateTime}</div>
-                <div className="table-cell">
-                  <FaTrash 
-                    className='deleteIconAnamnesis' 
-                    onClick={() => handleDeleteClick(row.id)} // Dəyişiklik burada edildi
-                  />
-                </div>
+                {(canUpdate || canDelete) && (
+                  <div className="table-cell">
+                    {canDelete && (
+                      <FaTrash 
+                        className='deleteIconAnamnesis' 
+                        onClick={() => handleDeleteClick(row.id)} // Dəyişiklik burada edildi
+                      />
+                    )}
+                  </div>
+                )}
               </div>
             ))
           ) : (
