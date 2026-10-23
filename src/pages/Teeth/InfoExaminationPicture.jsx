@@ -7,10 +7,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/style/Teeth/infoexaminationpicture.css";
 import useTeethExaminationStore from "../../../stores/teeth-examinationStore";
+import { usePermission } from "../../hooks/usePermission";
 
 const InfoExaminationPicture = () => {
   const { id: teethId, examinationId } = useParams();
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Digər", "UPDATE");
+  const canDelete = hasPermission("Digər", "DELETE");
   const location = useLocation();
   const { deleteTeethExamination, loading } = useTeethExaminationStore();
   
@@ -54,9 +58,11 @@ const InfoExaminationPicture = () => {
       <div className="infoExaminationPictureWrapper">
         <div className="infoExaminationPictureHeader">
           <h2>Müayinə Detalları</h2>
-          <button className="infoExaminationPictureEditIconButton" onClick={handleEdit}>
-            <FiEdit3 className="infoExaminationPictureEditIcon" />
-          </button>
+          {canUpdate && (
+            <button className="infoExaminationPictureEditIconButton" onClick={handleEdit}>
+              <FiEdit3 className="infoExaminationPictureEditIcon" />
+            </button>
+          )}
         </div>
 
         <div className="infoExaminationPictureContent">
@@ -113,22 +119,26 @@ const InfoExaminationPicture = () => {
             <RxCross2 style={{ marginRight: 8 }} />
             İmtina et
           </button>
-          <button
-            className="infoExaminationPictureDeleteButton"
-            onClick={handleDelete}
-            disabled={loading}
-          >
-            <GoTrash style={{ marginRight: 8 }} />
-            Sil
-          </button>
-          <button
-            className="infoExaminationPictureConfirmButton"
-            onClick={handleEdit}
-            disabled={loading}
-          >
-            <FiCheck style={{ marginRight: 8 }} />
-            Düzəlt
-          </button>
+          {canDelete && (
+            <button
+              className="infoExaminationPictureDeleteButton"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              <GoTrash style={{ marginRight: 8 }} />
+              Sil
+            </button>
+          )}
+          {canUpdate && (
+            <button
+              className="infoExaminationPictureConfirmButton"
+              onClick={handleEdit}
+              disabled={loading}
+            >
+              <FiCheck style={{ marginRight: 8 }} />
+              Düzəlt
+            </button>
+          )}
         </div>
       </div>
     </div>

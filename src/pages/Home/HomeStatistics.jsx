@@ -22,6 +22,8 @@ import {
 
 // Zustand Store importu
 import useSidebarStore from '../../../stores/sidebarStore.js';
+import { usePermission } from "../../hooks/usePermission";
+import { isPathAllowed } from "../../utils/routePermissions";
 
 // Interactive Area Chart Component (Shadcn style)
 const InteractiveAreaChart = ({ data, color = "#3b82f6", title, formatValue }) => {
@@ -451,6 +453,7 @@ function HomeStatistics() {
 
   const selectedFilter = timeFilterOptions.find(opt => opt.value === timeFilter);
 
+  const { hasPermission, isSuperAdmin } = usePermission();
   // Quick access links
   const quickAccessLinks = [
     { 
@@ -471,7 +474,7 @@ function HomeStatistics() {
       path: '/reports',
       color: '#f59e0b'
     }
-  ];
+  ].filter((link) => isSuperAdmin || isPathAllowed(link.path, hasPermission));
 
   return (
     <>

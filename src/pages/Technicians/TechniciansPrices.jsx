@@ -12,10 +12,13 @@ import { IoArrowBackOutline } from "react-icons/io5";
 // Stores
 import useTechnicianStore from "../../../stores/technicianStore";
 import useDentalOrderStore from "../../../stores/dentalOrderStore";
+import { usePermission } from "../../hooks/usePermission";
 
 function TechniciansPrices() {
   const { id } = useParams(); // Technician UUID
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Texniklər", "UPDATE");
 
   const { selectedTechnician, fetchTechnicianById } = useTechnicianStore();
   const { orders, fetchOrders, editTechnicOrderPrice } = useDentalOrderStore();
@@ -117,13 +120,13 @@ function TechniciansPrices() {
                 title="Təsdiqlə"
                 style={{ cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.5 : 1 }}
               />
-            ) : (
+            ) : canUpdate ? (
               <LuPencilLine
                 className="penIconForTopPartIcon"
                 onClick={handleEditToggle}
                 title="Redaktə et"
               />
-            )}
+            ) : null}
           </div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { usePermission } from "../../hooks/usePermission";
 
 // Style
 import "../../assets/style/LaboratoryPage/sentorders.css";
@@ -26,6 +27,8 @@ function ReceivedOrders() {
     fetchOrders, 
     changeOrderStatus
   } = useDentalOrderStore();
+  const { hasPermission } = usePermission();
+  const canChangeStatus = hasPermission("Gələn sifarişlər", "STATUS");
 
   useEffect(() => {
     fetchOrders();
@@ -293,6 +296,7 @@ function ReceivedOrders() {
                         className={`status-badge ${statusInfo.type}`}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (!canChangeStatus) return;
                           handleStatusChange(
                             row.id, 
                             row.dentalWorkStatus, 
@@ -300,7 +304,7 @@ function ReceivedOrders() {
                           );
                         }}
                         style={{ 
-                          cursor: 'pointer',
+                          cursor: canChangeStatus ? 'pointer' : 'default',
                           transition: 'all 0.3s ease',
                           display: 'inline-block',
                           padding: '4px 12px',
@@ -308,7 +312,7 @@ function ReceivedOrders() {
                           fontSize: '14px',
                           fontWeight: '500'
                         }}
-                        title={`Cari: ${statusInfo.text}\nNövbəti: ${nextStatusText}\n(Dəyişdirmək üçün klik edin)`}
+                        title={canChangeStatus ? `Cari: ${statusInfo.text}\nNövbəti: ${nextStatusText}\n(Dəyişdirmək üçün klik edin)` : statusInfo.text}
                       >
                         {statusInfo.text}
                       </span>

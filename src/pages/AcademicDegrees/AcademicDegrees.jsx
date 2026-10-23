@@ -13,9 +13,14 @@ import "../../assets/style/AcademicDegrees/academicdegrees.css";
 
 // Libraries
 import { Link } from 'react-router-dom';
+import { usePermission } from "../../hooks/usePermission";
 
 function AcademicDegrees() {
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Elmi dərəcələr", "CREATE");
+  const canUpdate = hasPermission("Elmi dərəcələr", "UPDATE");
+  const canDelete = hasPermission("Elmi dərəcələr", "DELETE");
   const [searchTerm, setSearchTerm] = useState("");
 
   const tableData = [
@@ -61,9 +66,11 @@ function AcademicDegrees() {
           </div>
         </div>
         <div className="rightPart">
-          <Link className="addAcademicDegrees" to={'/add-degree'}>
-            <IoMdAdd className="addAcademicDegreesIcon" /> Yenisini əlavə et
-          </Link>
+          {canCreate && (
+            <Link className="addAcademicDegrees" to={'/add-degree'}>
+              <IoMdAdd className="addAcademicDegreesIcon" /> Yenisini əlavə et
+            </Link>
+          )}
           <Link className="exportAcademicDegrees">
             <FiDownload className="exportAcademicDegreesIcon" />
           </Link>
@@ -85,7 +92,7 @@ function AcademicDegrees() {
                   <HiOutlineArrowsUpDown className='arrowIconsNow' /> Status
                 </span>
               </th>
-              <th>Düzəliş</th>
+              {(canUpdate || canDelete) && <th>Düzəliş</th>}
             </tr>
           </thead>
           <tbody>
@@ -98,12 +105,14 @@ function AcademicDegrees() {
                     {row.status}
                   </span>
                 </td>
-                <td>
-                  <div className="actionIcons">
-                    <FiEdit3 className="editBtn" onClick={() => handleEdit(row)} />
-                    <GoTrash className="deleteBtn" onClick={() => handleDelete(row)} />
-                  </div>
-                </td>
+                {(canUpdate || canDelete) && (
+                  <td>
+                    <div className="actionIcons">
+                      {canUpdate && <FiEdit3 className="editBtn" onClick={() => handleEdit(row)} />}
+                      {canDelete && <GoTrash className="deleteBtn" onClick={() => handleDelete(row)} />}
+                    </div>
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

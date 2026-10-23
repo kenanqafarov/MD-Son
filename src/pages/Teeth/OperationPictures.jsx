@@ -8,11 +8,16 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../assets/style/Teeth/operationpictures.css";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { usePermission } from "../../hooks/usePermission";
 import useTeethStore from "../../../stores/teethStore";
 import useTeethOperationStore from "../../../stores/teeth-opetaionStore";
 
 const OperationPictures = () => {
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Digər", "CREATE");
+  const canUpdate = hasPermission("Digər", "UPDATE");
+  const canDelete = hasPermission("Digər", "DELETE");
   const { id: teethId } = useParams();
 
   const { teeth, fetchTeeth, loading, error } = useTeethStore();
@@ -69,9 +74,11 @@ const OperationPictures = () => {
           </div>
         </div>
         <div className="operationPictures-actions">
-          <Link to={"add"} className="operationPictures-add-new-button">
-            + Yenisini əlavə et
-          </Link>
+          {canCreate && (
+            <Link to={"add"} className="operationPictures-add-new-button">
+              + Yenisini əlavə et
+            </Link>
+          )}
           <button className="operationPictures-download-button">
             <FiDownload className="operationPictures-download-icon" />
           </button>
@@ -114,20 +121,24 @@ const OperationPictures = () => {
                       }}
                       className="operationPictures-warning-button"
                     />
-                    <FiEdit3
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(row.id, row)();
-                      }}
-                      className="operationPictures-edit-button"
-                    />
-                    <GoTrash
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(row.id, row.operationName);
-                      }}
-                      className="operationPictures-delete-button"
-                    />
+                    {canUpdate && (
+                      <FiEdit3
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(row.id, row)();
+                        }}
+                        className="operationPictures-edit-button"
+                      />
+                    )}
+                    {canDelete && (
+                      <GoTrash
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(row.id, row.operationName);
+                        }}
+                        className="operationPictures-delete-button"
+                      />
+                    )}
                   </div>
                 </td>
               </tr>

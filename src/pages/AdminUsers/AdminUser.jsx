@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 // Assuming you have your custom CSS files
 import "../../assets/style/AdminUsers/adminusers.css";
 import Modal from "../../components/Modal"; // Adjust the path as needed
+import { usePermission } from "../../hooks/usePermission";
 
 const AdminUser = () => {
   const [workers, setWorkers] = useState([]);
@@ -19,6 +20,9 @@ const AdminUser = () => {
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canUpdate = hasPermission("Admin istifadəçiləri", "UPDATE");
+  const canDelete = hasPermission("Admin istifadəçiləri", "DELETE");
 
   // State for the custom confirmation modal
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -244,20 +248,24 @@ const AdminUser = () => {
                           handleInfo(user.id);
                         }}
                       />
-                      <FiEdit3
-                        className="edit"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEdit(user.id);
-                        }}
-                      />
-                      <GoTrash
-                        className="delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(user.id);
-                        }}
-                      />
+                      {canUpdate && (
+                        <FiEdit3
+                          className="edit"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEdit(user.id);
+                          }}
+                        />
+                      )}
+                      {canDelete && (
+                        <GoTrash
+                          className="delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user.id);
+                          }}
+                        />
+                      )}
                     </div>
                   </td>
                 </tr>

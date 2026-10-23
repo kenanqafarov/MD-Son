@@ -15,7 +15,7 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { formatNameInput, handleNameKeyDown } from "../utils/textUtils";
 import { toast } from "react-toastify";
 
-function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
+function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete, canUpdate = true, canDelete = true }) {
   const { addWorker } = useWorkerStore();
   const {
     permissions: rawPermissions,
@@ -437,6 +437,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
           />
           {mode === "view" && (
             <div className="profile-button-group">
+              {canUpdate && (
               <button
                 type="button"
                 className="color-success"
@@ -444,6 +445,8 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
                 <LuPenLine className="color-success" />
                 Redaktə et
               </button>
+              )}
+              {canDelete && (
               <button
                 type="button"
                 className="color-danger"
@@ -451,6 +454,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
                 <FaRegTrashAlt className="color-danger" />
                 Sil
               </button>
+              )}
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import { FaPlus } from "react-icons/fa";
 import "../../assets/style/RecommendationsPage/recommendationspage.css"
 import { CiExport } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
+import { usePermission } from "../../hooks/usePermission";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -19,6 +20,10 @@ const RecommendationsPage = () => {
   const [search, setSearch] = useState("");
   const [items, setItems] = useState([]);
   const navigate = useNavigate();
+  const { hasPermission } = usePermission();
+  const canCreate = hasPermission("Tövsiyə edənlər", "CREATE");
+  const canUpdate = hasPermission("Tövsiyə edənlər", "UPDATE");
+  const canDelete = hasPermission("Tövsiyə edənlər", "DELETE");
 
   useEffect(() => {
     const stored = localStorage.getItem("MD_RECOMMENDATIONS");
@@ -81,9 +86,11 @@ const RecommendationsPage = () => {
             </div>
             </div>
             <div className="rightPartOfTop">
+            {canCreate && (
             <Link to={'add'} className="addNewRecommendationItem">
                 <FaPlus /> Yenisini əlavə et
             </Link>
+            )}
             <Link className="exportDataOfRecommendations" title="Export">
                 <CiExport size={22} className="exportRecommendationDataIcon" />
             </Link>
@@ -105,7 +112,7 @@ const RecommendationsPage = () => {
                     <HiArrowsUpDown className="tableArrowIcon" /> Status
                     </span>
                 </th>
-                <th>Düzəliş</th>
+                {(canUpdate || canDelete) && <th>Düzəliş</th>}
                 </tr>
             </thead>
             <tbody>
@@ -122,12 +129,14 @@ const RecommendationsPage = () => {
                         {item.status}
                     </span>
                     </td>
+                    {(canUpdate || canDelete) && (
                     <td>
                     <div className="icons flex gap-3 cursor-pointer">
-                        <FiEdit3 className="edit" onClick={() => handleEdit(item.id)} />
-                        <GoTrash className="delete" onClick={() => handleDelete(item.id)} />
+                        {canUpdate && <FiEdit3 className="edit" onClick={() => handleEdit(item.id)} />}
+                        {canDelete && <GoTrash className="delete" onClick={() => handleDelete(item.id)} />}
                     </div>
                     </td>
+                    )}
                 </tr>
                 ))}
                 {filteredRecommendationItems.length === 0 && (
