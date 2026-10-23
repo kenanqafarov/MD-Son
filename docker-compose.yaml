@@ -35,6 +35,8 @@ services:
       - redis-server
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET .env faylında verilməlidir}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://169.58.138.247}
       JAVA_OPTS: "-XX:+UseG1GC -XX:+UseStringDeduplication -Xms512m -Xmx1536m -XX:MaxGCPauseMillis=200 -Djava.security.egd=file:/dev/./urandom"
     ports:
       - "5555:5555"

@@ -1,5 +1,7 @@
 package com.rustam.modern_dentistry.config;
 
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import java.util.regex.Pattern;
 import com.rustam.modern_dentistry.util.JwtAuthUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -32,6 +35,9 @@ public class SecurityConfig {
 
     private final JwtAuthUtil jwtAuthFilter;
     private final SuperAdminBypassAuthorizationManager superAdminBypassAuthorizationManager;
+
+    @Value("${cors.allowed-origins:http://localhost:5173,http://169.58.138.247}")
+    private List<String> allowedOrigins;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -81,11 +87,26 @@ public class SecurityConfig {
 
         for (String module : modules) {
             String basePath = "/api/v1/" + module + "/**";
+            String prefix = "/api/v1/" + module + "/";
+            // POST ilə gələn oxuma (search/read/export) və silmə sorğuları CREATE sayılmasın
+            x.requestMatchers(postNamed(prefix, READ_LIKE_POST)).access((auth, ctx) -> decision(auth, basePath, "READ"));
+            x.requestMatchers(postNamed(prefix, DELETE_LIKE_POST)).access((auth, ctx) -> decision(auth, basePath, "DELETE"));
             x.requestMatchers(HttpMethod.GET, basePath).access((auth, ctx) -> decision(auth, basePath, "READ"));
             x.requestMatchers(HttpMethod.POST, basePath).access((auth, ctx) -> decision(auth, basePath, "CREATE"));
             x.requestMatchers(HttpMethod.PUT, basePath).access((auth, ctx) -> decision(auth, basePath, "UPDATE"));
             x.requestMatchers(HttpMethod.DELETE, basePath).access((auth, ctx) -> decision(auth, basePath, "DELETE"));
         }
+    }
+
+    private static final Pattern READ_LIKE_POST = Pattern.compile("^(search|read|detailed|export|see-)");
+    private static final Pattern DELETE_LIKE_POST = Pattern.compile("^delete(/|$)");
+
+    private static RequestMatcher postNamed(String prefix, Pattern action) {
+        return request -> {
+            if (!HttpMethod.POST.matches(request.getMethod())) return false;
+            String path = request.getRequestURI().substring(request.getContextPath().length());
+            return path.startsWith(prefix) && action.matcher(path.substring(prefix.length())).find();
+        };
     }
 
     private AuthorizationDecision decision(Supplier<Authentication> authSupplier, String path, String action) {
@@ -175,7 +196,7 @@ public class SecurityConfig {
 
     private CorsConfiguration getCorsConfiguration() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.setAllowedOrigins(allowedOrigins);
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
         return corsConfiguration;
