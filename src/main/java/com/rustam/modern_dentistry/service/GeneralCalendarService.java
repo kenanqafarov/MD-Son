@@ -24,6 +24,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import com.rustam.modern_dentistry.dao.entity.enums.status.Appointment;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -41,6 +44,36 @@ public class GeneralCalendarService {
     CabinetService cabinetService;
     PatientService patientService;
     GeneralCalendarMapper generalCalendarMapper;
+
+    /** Eyni kabinetdə və ya eyni həkimdə vaxtı üst-üstə düşən (ləğv olunmamış) randevu varsa rədd edir */
+    private void requireFreeSlot(Long selfId, Cabinet cabinet, BaseUser doctor, LocalDate date,
+                                 LocalTime time, LocalTime period) {
+        if (date == null || time == null) return;
+        int start = minutes(time);
+        int end = start + durationMinutes(period);
+        for (GeneralCalendar other : generalCalendarRepository.findAllByDateAndAppointmentNot(date, Appointment.CANCELED)) {
+            if (other.getId().equals(selfId) || other.getTime() == null) continue;
+            int otherStart = minutes(other.getTime());
+            int otherEnd = otherStart + durationMinutes(other.getPeriod());
+            if (start >= otherEnd || otherStart >= end) continue;
+            if (cabinet != null && other.getCabinet() != null && cabinet.getId().equals(other.getCabinet().getId())) {
+                throw new ExistsException("Bu vaxtda kabinet (" + cabinet.getCabinetName() + ") artıq məşğuldur: " + other.getTime());
+            }
+            if (doctor != null && other.getBaseUser() != null && doctor.getId().equals(other.getBaseUser().getId())) {
+                throw new ExistsException("Bu vaxtda həkimin artıq randevusu var: " + other.getTime());
+            }
+        }
+    }
+
+    private static int minutes(LocalTime t) {
+        return t.getHour() * 60 + t.getMinute();
+    }
+
+    /** period müddəti saat:dəqiqə kimi saxlayır (məs. 01:00 = 1 saat); verilməyibsə 1 saat */
+    private static int durationMinutes(LocalTime period) {
+        int m = period == null ? 60 : minutes(period);
+        return m > 0 ? m : 60;
+    }
 
     public List<GeneralCalendarResponse> readDoctors() {
         List<BaseUser> doctors = addWorkerService.readAll();
@@ -67,6 +100,9 @@ public class GeneralCalendarService {
                 .map(AppointmentTypeRequestId::getId)
                 .map(appointmentTypeService::findById)
                 .collect(Collectors.toSet());
+
+        requireFreeSlot(null, cabinet, patient.getBaseUser(), newAppointmentRequest.getDate(),
+                newAppointmentRequest.getTime(), newAppointmentRequest.getPeriod());
 
         GeneralCalendar generalCalendar = GeneralCalendar.builder()
                 .baseUser(patient.getBaseUser())
@@ -146,6 +182,8 @@ public class GeneralCalendarService {
         utilService.updateFieldIfPresent(updateAppointmentRequest.getDate(), generalCalendar::setDate);
         utilService.updateFieldIfPresent(updateAppointmentRequest.getTime(), generalCalendar::setTime);
         utilService.updateFieldIfPresent(updateAppointmentRequest.getPeriod(), generalCalendar::setPeriod);
+        requireFreeSlot(generalCalendar.getId(), generalCalendar.getCabinet(), generalCalendar.getBaseUser(),
+                generalCalendar.getDate(), generalCalendar.getTime(), generalCalendar.getPeriod());
         generalCalendarRepository.save(generalCalendar);
 
         return NewAppointmentResponse.builder()

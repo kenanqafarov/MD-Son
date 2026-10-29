@@ -1,5 +1,6 @@
 package com.rustam.modern_dentistry.service.labarotory;
 
+import com.rustam.modern_dentistry.util.user.AccessGuard;
 import com.rustam.modern_dentistry.dao.entity.enums.DentalWorkType;
 import com.rustam.modern_dentistry.dao.entity.laboratory.DentalOrder;
 import com.rustam.modern_dentistry.dao.entity.laboratory.DentalOrderToothDetail;
@@ -204,8 +205,10 @@ private MultipartFile convertBase64ToMultipartFile(String base64String) {
         return dentalOrderMapper.toResponse(order);
     }
 
+    @Transactional
     public void updateOrderStatus(UpdateLabOrderStatus request) {
         var dentalOrder = getDentalOrder(request.getId());
+        requireOwnOrderUnlessLabManager(dentalOrder);
         dentalOrder.setDentalWorkStatus(request.getDentalWorkStatus());
         dentalOrderRepository.save(dentalOrder);
     }
@@ -301,12 +304,19 @@ private MultipartFile convertBase64ToMultipartFile(String base64String) {
         );
     }
 
+    @Transactional
     public void setOrderPrice(Long id, UpdateOrderPrice request) {
         var dentalOrder = getDentalOrder(id);
+        requireOwnOrderUnlessLabManager(dentalOrder);
         dentalOrder.setPrice(request.getPrice());
         dentalOrderRepository.save(dentalOrder);
     }
 
+
+    private void requireOwnOrderUnlessLabManager(DentalOrder order) {
+        AccessGuard.requireOwnOrderUnlessLabManager(
+                order.getTechnician() == null ? null : order.getTechnician().getId());
+    }
 
     private DentalOrder getDentalOrder(Long id) {
         return dentalOrderRepository.findById(id).orElseThrow(

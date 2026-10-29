@@ -19,6 +19,9 @@ import java.util.Optional;
 public final class AccessGuard {
 
     public static final String SUPER_ADMIN = "SUPER_ADMIN";
+    /** Texnik hesabı ilə daxil olan istifadəçi: yalnız özünə təyin olunmuş laboratoriya sifarişləri */
+    public static final String TECHNICIAN = "TECHNICIAN";
+    public static final String LAB_MODULE = "Gələn sifarişlər";
 
     private AccessGuard() {
     }
@@ -60,6 +63,16 @@ public final class AccessGuard {
         Collection<Permission> roles = permissions == null ? Collections.emptyList() : permissions;
         if (roles.stream().anyMatch(AccessGuard::isSuperAdminRole) && !isCurrentSuperAdmin()) {
             throw new ForbiddenException("SUPER_ADMIN rolunu yalnız super admin təyin edə bilər");
+        }
+    }
+
+    /** Laboratoriya modulunda UPDATE/STATUS hüququ olmayan texnik yalnız öz sifarişini dəyişə bilər */
+    public static void requireOwnOrderUnlessLabManager(String orderTechnicianId) {
+        boolean labManager = currentHasAuthority(LAB_MODULE + ":UPDATE") || currentHasAuthority(LAB_MODULE + ":STATUS");
+        if (labManager) return;
+        String currentId = currentUser().map(BaseUser::getId).orElse(null);
+        if (currentId == null || !currentId.equals(orderTechnicianId)) {
+            throw new ForbiddenException("Texnik yalnız özünə təyin olunmuş sifarişi dəyişə bilər");
         }
     }
 

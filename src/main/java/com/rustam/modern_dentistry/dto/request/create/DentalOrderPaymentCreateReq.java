@@ -1,6 +1,7 @@
 package com.rustam.modern_dentistry.dto.request.create;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
@@ -19,5 +20,6 @@ public class DentalOrderPaymentCreateReq {
     @NotNull(message = VALIDATION_TECHNICIAN_ID)
     UUID technicianId;
     @NotNull(message = VALIDATION_LAB_PAYMENT_PRICE)
+    @Positive(message = "Ödəniş məbləği müsbət olmalıdır")
     BigDecimal amount;
 }

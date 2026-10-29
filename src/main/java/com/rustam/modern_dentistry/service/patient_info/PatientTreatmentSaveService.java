@@ -43,8 +43,9 @@ public class PatientTreatmentSaveService {
                 .findByExecutedPlans_IdInAndIsCheckedAndStatusInAndActionStatusIn(
                         req.getCheckedPlanIds(),
                         true,
-                        List.of("A", "C"),
-                        List.of("A", "C")
+                        // Yalnız hələ icra olunmamış (C) müalicələr: artıq saxlanmış (A) müalicə təkrar faktura yaratmır
+                        List.of("C"),
+                        List.of("C")
                 );
 
         BigDecimal treatmentTotal = BigDecimal.ZERO;

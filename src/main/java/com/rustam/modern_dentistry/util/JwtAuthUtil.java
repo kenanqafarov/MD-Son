@@ -1,5 +1,7 @@
 package com.rustam.modern_dentistry.util;
 
+import io.jsonwebtoken.JwtException;
+
 import com.rustam.modern_dentistry.service.AuthService;
 import com.rustam.modern_dentistry.util.user.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
@@ -36,9 +38,22 @@ public class JwtAuthUtil extends OncePerRequestFilter {
         }
 
         String jwt = authHeader.substring(7);
-        String username = jwtUtil.extractUsername(jwt);
+        String username;
+        try {
+            // Refresh token yalnız /auth/refresh üçündür, API-yə giriş vermir
+            if (jwtUtil.isRefreshToken(jwt)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            username = jwtUtil.extractUsername(jwt);
+        } catch (JwtException | IllegalArgumentException e) {
+            // Etibarsız və ya vaxtı keçmiş token: anonim kimi davam et, qorunan endpoint 401 qaytarır
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null
+                && !authService.isRevoked(username, jwtUtil.extractIssuedAt(jwt))) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             if (jwtUtil.isTokenValid(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =

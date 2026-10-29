@@ -122,6 +122,9 @@ public class OrderFromWarehouseService {
                         if (warehouseEntryProduct != null && warehouseEntryProduct.getId() != null) {
                             warehouseEntryProductService.decreaseProductQuantity(warehouseEntryProduct.getId(), dto.getQuantity());
                         }
+                    } catch (ProductDoesnotQuantityThatMuchException e) {
+                        // Stokdan artıq sifariş rədd edilir, tranzaksiya geri qaytarılır
+                        throw e;
                     } catch (Exception e) {
                         log.warn("WarehouseEntryProduct lookup failed for create item: {}", e.getMessage());
                     }
@@ -282,6 +285,9 @@ public class OrderFromWarehouseService {
                         Long wepIdToIncrease = existing.getWarehouseEntryProductId() != null ? existing.getWarehouseEntryProductId() : dto.getWarehouseEntryProductId();
                         warehouseEntryProductService.increaseProductQuantity(wepIdToIncrease, existing.getQuantity());
                         warehouseEntryProductService.decreaseProductQuantity(dto.getWarehouseEntryProductId(), dto.getQuantity());
+                    } catch (ProductDoesnotQuantityThatMuchException e) {
+                        // Stokdan artıq sifariş rədd edilir, tranzaksiya geri qaytarılır
+                        throw e;
                     } catch (Exception e) {
                         log.warn("Could not update quantities for warehouseEntryProductId: {}", e.getMessage());
                     }
@@ -328,6 +334,9 @@ public class OrderFromWarehouseService {
                 if (warehouseEntryProduct != null && warehouseEntryProduct.getId() != null) {
                     try {
                         warehouseEntryProductService.decreaseProductQuantity(warehouseEntryProduct.getId(), dto.getQuantity());
+                    } catch (ProductDoesnotQuantityThatMuchException e) {
+                        // Stokdan artıq sifariş rədd edilir, tranzaksiya geri qaytarılır
+                        throw e;
                     } catch (Exception e) {
                         log.warn("Could not decrease product quantity: {}", e.getMessage());
                     }

@@ -15,7 +15,6 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AddWorkerUpdateResponse {
     String username;
-    String password;
     String name;
     String surname;
     String patronymic;

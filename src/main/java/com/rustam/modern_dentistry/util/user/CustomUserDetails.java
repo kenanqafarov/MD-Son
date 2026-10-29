@@ -4,6 +4,8 @@ import com.rustam.modern_dentistry.dao.entity.enums.PermissionAction;
 import com.rustam.modern_dentistry.dao.entity.enums.status.Status;
 import com.rustam.modern_dentistry.dao.entity.settings.permission.Permission;
 import com.rustam.modern_dentistry.dao.entity.users.BaseUser;
+import com.rustam.modern_dentistry.dao.entity.users.Technician;
+import org.hibernate.Hibernate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,6 +28,10 @@ public record CustomUserDetails(BaseUser user) implements UserDetails {
         if (isSuperAdmin) {
             authorities.add(new SimpleGrantedAuthority(AccessGuard.SUPER_ADMIN));
             return authorities;
+        }
+
+        if (Hibernate.unproxy(user) instanceof Technician) {
+            authorities.add(new SimpleGrantedAuthority(AccessGuard.TECHNICIAN));
         }
 
         // Deaktiv (PASSIVE) rol heç bir hüquq vermir
