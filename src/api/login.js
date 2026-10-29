@@ -37,3 +37,8 @@ export const refreshToken = async (refreshTokenValue, accessToken) => {
     throw error;
   }
 };
+
+export const logout = (accessToken) =>
+  axios.post(`${API_BASE_URL}/auth/logout`, null, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
