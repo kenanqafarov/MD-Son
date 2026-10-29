@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   login as loginApi,
   refreshToken as refreshTokenApi,
+  logout as logoutApi,
 } from "../src/api/login";
 import { readPatients } from "../src/api/patient";
 import { getWorkerInfo } from "../src/api/add-worker";
@@ -123,6 +124,11 @@ const useAuthStore = create((set) => ({
   },
 
   logout: () => {
+    // Backend refresh tokeni silir və cari access tokeni etibarsız edir; cavabı gözləmirik
+    const currentToken = localStorage.getItem("token");
+    if (currentToken) {
+      logoutApi(currentToken).catch(() => {});
+    }
     localStorage.removeItem("token");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("userId");

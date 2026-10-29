@@ -84,6 +84,7 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
             value: String(id),
             label,
             debt: patient.debt || 0,
+            isBlocked: Boolean(patient.isBlocked),
             doctorId: patient.doctorId || patient.doctor_id || patient.baseUser,
             doctorName: patient.doctorName,
           };
@@ -456,8 +457,12 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
         <Modal
           isOpen={showModal}
           onClose={() => setShowModal(false)}
-          title="Əminsinizmi?"
-          message="Randevu əlavə ediləcək!"
+          title={selectedPatient?.isBlocked ? "Diqqət: pasiyent qara siyahıdadır!" : "Əminsinizmi?"}
+          message={
+            selectedPatient?.isBlocked
+              ? "Bu pasiyent qara siyahıdadır. Yenə də randevu əlavə edilsin?"
+              : "Randevu əlavə ediləcək!"
+          }
           onConfirm={handleConfirmAppointment}
         />
       </BlurLoader>
