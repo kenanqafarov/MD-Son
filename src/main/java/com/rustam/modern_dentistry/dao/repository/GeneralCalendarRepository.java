@@ -20,6 +20,8 @@ import java.util.UUID;
 
 public interface GeneralCalendarRepository extends JpaRepository<GeneralCalendar,Long> {
 
+    List<GeneralCalendar> findAllByDateAndAppointmentNot(LocalDate date, Appointment appointment);
+
     long countByDateBetween(LocalDate start, LocalDate end);
 
     long countByDateBetweenAndAppointment(LocalDate start, LocalDate end, Appointment appointment);

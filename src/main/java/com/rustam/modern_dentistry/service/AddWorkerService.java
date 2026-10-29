@@ -156,8 +156,9 @@ public class AddWorkerService {
                 .orElseThrow(() -> new UserNotFountException("İstifadəçi tapılmadı."));
         AccessGuard.requireSuperAdminToModify(baseUser);
 
+        // permissions göndərilməyibsə mövcud rollar saxlanılır (boş siyahı isə rolları silir)
         Set<Permission> newPermissions = (dto.getPermissions() == null)
-                ? new HashSet<>()
+                ? new HashSet<>(baseUser.getPermissions())
                 : dto.getPermissions().stream()
                     .filter(p -> p != null && !p.trim().isEmpty())
                     .map(name -> {

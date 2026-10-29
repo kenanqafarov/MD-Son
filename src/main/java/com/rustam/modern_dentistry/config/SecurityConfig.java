@@ -1,5 +1,9 @@
 package com.rustam.modern_dentistry.config;
 
+import com.rustam.modern_dentistry.util.user.AccessGuard;
+import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.Arrays;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.util.regex.Pattern;
 import com.rustam.modern_dentistry.util.JwtAuthUtil;
@@ -50,6 +54,13 @@ public class SecurityConfig {
                     // ✅ Permission READ and Worker INFO - hər authenticated istifadəçi üçün
                     x.requestMatchers(HttpMethod.GET, "/api/v1/permission/read").authenticated();
                     x.requestMatchers(HttpMethod.GET, "/api/v1/add-worker/info/{id}").authenticated();
+                    x.requestMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated();
+                    // Texnik öz sifarişlərini görür, statusunu və qiymətini dəyişir (sahiblik servisdə yoxlanılır)
+                    String lab = "/api/v1/laboratory/**";
+                    x.requestMatchers(HttpMethod.GET, "/api/v1/laboratory/technic/order/read")
+                            .access((auth, ctx) -> technicianOr(auth, lab, "READ"));
+                    x.requestMatchers(HttpMethod.PATCH, "/api/v1/laboratory/technic/order/*/price", "/api/v1/laboratory/order/status")
+                            .access((auth, ctx) -> technicianOr(auth, lab, "UPDATE", "STATUS"));
                     registerModulePermissions(x);
                     x.anyRequest().access(superAdminBypassAuthorizationManager);
                 })
@@ -95,6 +106,8 @@ public class SecurityConfig {
             x.requestMatchers(HttpMethod.POST, basePath).access((auth, ctx) -> decision(auth, basePath, "CREATE"));
             x.requestMatchers(HttpMethod.PUT, basePath).access((auth, ctx) -> decision(auth, basePath, "UPDATE"));
             x.requestMatchers(HttpMethod.DELETE, basePath).access((auth, ctx) -> decision(auth, basePath, "DELETE"));
+            // PATCH status/qiymət dəyişiklikləridir: UPDATE və ya STATUS hüququ kifayətdir
+            x.requestMatchers(HttpMethod.PATCH, basePath).access((auth, ctx) -> decision(auth, basePath, "UPDATE", "STATUS"));
         }
     }
 
@@ -109,7 +122,16 @@ public class SecurityConfig {
         };
     }
 
-    private AuthorizationDecision decision(Supplier<Authentication> authSupplier, String path, String action) {
+    private AuthorizationDecision technicianOr(Supplier<Authentication> authSupplier, String path, String... actions) {
+        Authentication auth = authSupplier.get();
+        if (auth != null && auth.isAuthenticated()
+                && auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(AccessGuard.TECHNICIAN))) {
+            return new AuthorizationDecision(true);
+        }
+        return decision(() -> auth, path, actions);
+    }
+
+    private AuthorizationDecision decision(Supplier<Authentication> authSupplier, String path, String... actions) {
         Authentication auth = authSupplier.get();
 
         if (auth != null && auth.isAuthenticated()) {
@@ -119,9 +141,9 @@ public class SecurityConfig {
             if (isSuperAdmin) return new AuthorizationDecision(true);
 
             String moduleName = getModuleNameFromPath(path);
-            String requiredPermission = moduleName + ":" + action;
+            Set<String> accepted = Arrays.stream(actions).map(action -> moduleName + ":" + action).collect(Collectors.toSet());
             boolean hasPermission = auth.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals(requiredPermission));
+                    .anyMatch(a -> accepted.contains(a.getAuthority()));
 
             return new AuthorizationDecision(hasPermission);
         }
@@ -188,6 +210,7 @@ public class SecurityConfig {
     private String[] getPublicEndpoints() {
         return new String[]{
                 "/api/v1/auth/login",
+                "/api/v1/auth/refresh",
                 "/v3/api-docs/**",
                 "/swagger-ui/**",
                 "/swagger-ui.html/**"

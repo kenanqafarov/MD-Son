@@ -143,6 +143,9 @@ public class PermissionService {
     @Transactional
     public PermissionCreateResponse update(PermissionUpdateRequest request) {
         Permission permission = findById(request.getId());
+        if (AccessGuard.isSuperAdminRole(permission) && !AccessGuard.isCurrentSuperAdmin()) {
+            throw new ForbiddenException("SUPER_ADMIN rolunu yalnız super admin dəyişə bilər");
+        }
         boolean renaming = request.getPermissionName() != null
                 && !request.getPermissionName().trim().isEmpty()
                 && !request.getPermissionName().equals(permission.getPermissionName());

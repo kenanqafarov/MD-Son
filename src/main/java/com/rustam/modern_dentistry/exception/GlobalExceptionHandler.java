@@ -181,6 +181,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ExceptionResponseMessages> invalidTokenException(InvalidTokenException ex) {
+        return new ResponseEntity<>(
+                new ExceptionResponseMessages(ex.getClass().getName(), ex.getMessage(), HttpStatus.UNAUTHORIZED) ,
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
     @ExceptionHandler(IncorrectPasswordException.class)
     public ResponseEntity<ExceptionResponseMessages> incorrectPasswordException(IncorrectPasswordException ex) {
         return new ResponseEntity<>(
@@ -250,6 +258,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 new ExceptionResponseMessages(ex.getClass().getName(), ex.getMessage(), HttpStatus.FORBIDDEN),
                 HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    public ResponseEntity<ExceptionResponseMessages> noResourceFound(org.springframework.web.servlet.resource.NoResourceFoundException ex) {
+        return new ResponseEntity<>(
+                new ExceptionResponseMessages(ex.getClass().getName(), "Belə endpoint yoxdur: " + ex.getResourcePath(), HttpStatus.NOT_FOUND),
+                HttpStatus.NOT_FOUND
         );
     }
 

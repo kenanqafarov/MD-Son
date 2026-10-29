@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Service
@@ -24,15 +25,21 @@ public class JwtUtil {
     public String createToken(String userId) {
         return Jwts.builder()
                 .setSubject(userId)
+                .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
                 .compact();
     }
 
+    public static final String TOKEN_TYPE_CLAIM = "typ";
+    public static final String REFRESH_TYPE = "refresh";
+
     public String createRefreshToken(String userId) {
         return Jwts.builder()
                 .setSubject(userId)
+                .setId(UUID.randomUUID().toString())
+                .claim(TOKEN_TYPE_CLAIM, REFRESH_TYPE)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
                 .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -122,6 +129,14 @@ public class JwtUtil {
     private byte[] getSignKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes).getEncoded();
+    }
+
+    public boolean isRefreshToken(String token) {
+        return REFRESH_TYPE.equals(extractAllClaims(token).get(TOKEN_TYPE_CLAIM, String.class));
+    }
+
+    public Date extractIssuedAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
