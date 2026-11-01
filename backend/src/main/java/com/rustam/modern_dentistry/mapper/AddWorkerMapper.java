@@ -45,6 +45,8 @@ public interface AddWorkerMapper {
     @Mapping(target = "phone2", source = "phone2")
     @Mapping(target = "phone3", source = "phone3")
     @Mapping(target = "homePhone", source = "homePhone")
+    @Mapping(target = "profilePhotoPath", source = "profilePhotoPath")
+    @Mapping(target = "enabled", source = "enabled")
     BaseUser dtoToEntity(@MappingTarget BaseUser baseUser, AddWorkerCreateRequest dto);
 
     default Set<Permission> map(Set<String> permissionNames) {
@@ -60,7 +62,7 @@ public interface AddWorkerMapper {
 
     AddWorkerCreateResponse entityToDto(BaseUser baseUser);
 
-    @Mapping(target = "permissions", source = "permissions")
+    @Mapping(target = "permissions", ignore = true)
     @Mapping(target = "colorCode", source = "colorCode")
     @Mapping(target = "experience", source = "experience")
     @Mapping(target = "address", source = "address")
@@ -68,6 +70,8 @@ public interface AddWorkerMapper {
     @Mapping(target = "phone2", source = "phone2")
     @Mapping(target = "phone3", source = "phone3")
     @Mapping(target = "homePhone", source = "homePhone")
+    @Mapping(target = "profilePhotoPath", source = "profilePhotoPath")
+    @Mapping(target = "enabled", source = "enabled")
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     BaseUser dtoToEntityUpdate(@MappingTarget BaseUser baseUser, AddWorkerUpdateRequest dto);
 

@@ -16,7 +16,9 @@ def query(sql):
     if err:
         print("ERR:", err)
 
-query("SELECT * FROM authorities LIMIT 10;")
-query("SELECT id, name, surname, username FROM base_users LIMIT 5;")
+query("SELECT id, company_name, phone_number, status FROM insurance_companies;")
+query("SELECT id, category_name, category_code, insurance_company_id FROM op_types;")
+query("SELECT count(*) FROM op_type_items;")
+query("SELECT id, patient_id, insurance_id, plan_name FROM patient_plans_main LIMIT 5;")
 
 ssh.close()

@@ -9,6 +9,7 @@ import { CiExport } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import useAppointmentTypeStore from "../../../stores/appointment-type-store";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -66,6 +67,17 @@ const AppointmentTypes = () => {
     await updateAppointmentTypeStatus({ id: type.id, status: newStatus });
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredAppointmentTypes.map((type, idx) => ({
+      "№": idx + 1,
+      "Randevu tipinin adı": type.appointmentTypeName || "",
+      "Müddət (dəqiqə)": type.duration || "",
+      "Rəng": type.color || "",
+      "Status": type.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "randevu_tipleri");
+  };
+
   const handleSearch = async () => {
     if (search.trim()) {
     } else {
@@ -84,110 +96,122 @@ const AppointmentTypes = () => {
   if (error) return <div>Error: {error.message || error.toString()}</div>;
 
   return (
-    <div className="appointmentTypesPageContainer">
-      <div className="appointmentTypesPageTopPart">
-        <div className="leftPartOfTop">
-          <select
-            className="appointmentTypesStatusSelect"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}>
-            {statusOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+            >
+              {statusOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
 
-          <div className="searchBarContainer">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-            />
-            <CiSearch className="searchIconBTN" onClick={handleSearch} />
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </div>
+          </div>
+
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              title="Excel-ə ixrac et"
+              onClick={handleExport}
+            >
+              <CiExport size={20} />
+            </button>
           </div>
         </div>
 
-        <div className="rightPartOfTop">
-          {canCreate && (
-            <Link to={"add"} className="addNewAppointmentType">
-              <FaPlus /> Yenisini əlavə et
-            </Link>
-          )}
-          <Link className="exportDataOfAppointmentTypes" title="Export">
-            <CiExport size={22} className="exportAppointmentTypeDataIcon" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="appointmentTypesTableWrapper">
-        <table className="appointmentTypesTable">
-          <thead>
-            <tr>
-              <th>
-                <span>1-{filteredAppointmentTypes.length}</span>
-              </th>
-              <th>
-                <span>
-                  <HiArrowsUpDown className="tableArrowIcon" /> Randevu tipinin
-                  adı
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiArrowsUpDown className="tableArrowIcon" /> Müddət
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiArrowsUpDown className="tableArrowIcon" /> Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-
-          <tbody>
-            {filteredAppointmentTypes.map((type, idx) => (
-              <tr key={type?.id || idx}>
-                <td>{idx + 1}</td>
-                <td>{type?.appointmentTypeName || ""}</td>
-                <td>{type?.time ? type.time.slice(0, 5) : ""}</td>
-                <td>
-                  <span
-                    onClick={() => canStatus && toggleStatus(type)}
-                    className={`status ${
-                      (type?.status || "") === "ACTIVE" ? "active" : "passive"
-                    }`}
-                    style={{ cursor: canStatus ? "pointer" : "default", userSelect: "none" }}
-                    title="Statusu dəyişmək üçün kliklə">
-                    {(type?.status || "") === "ACTIVE" ? "Aktiv" : "Passiv"}
-                  </span>
-                </td>
-                {(canUpdate || canDelete) && (
-                  <td>
-                    <div className="icons flex gap-3 cursor-pointer">
-                      {canUpdate && (
-                        <FiEdit3
-                          className="edit"
-                          onClick={() => handleEdit(type?.id)}
-                        />
-                      )}
-                      {canDelete && (
-                        <GoTrash
-                          className="delete"
-                          onClick={() => handleDelete(type?.id)}
-                        />
-                      )}
-                    </div>
-                  </td>
-                )}
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
+              <tr>
+                <th className="settings-col-num">№</th>
+                <th>Randevu tipinin adı</th>
+                <th>Müddət</th>
+                <th>Status</th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {filteredAppointmentTypes.length > 0 ? (
+                filteredAppointmentTypes.map((type, idx) => (
+                  <tr key={type?.id || idx}>
+                    <td className="settings-col-num">{idx + 1}</td>
+                    <td style={{ fontWeight: 500, color: "#1E293B" }}>{type?.appointmentTypeName || ""}</td>
+                    <td>{type?.time ? type.time.slice(0, 5) : type?.duration ? `${type.duration} dəq` : "—"}</td>
+                    <td>
+                      <span
+                        onClick={() => canStatus && toggleStatus(type)}
+                        className={`settings-status-badge ${
+                          (type?.status || "") === "ACTIVE" ? "active" : "passive"
+                        }`}
+                        style={{ cursor: canStatus ? "pointer" : "default" }}
+                        title="Statusu dəyişmək üçün kliklə"
+                      >
+                        <span className="settings-status-dot" />
+                        {(type?.status || "") === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </span>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(type?.id)}
+                              title="Düzəliş et"
+                            >
+                              <FiEdit3 size={16} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(type?.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>
+                    <div className="settings-empty-state">Heç bir randevu tipi tapılmadı.</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

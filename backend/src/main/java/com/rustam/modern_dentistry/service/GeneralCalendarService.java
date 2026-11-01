@@ -71,7 +71,7 @@ public class GeneralCalendarService {
         GeneralCalendar generalCalendar = GeneralCalendar.builder()
                 .baseUser(patient.getBaseUser())
                 .patient(patient)
-                .appointment(newAppointmentRequest.getAppointment())
+                .appointment(newAppointmentRequest.getAppointment() != null ? newAppointmentRequest.getAppointment() : com.rustam.modern_dentistry.dao.entity.enums.status.Appointment.MEETING)
                 .cabinet(cabinet)
                 .date(newAppointmentRequest.getDate())
                 .time(newAppointmentRequest.getTime())

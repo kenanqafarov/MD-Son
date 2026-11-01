@@ -7,6 +7,7 @@ import { HiOutlineArrowsUpDown } from "react-icons/hi2";
 import { useEffect, useState } from "react";
 import useGarnitureStore from "../../../stores/garnitureStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 function DentalSetList() {
   const navigate = useNavigate();
@@ -32,14 +33,12 @@ function DentalSetList() {
     fetchGarnitures();
   }, []);
 
-  useEffect(() => {}, [garnitures]);
-
-  const filteredData = garnitures.filter((row) => {
-    const matchesName = row.name
-      ?.toLowerCase()
+  const filteredData = (garnitures || []).filter((row) => {
+    const matchesName = (row.name || "")
+      .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter
-      ? row.status.toLowerCase() === statusFilter
+      ? (row.status || "").toUpperCase() === statusFilter.toUpperCase()
       : true;
     return matchesName && matchesStatus;
   });
@@ -56,144 +55,166 @@ function DentalSetList() {
 
     try {
       await removeGarniture(row.id);
-      alert(`${row.name} uğurla silindi.`);
     } catch (err) {
       alert("Silinmə zamanı xəta baş verdi!");
     }
   };
 
   const handleStatusChange = async (id, currentStatus) => {
-    const newStatus =
-      currentStatus.toLowerCase() === "active" ? "passive" : "active";
+    const isCurrentlyActive = (currentStatus || "").toUpperCase() === "ACTIVE";
+    const newStatus = isCurrentlyActive ? "PASSIVE" : "ACTIVE";
     const confirmMessage =
-      newStatus === "active"
+      newStatus === "ACTIVE"
         ? "Qarnituru aktiv etmək istədiyinizə əminsiniz?"
         : "Qarnituru passiv etmək istədiyinizə əminsiniz?";
 
     if (window.confirm(confirmMessage)) {
       try {
-        await updateStatus(id, { status: newStatus.toUpperCase() }); // backendə böyük hərflə göndər
-        alert(
-          `Qarnitur uğurla ${
-            newStatus === "active" ? "aktiv" : "passiv"
-          } edildi!`
-        );
+        await updateStatus(id, { status: newStatus });
       } catch (error) {
         alert("Status dəyişdirilməsi zamanı xəta baş verdi!");
       }
     }
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredData.map((row, idx) => ({
+      "№": idx + 1,
+      "Qarniturun adı": row.name || "",
+      "Status": (row.status || "").toUpperCase() === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "qarniturlar_siyahisi");
+  };
+
   return (
-    <div className="dentalSetPageWrapper">
-      <div className="dentalSetCategoryQuickSearch">
-        <div className="dentalSetCategoryLeftPart">
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">Status</option>
-            <option value="active">Aktiv</option>
-            <option value="passive">Passiv</option>
-          </select>
-          <div className="searchForNameDentalSet">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <CiSearch className="searchForNameIcon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
+            </button>
           </div>
         </div>
-        <div className="dentalSetCategoryRightPart">
-          {canCreate && (
-            <Link to={"./add"}>
-              <p className="addNewDentalSetCategory">
-                <span>+</span> Yenisini əlavə et
-              </p>
-            </Link>
-          )}
-          <Link to={"/export"}>
-            <FiDownload className="exportDentalSetCategoriesData" />
-          </Link>
-        </div>
-      </div>
 
-      <div className="dentalSetPageTableWrapper">
-        <table className="dentalSetPageTable">
-          <thead>
-            <tr>
-              <th>
-                {garnitures.length === 0 ? "0" : `1-${garnitures.length}`}
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Qarniturun
-                  adı
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td colSpan="4">Yüklənir...</td>
+                <th className="settings-col-num">№</th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Qarniturun adı
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Status
+                  </div>
+                </th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ) : filteredData.length > 0 ? (
-              filteredData.map((row, index) => (
-                <tr key={row.id}>
-                  <td>{index + 1}</td>
-                  <td className="dentalSetNameCol">{row.name}</td>
-                  <td>
-                    <span
-                      className={`statusBadge ${
-                        row.status.toLowerCase() === "active"
-                          ? "active"
-                          : "passive"
-                      }`}
-                      onClick={() => canStatus && handleStatusChange(row.id, row.status)}
-                      style={{ cursor: canStatus ? "pointer" : "default" }}>
-                      {row.status.toLowerCase() === "active"
-                        ? "Aktiv"
-                        : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="dentalSetActionIcons">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="editBtn"
-                            onClick={() => handleEdit(row)}
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="deleteBtn"
-                            onClick={() => handleDelete(row)}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  )}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="settings-empty-state">Yüklənir...</td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="4">Heç bir qarnitur tapılmadı</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-        {error && (
-          <div style={{ color: "red", marginTop: 10 }}>Xəta: {error}</div>
-        )}
+              ) : filteredData.length > 0 ? (
+                filteredData.map((row, index) => {
+                  const isActive = (row.status || "").toUpperCase() === "ACTIVE";
+                  return (
+                    <tr key={row.id}>
+                      <td className="settings-col-num">{index + 1}</td>
+                      <td className="font-medium text-gray-800">{row.name}</td>
+                      <td>
+                        <button
+                          type="button"
+                          disabled={!canStatus}
+                          className={`settings-status-badge ${
+                            isActive
+                              ? "settings-status-active"
+                              : "settings-status-passive"
+                          }`}
+                          onClick={() => canStatus && handleStatusChange(row.id, row.status)}
+                        >
+                          <span className="settings-status-dot" />
+                          {isActive ? "Aktiv" : "Passiv"}
+                        </button>
+                      </td>
+                      {(canUpdate || canDelete) && (
+                        <td className="settings-col-actions">
+                          <div className="settings-actions-group">
+                            {canUpdate && (
+                              <button
+                                type="button"
+                                className="settings-action-btn edit"
+                                onClick={() => handleEdit(row)}
+                                title="Redaktə et"
+                              >
+                                <FiEdit3 size={15} />
+                              </button>
+                            )}
+                            {canDelete && (
+                              <button
+                                type="button"
+                                className="settings-action-btn delete"
+                                onClick={() => handleDelete(row)}
+                                title="Sil"
+                              >
+                                <GoTrash size={15} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan="4" className="settings-empty-state">Heç bir qarnitur tapılmadı</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          {error && (
+            <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg mt-2">
+              Xəta: {error}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useInsuranceCompanyStore from "../../../stores/insuranceStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 function InsuranceList() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ function InsuranceList() {
   }, []);
 
   const filteredData = (insuranceCompanies || []).filter((row) => {
-    const matchesSearch = row.companyName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (row.companyName || "").toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = selectedStatus === "" || row.status === selectedStatus;
     return matchesSearch && matchesStatus;
   });
@@ -58,140 +59,161 @@ function InsuranceList() {
 
     try {
       await updateStatus(id, { status: newStatus });
-      alert(`Sığorta uğurla ${newStatus === "ACTIVE" ? "aktiv" : "passiv"} edildi!`);
     } catch (error) {
       alert("Status dəyişdirmə zamanı xəta baş verdi!");
     }
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredData.map((row, idx) => ({
+      "№": idx + 1,
+      "Sığorta şirkəti": row.companyName || "",
+      "Əlaqə nömrəsi": row.phone || "",
+      "Email": row.email || "",
+      "Status": row.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "sigorta_sirketleri");
+  };
+
   return (
-    <div className="insurancePageWrapper">
-      <div className="insuranceCategoryQuickSearch">
-        <div className="insuranceCategoryLeftPart">
-          <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value)}>
-            <option value="">Status</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="PASSIVE">Passiv</option>
-          </select>
-          <div className="searchForNameInsurance">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <CiSearch className="searchForNameIcon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
+            </button>
           </div>
         </div>
-        <div className="insuranceCategoryRightPart">
-          {canCreate && (
-            <Link to={"./add"}>
-              <p className="addNewInsuranceCategory">
-                <span>+</span> Yenisini əlavə et
-              </p>
-            </Link>
-          )}
-          <Link to={"/export"}>
-            <FiDownload className="exportInsuranceCategoriesData" />
-          </Link>
-        </div>
-      </div>
 
-      <div className="insurancePageTableWrapper">
-        <table className="insurancePageTable">
-          <thead>
-            <tr>
-              <th>{filteredData.length}</th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Sığorta şirkəti
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Əməliyyat növləri
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown className="arrowIconsNow" /> Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredData.length === 0 ? (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td colSpan={5} style={{ textAlign: "center" }}>
-                  Sığorta şirkəti tapılmadı.
-                </td>
+                <th className="settings-col-num">№</th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Sığorta şirkəti
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Əməliyyat növləri
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Status
+                  </div>
+                </th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ) : (
-              filteredData.map((row, index) => (
-                <tr key={row.id}>
-                  <td>{index + 1}</td>
-                  <td className="insuranceNameCol">
-                    <Link
-                      to={`/insurance/${row.id}/operations`}
-                      style={{ color: "inherit", textDecoration: "none", fontWeight: "600", cursor: "pointer" }}
-                    >
-                      {row.companyName}
-                    </Link>
+            </thead>
+            <tbody>
+              {filteredData.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="settings-empty-state">
+                    Sığorta şirkəti tapılmadı.
                   </td>
-                  <td>
-                    <Link
-                      to={`/insurance/${row.id}/operations`}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        color: "#2563EB",
-                        backgroundColor: "#EFF6FF",
-                        padding: "4px 10px",
-                        borderRadius: "6px",
-                        textDecoration: "none",
-                        fontWeight: "500",
-                        fontSize: "13px"
-                      }}
-                    >
-                      Əməliyyat növlərinə bax →
-                    </Link>
-                  </td>
-                  <td>
-                    <span
-                      className={`statusBadge ${
-                        row.status === "ACTIVE" ? "active" : "passive"
-                      }`}
-                      onClick={() => canStatus && handleStatusChange(row.id, row.status)}
-                      style={{ cursor: canStatus ? "pointer" : "default" }}
-                    >
-                      {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="insuranceActionIcons">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="editBtn"
-                            onClick={() => handleEdit(row)}
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="deleteBtn"
-                            onClick={() => handleDelete(row)}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  )}
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                filteredData.map((row, index) => (
+                  <tr key={row.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td className="font-semibold text-gray-800">
+                      <Link
+                        to={`/insurance/${row.id}/operations`}
+                        className="hover:text-blue-600 transition-colors"
+                      >
+                        {row.companyName}
+                      </Link>
+                    </td>
+                    <td>
+                      <Link
+                        to={`/insurance/${row.id}/operations`}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                      >
+                        Əməliyyat növlərinə bax →
+                      </Link>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={!canStatus}
+                        className={`settings-status-badge ${
+                          row.status === "ACTIVE"
+                            ? "settings-status-active"
+                            : "settings-status-passive"
+                        }`}
+                        onClick={() => canStatus && handleStatusChange(row.id, row.status)}
+                      >
+                        <span className="settings-status-dot" />
+                        {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </button>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(row)}
+                              title="Redaktə et"
+                            >
+                              <FiEdit3 size={15} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(row)}
+                              title="Sil"
+                            >
+                              <GoTrash size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

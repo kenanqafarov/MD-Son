@@ -14,8 +14,6 @@ import { useRooms } from "../hooks/useRooms.js";
 import usePatientStore from "../../stores/patiendStore.js";
 import useAppointmentTypeStore from "../../stores/appointment-type-store.js";
 
-const STATUS_OPTIONS = [{ value: "MEETING", label: "MEETING" }];
-
 const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -25,7 +23,6 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedOperations, setSelectedOperations] = useState([]);
-  const [selectedStatus, setSelectedStatus] = useState(STATUS_OPTIONS[0]);
   const [formData, setFormData] = useState({
     date: "",
     time: "09:00:00", // String format
@@ -171,14 +168,43 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
     setSelectedDoctorId(selectedOption?.value || null);
   };
 
-  // Operations selection
-  const handleOperationsChange = (selectedOptions) => {
-    setSelectedOperations(selectedOptions || []);
-  };
+  // Auto-select room when date is selected and room is not set
+  useEffect(() => {
+    if (formData.date && !selectedRoom && roomOptions && roomOptions.length > 0) {
+      setSelectedRoom(roomOptions[0]);
+    }
+  }, [formData.date, roomOptions, selectedRoom]);
 
-  // Status selection
-  const handleStatusChange = (selectedOption) => {
-    setSelectedStatus(selectedOption);
+  // Operations selection - auto calculate total duration while remaining editable
+  const handleOperationsChange = (selectedOptions) => {
+    const ops = selectedOptions || [];
+    setSelectedOperations(ops);
+
+    if (ops.length > 0 && appointmentTypes?.length > 0) {
+      let totalMinutes = 0;
+      ops.forEach((op) => {
+        const matchingType = appointmentTypes.find(
+          (t) => String(t.id) === String(op.value)
+        );
+        if (matchingType?.time) {
+          const parts = matchingType.time.split(":").map(Number);
+          const h = parts[0] || 0;
+          const m = parts[1] || 0;
+          const s = parts[2] || 0;
+          totalMinutes += h * 60 + m + Math.round(s / 60);
+        }
+      });
+
+      if (totalMinutes > 0) {
+        const hours = Math.floor(totalMinutes / 60);
+        const mins = totalMinutes % 60;
+        const periodStr = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:00`;
+        setFormData((prev) => ({
+          ...prev,
+          period: periodStr,
+        }));
+      }
+    }
   };
 
   // Form input changes
@@ -188,6 +214,12 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
       ...prev,
       [name]: value,
     }));
+
+    if (name === "date" && value) {
+      if (!selectedRoom && roomOptions && roomOptions.length > 0) {
+        setSelectedRoom(roomOptions[0]);
+      }
+    }
   };
 
   // Time input handling - Convert to "HH:mm:ss" format
@@ -260,7 +292,7 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
     const appointmentData = {
       cabinetName: selectedRoom?.value || "",
       patientId: selectedPatient ? parseInt(selectedPatient.value) : 0,
-      appointment: selectedStatus?.value || "MEETING",
+      appointment: "MEETING",
       appointmentTypeRequestIds: selectedOperations.map((op) => ({
         id: parseInt(op.value),
       })),
@@ -404,21 +436,9 @@ const AddNewAppointment = ({ employees, WORK_HOURS, WEEKDAYS_SHORT }) => {
                 </div>
               </div>
 
-              {/* Status & Patient debt */}
+              {/* Patient debt */}
               <div className="fourth-row">
-                <div className="form-group">
-                  <label className="required-label">Status</label>
-                  <CustomDropdown
-                    options={STATUS_OPTIONS}
-                    onChange={handleStatusChange}
-                    placeholder="Status seçin"
-                    value={selectedStatus}
-                    isClearable={true}
-                    isSearchable={true}
-                    className="status-select"
-                  />
-                </div>
-                <div className="form-group">
+                <div className="form-group w-full">
                   <label>Pasient borcu</label>
                   <input
                     type="text"

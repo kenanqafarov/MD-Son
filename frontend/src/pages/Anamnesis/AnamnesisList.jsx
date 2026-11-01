@@ -1,22 +1,20 @@
-// AnamnesisList.js
 import React, { useEffect, useState } from "react";
 import "../../assets/style/Anamnesis/anamnesiscategorylist.css";
 import { CiSearch } from "react-icons/ci";
 import { FiDownload, FiEdit3 } from "react-icons/fi";
 import { GoTrash } from "react-icons/go";
 import { HiOutlineArrowsUpDown } from "react-icons/hi2";
-import { FaPlus } from "react-icons/fa6";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import useAnamnesisListStore from "../../../stores/anamnesStore";
-import { exportAnamnesisItemsToExcel } from "../../../src/api/anamnesis-list";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const AnamnesisList = () => {
   const navigate = useNavigate();
   const { categoryId } = useParams();
-  
+
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("Anamnez siyahısı", "CREATE");
   const canUpdate = hasPermission("Anamnez siyahısı", "UPDATE");
@@ -32,7 +30,6 @@ const AnamnesisList = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     if (categoryId) {
@@ -64,7 +61,6 @@ const AnamnesisList = () => {
     const newStatus = row.status === "ACTIVE" ? "INACTIVE" : "ACTIVE";
     try {
       await updateAnamnesisStatus(row.id, { status: newStatus });
-      // Refresh the list to reflect the change
       setTimeout(() => {
         fetchAnamnesisList(categoryId);
       }, 500);
@@ -75,179 +71,148 @@ const AnamnesisList = () => {
     }
   };
 
-  const handleExport = async () => {
-    try {
-      setExporting(true);
-      const response = await exportAnamnesisItemsToExcel();
-      
-      // Create blob and download
-      const blob = new Blob([response.data], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "anamnesis-list.xlsx");
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      
-      toast.success("Excel faylı uğurla yükləndi!");
-    } catch (error) {
-      console.error("Export error:", error);
-      toast.error("Export zamanı xəta baş verdi.");
-    } finally {
-      setExporting(false);
-    }
-  };
-
-  const filteredAnamnesis = anamnesisList.filter((item) => {
-    const matchesSearch = item.name
+  const filteredAnamnesis = (anamnesisList || []).filter((item) => {
+    const matchesSearch = (item.name || "")
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
     const matchesStatus = !statusFilter || item.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
+  const handleExport = () => {
+    const dataToExport = filteredAnamnesis.map((item, idx) => ({
+      "№": idx + 1,
+      "Anamnezin adı": item.name || "",
+      "Status": item.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "anamnezler_siyahisi");
+  };
+
   return (
-    <div className="anamnesisList-container">
+    <div className="settings-page-shell">
       <ToastContainer />
-      <div className="anamnesisList-controls-section">
-        <div className="anamnesisList-filters">
-          <select
-            className="anamnesisList-status-dropdown"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="">Hamısı ({anamnesisList.length})</option>
-            <option value="ACTIVE">
-              Aktiv ({anamnesisList.filter(a => a.status === "ACTIVE").length})
-            </option>
-            <option value="INACTIVE">
-              Passiv ({anamnesisList.filter(a => a.status === "INACTIVE").length})
-            </option>
-          </select>
-          <div className="anamnesisList-search-box">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              className="anamnesisList-search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="anamnesisList-search-button" type="button">
-              <CiSearch className="anamnesisList-search-icon" />
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="INACTIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link
+                to={`/anamnesis/anamnesis-details/${categoryId}/add`}
+                className="settings-btn-add"
+              >
+                <span>+</span> Yeni anamnez əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
             </button>
           </div>
         </div>
-        <div className="anamnesisList-actions">
-          <button
-            onClick={handleExport}
-            disabled={exporting || anamnesisList.length === 0}
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "20px",
-              color: "#155EEF",
-            }}
-            title="Excel'ə ixrac et"
-          >
-            <FiDownload />
-          </button>
-          {canCreate && (
-            <div
-              className="anamnesisList-add-new-button"
-              onClick={() =>
-                navigate(`/anamnesis/anamnesis-details/${categoryId}/add`)
-              }
-              style={{ cursor: "pointer" }}
-            >
-              <FaPlus style={{ marginRight: "4px" }} /> Yeni anamnez əlavə et
-            </div>
-          )}
-        </div>
-      </div>
 
-      <div className="anamnesisList-table-section">
-        <table className="anamnesisList-table">
-          <thead>
-            <tr>
-              <th>
-                #{" "}
-                <span>
-                  ({filteredAnamnesis.length === 0 ? "0" : `1-${filteredAnamnesis.length}`})
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown /> Anamnezin adı
-                </span>
-              </th>
-              <th>
-                <span>
-                  <HiOutlineArrowsUpDown /> Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
-                  Yüklənir...
-                </td>
+                <th className="settings-col-num">#</th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Anamnezin adı
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Status
+                  </div>
+                </th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ) : filteredAnamnesis.length === 0 ? (
-              <tr>
-                <td colSpan="4" style={{ textAlign: "center" }}>
-                  Heç bir anamnez tapılmadı.
-                </td>
-              </tr>
-            ) : (
-              filteredAnamnesis.map((row, index) => (
-                <tr key={row.id}>
-                  <td>{index + 1}</td>
-                  <td>{row.name}</td>
-                  <td>
-                    <span
-                      onClick={() => canStatus && toggleStatus(row)}
-                      style={{ cursor: canStatus ? "pointer" : "default" }}
-                      className={`anamnesisList-status-badge ${
-                        row.status === "ACTIVE" ? "active" : "passive"
-                      }`}
-                      title="Statusu dəyişmək üçün kliklə"
-                    >
-                      {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="anamnesisList-action-icons">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="anamnesisList-edit-button"
-                            onClick={() => handleEdit(row.id)}
-                            title="Düzəlt"
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="anamnesisList-delete-button"
-                            onClick={() => handleDelete(row.id, row.name)}
-                            title="Sil"
-                          />
-                        )}
-                      </div>
-                    </td>
-                  )}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="settings-empty-state">Yüklənir...</td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : filteredAnamnesis.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="settings-empty-state">Heç bir anamnez tapılmadı.</td>
+                </tr>
+              ) : (
+                filteredAnamnesis.map((row, index) => (
+                  <tr key={row.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td className="font-medium text-gray-800">{row.name}</td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={!canStatus}
+                        className={`settings-status-badge ${
+                          row.status === "ACTIVE"
+                            ? "settings-status-active"
+                            : "settings-status-passive"
+                        }`}
+                        onClick={() => canStatus && toggleStatus(row)}
+                      >
+                        <span className="settings-status-dot" />
+                        {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </button>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(row.id)}
+                              title="Redaktə et"
+                            >
+                              <FiEdit3 size={15} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(row.id, row.name)}
+                              title="Sil"
+                            >
+                              <GoTrash size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

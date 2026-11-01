@@ -1,0 +1,362 @@
+[
+  {
+    "route": "login",
+    "url": "http://localhost:5173/login",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\login_1920_full_hd.png"
+      }
+    ]
+  },
+  {
+    "route": "appointments",
+    "url": "http://localhost:5173/appointments",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\appointments_1920_full_hd.png"
+      }
+    ]
+  },
+  {
+    "route": "patients",
+    "url": "http://localhost:5173/patients",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\patients_1920_full_hd.png"
+      }
+    ]
+  },
+  {
+    "route": "stock_clinic",
+    "url": "http://localhost:5173/stock/clinic",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\stock_clinic_1920_full_hd.png"
+      }
+    ]
+  },
+  {
+    "route": "permissions",
+    "url": "http://localhost:5173/permissions",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\permissions_1920_full_hd.png"
+      }
+    ]
+  },
+  {
+    "route": "received_orders",
+    "url": "http://localhost:5173/received-orders",
+    "viewports": [
+      {
+        "viewport": "360_mobile",
+        "width": 360,
+        "scroll_width": 360,
+        "client_width": 360,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_360_mobile.png"
+      },
+      {
+        "viewport": "768_tablet",
+        "width": 768,
+        "scroll_width": 768,
+        "client_width": 768,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_768_tablet.png"
+      },
+      {
+        "viewport": "1024_small_desktop",
+        "width": 1024,
+        "scroll_width": 1024,
+        "client_width": 1024,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_1024_small_desktop.png"
+      },
+      {
+        "viewport": "1280_desktop",
+        "width": 1280,
+        "scroll_width": 1280,
+        "client_width": 1280,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_1280_desktop.png"
+      },
+      {
+        "viewport": "1440_wide",
+        "width": 1440,
+        "scroll_width": 1440,
+        "client_width": 1440,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_1440_wide.png"
+      },
+      {
+        "viewport": "1920_full_hd",
+        "width": 1920,
+        "scroll_width": 1920,
+        "client_width": 1920,
+        "has_horizontal_scroll": false,
+        "overflow_elements_sample": [],
+        "screenshot": "docs\\design-qa\\audit\\received_orders_1920_full_hd.png"
+      }
+    ]
+  }
+]

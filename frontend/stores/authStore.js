@@ -90,8 +90,13 @@ const useAuthStore = create((set) => ({
         throw new Error("Token tapılmadı");
       }
     } catch (err) {
+      const rawMsg = err.response?.data?.message || err.response?.data?.error || "";
+      let safeMsg = "İstifadəçi adı və ya şifrə yanlışdır";
+      if (rawMsg && typeof rawMsg === "string" && !rawMsg.toLowerCase().includes("password does not match") && !rawMsg.toLowerCase().includes("no such username")) {
+        safeMsg = rawMsg;
+      }
       set({
-        error: err.response?.data?.message || "Login failed",
+        error: safeMsg,
         loading: false,
       });
       return false;

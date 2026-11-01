@@ -1,11 +1,8 @@
 import { API_BASE_URL } from "./config";
 import axiosInstance from "./temp-axios-auth";
 
-
-
 export const createWorker = async (workerData) => {
   try {
-    // Create a simple JSON object with all fields
     const payload = {
       username: workerData.username,
       password: workerData.password,
@@ -24,6 +21,8 @@ export const createWorker = async (workerData) => {
       email: workerData.email || "",
       address: workerData.address || "",
       experience: workerData.experience || 0,
+      profilePhotoPath: workerData.profilePhotoPath || null,
+      enabled: workerData.enabled !== undefined ? workerData.enabled : true,
       permissions: workerData.permissions || [],
     };
     
@@ -32,18 +31,9 @@ export const createWorker = async (workerData) => {
       `${API_BASE_URL}/add-worker/create`,
       payload
     );
-    console.log("Worker created successfully:", response.data);
     return response.data;
   } catch (error) {
     console.error("❌ Error creating worker:", error);
-    if (error.response) {
-      console.error("Error response data:", error.response.data);
-      console.error("Error response status:", error.response.status);
-    } else if (error.request) {
-      console.error("Error request:", error.request);
-    } else {
-      console.error("Error message:", error.message);
-    }
     throw error;
   }
 };
@@ -121,29 +111,18 @@ export const searchWorkers = async (searchParams) => {
       `${API_BASE_URL}/add-worker/search`,
       transformedParams
     );
-    console.log("Search results received:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error searching workers:", error);
-    if (error.response) {
-      console.error("Search error response data:", error.response.data);
-      console.error("Search error response status:", error.response.status);
-    }
     throw error;
   }
 };
 
 export const deleteWorker = async (id) => {
   try {
-    console.log("Attempting to delete worker with id:", id);
     const response = await axiosInstance.delete(
       `${API_BASE_URL}/add-worker/delete/${id}`
     );
-    if (response.status === 200) {
-      console.log("✅ Worker deleted successfully");
-    } else {
-      console.error("❌ Worker deletion failed:", response);
-    }
     return response.data;
   } catch (error) {
     console.error(
@@ -172,6 +151,18 @@ export const apiFetchPermissions = async () => {
     return response.data;
   } catch (error) {
     console.error("Permissions gətirərkən xəta:", error);
+    throw error;
+  }
+};
+
+export const toggleWorkerStatus = async (id) => {
+  try {
+    const response = await axiosInstance.patch(
+      `${API_BASE_URL}/add-worker/${id}/toggle-status`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error toggling worker status:", error);
     throw error;
   }
 };

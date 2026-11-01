@@ -8,17 +8,20 @@ import { useEffect, useState } from "react";
 import useRecipeStore from "../../../stores/receptsStore";
 import useMedicineStore from "../../../stores/medicineStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 function ReceptsList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  
+  const [statusFilter, setStatusFilter] = useState("");
+
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("Reseptlər", "CREATE");
   const canUpdate = hasPermission("Reseptlər", "UPDATE");
   const canDelete = hasPermission("Reseptlər", "DELETE");
   const canStatus = hasPermission("Reseptlər", "STATUS");
-  const { recipes, fetchRecipes, deleteRecipeById, exportExcel, updateStatus } =
+
+  const { recipes, fetchRecipes, deleteRecipeById, updateStatus } =
     useRecipeStore();
   const { medicines, fetchMedicines } = useMedicineStore();
 
@@ -38,15 +41,14 @@ function ReceptsList() {
   const handleDelete = async (id) => {
     const recept = recipes.find((r) => r.id === id);
     const confirmDelete = window.confirm(
-      `${recept.name} reseptini silmək istədiyinizə əminsiniz?`
+      `${recept?.name || "Bu"} reseptini silmək istədiyinizə əminsiniz?`
     );
     if (!confirmDelete) return;
 
     await deleteRecipeById(id);
-    alert(`${recept.name} uğurla silindi.`);
+    alert(`${recept?.name || ""} uğurla silindi.`);
   };
 
-  // Statusa kliklə dəyişmə funksiyası
   const toggleStatus = async (item) => {
     const newStatus = item.status === "ACTIVE" ? "PASSIVE" : "ACTIVE";
     try {
@@ -56,125 +58,154 @@ function ReceptsList() {
     }
   };
 
-  const filteredRecepts = recipes.filter((r) =>
-    r.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRecepts = (recipes || []).filter((r) => {
+    const matchesSearch = (r.name || "").toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = !statusFilter || r.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleExport = () => {
+    const dataToExport = filteredRecepts.map((r, idx) => ({
+      "№": idx + 1,
+      "Reseptin adı": r.name || "",
+      "Dərman sayı": getMedicineCount(r.id),
+      "Status": r.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "reseptler_siyahisi");
+  };
 
   return (
-    <div className="receptsList-container">
-      <div className="receptsList-controls-section">
-        <div className="receptsList-filters">
-          <select className="receptsList-status-dropdown">
-            <option value="">Status</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="PASSIVE">Passiv</option>
-          </select>
-          <div className="receptsList-search-box">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              className="receptsList-search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="receptsList-search-button">
-              <CiSearch className="receptsList-search-icon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
             </button>
           </div>
         </div>
-        <div className="receptsList-actions">
-          {canCreate && (
-            <Link to={"./add"} className="receptsList-add-new-button">
-              <span>+</span> Yenisini əlavə et
-            </Link>
-          )}
-          <button className="receptsList-download-button" onClick={exportExcel}>
-            <FiDownload className="receptsList-download-icon" />
-          </button>
-        </div>
-      </div>
 
-      <div className="receptsList-table-section">
-        <table className="receptsList-table">
-          <thead>
-            <tr>
-              <th>
-                <span className="firstElementOfTHS !flex !justify-center gap-1">
-                  <HiOutlineArrowsUpDown className="receptsList-sort-icon mt-1" />
-                  {filteredRecepts.length === 0
-                    ? "0"
-                    : `1-${filteredRecepts.length}`}
-                </span>
-              </th>
-              <th>
-                <span className="!flex !justify-center gap-1">
-                  <HiOutlineArrowsUpDown className="receptsList-sort-icon" />{" "}
-                  Reseptin adı
-                </span>
-              </th>
-              <th>
-                <span className="!flex !justify-center gap-1">
-                  <HiOutlineArrowsUpDown className="receptsList-sort-icon" />{" "}
-                  Dərmanları
-                </span>
-              </th>
-              <th>
-                <span className="!flex !justify-center gap-1">
-                  <HiOutlineArrowsUpDown className="receptsList-sort-icon" />{" "}
-                  Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
+              <tr>
+                <th className="settings-col-num">№</th>
                 <th>
-                  <span className="!flex !justify-center">Düzəliş</span>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Reseptin adı
+                  </div>
                 </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRecepts.map((row, index) => (
-              <tr key={row.id}>
-                <td className="!text-center">{index + 1}</td>
-                <td className="!text-center">{row.name}</td>
-                <td className="!text-center">
-                  <Link to={`/recepts/${row.id}`}>
-                    Dərmanlar({getMedicineCount(row.id)})
-                  </Link>
-                </td>
-                <td className="!text-center">
-                  <span
-                    onClick={() => canStatus && toggleStatus(row)}
-                    style={{ cursor: canStatus ? "pointer" : "default" }}
-                    className={`receptsList-status-badge ${
-                      row.status === "ACTIVE" ? "active" : "passive"
-                    }`}
-                    title="Statusu dəyişmək üçün kliklə"
-                  >
-                    {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                  </span>
-                </td>
-                {(canUpdate || canDelete) && (
-                  <td>
-                    <div className="receptsList-action-icons !flex !justify-center">
-                      {canUpdate && (
-                        <FiEdit3  
-                          className="receptsList-edit-button"
-                          onClick={() => handleEdit(row.id)}
-                        />
-                      )}
-                      {canDelete && (
-                        <GoTrash
-                          className="receptsList-delete-button"
-                          onClick={() => handleDelete(row.id)}
-                        />
-                      )}
-                    </div>
-                  </td>
-                )}
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Dərmanları
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Status
+                  </div>
+                </th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRecepts.length > 0 ? (
+                filteredRecepts.map((row, index) => (
+                  <tr key={row.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td className="font-medium text-gray-800">{row.name}</td>
+                    <td>
+                      <Link
+                        to={`/recepts/${row.id}`}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                      >
+                        Dərmanlar ({getMedicineCount(row.id)})
+                      </Link>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={!canStatus}
+                        className={`settings-status-badge ${
+                          row.status === "ACTIVE"
+                            ? "settings-status-active"
+                            : "settings-status-passive"
+                        }`}
+                        onClick={() => canStatus && toggleStatus(row)}
+                      >
+                        <span className="settings-status-dot" />
+                        {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </button>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(row.id)}
+                              title="Redaktə et"
+                            >
+                              <FiEdit3 size={15} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(row.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="settings-empty-state">
+                    Heç bir resept tapılmadı.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

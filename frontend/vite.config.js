@@ -92,7 +92,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://169.58.138.247:5555',
+        target: 'http://localhost:5555',
+        changeOrigin: true,
+        secure: false
+      },
+      '/uploads': {
+        target: 'http://localhost:5555',
         changeOrigin: true,
         secure: false
       }

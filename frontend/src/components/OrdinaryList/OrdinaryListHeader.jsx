@@ -9,7 +9,7 @@ import { FiDownload } from "react-icons/fi";
 
 import { Link } from 'react-router-dom';
 
-function OrdinaryListHeader({ title, addText, addLink, exportLink, onAddClick, showAdd = true }) {
+function OrdinaryListHeader({ title, addText, addLink, exportLink, onAddClick, onExportClick, showAdd = true }) {
   return (
     <div className="listHeader -ml-4">
       <p className='titleOrdinaryList'>{title}</p>
@@ -25,9 +25,15 @@ function OrdinaryListHeader({ title, addText, addLink, exportLink, onAddClick, s
             </Link>
           )
         )}
-        <Link target='_blank' className='exportDataNow' to={exportLink}>
-          <FiDownload className='exportDataBTN' />
-        </Link>
+        {onExportClick ? (
+          <button type="button" onClick={onExportClick} className='exportDataNow cursor-pointer bg-transparent border-none' title="Excel olaraq yüklə">
+            <FiDownload className='exportDataBTN' />
+          </button>
+        ) : (
+          <Link target='_blank' className='exportDataNow' to={exportLink || "#"}>
+            <FiDownload className='exportDataBTN' />
+          </Link>
+        )}
       </div>
     </div>
   )

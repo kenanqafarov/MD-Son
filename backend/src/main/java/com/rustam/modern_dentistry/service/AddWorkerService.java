@@ -96,7 +96,10 @@ public class AddWorkerService {
         BaseUser baseUser = addWorkerMapper.dtoToEntity(new BaseUser(), dto);
         baseUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         baseUser.setPermissions(newPermissions);
-        baseUser.setEnabled(true);
+        baseUser.setEnabled(dto.getEnabled() != null ? dto.getEnabled() : true);
+        if (dto.getProfilePhotoPath() != null) {
+            baseUser.setProfilePhotoPath(dto.getProfilePhotoPath());
+        }
         baseUserRepository.save(baseUser);
         return addWorkerMapper.entityToDto(baseUser);
     }
@@ -153,24 +156,6 @@ public class AddWorkerService {
         BaseUser baseUser = baseUserRepository.findByIdWithPermissions(dto.getId())
                 .orElseThrow(() -> new UserNotFountException("İstifadəçi tapılmadı."));
 
-        Set<Permission> newPermissions = (dto.getPermissions() == null)
-                ? new HashSet<>()
-                : dto.getPermissions().stream()
-                    .filter(p -> p != null && !p.trim().isEmpty())
-                    .map(name -> {
-                        try {
-                            return permissionService.findByName(name.trim());
-                        } catch (Exception e) {
-                            try {
-                                return permissionService.findById(Long.parseLong(name.trim()));
-                            } catch (Exception ex) {
-                                return null;
-                            }
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toSet());
-
         if (dto.getFinCode() != null) {
             if (baseUserRepository.existsByFinCodeIgnoreCaseAndIdNot(dto.getFinCode(), dto.getId())) {
                 throw new ExistsException("Bu FIN kod artıq sistemdə var");
@@ -186,8 +171,34 @@ public class AddWorkerService {
                 throw new ExistsException("Bu e-poçt ünvanı artıq sistemdə var");
             }
         }
+
         BaseUser entityUpdate = addWorkerMapper.dtoToEntityUpdate(baseUser, dto);
-        baseUser.setPermissions(newPermissions);
+
+        if (dto.getPermissions() != null) {
+            Set<Permission> newPermissions = dto.getPermissions().stream()
+                    .filter(p -> p != null && !p.trim().isEmpty())
+                    .map(name -> {
+                        try {
+                            return permissionService.findByName(name.trim());
+                        } catch (Exception e) {
+                            try {
+                                return permissionService.findById(Long.parseLong(name.trim()));
+                            } catch (Exception ex) {
+                                return null;
+                            }
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+            baseUser.setPermissions(newPermissions);
+        }
+
+        if (dto.getEnabled() != null) {
+            baseUser.setEnabled(dto.getEnabled());
+        }
+        if (dto.getProfilePhotoPath() != null) {
+            baseUser.setProfilePhotoPath(dto.getProfilePhotoPath());
+        }
         if (dto.getPassword() != null && !dto.getPassword().trim().isEmpty()) {
             baseUser.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
@@ -204,7 +215,7 @@ public class AddWorkerService {
 
     @Transactional(readOnly = true)
     public AddWorkerReadResponse info(UUID id) {
-        BaseUser baseUser = baseUserRepository.findById(id)
+        BaseUser baseUser = baseUserRepository.findByIdWithPermissions(id)
                 .orElseThrow(() -> new UserNotFountException("No such user found."));
         return addWorkerMapper.toResponse(baseUser);
     }
@@ -235,5 +246,14 @@ public class AddWorkerService {
 
     public List<BaseUser> readAll() {
         return baseUserRepository.findAllWithPermissionDoctor();
+    }
+
+    @Transactional
+    public AddWorkerReadResponse toggleStatus(UUID id) {
+        BaseUser baseUser = baseUserRepository.findByIdWithPermissions(id)
+                .orElseThrow(() -> new UserNotFountException("İstifadəçi tapılmadı."));
+        baseUser.setEnabled(!Boolean.TRUE.equals(baseUser.getEnabled()));
+        baseUserRepository.save(baseUser);
+        return addWorkerMapper.toResponse(baseUser);
     }
 }

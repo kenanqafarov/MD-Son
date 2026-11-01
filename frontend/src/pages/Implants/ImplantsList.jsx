@@ -7,12 +7,13 @@ import { HiOutlineArrowsUpDown } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
 import useImplantStore from "../../../stores/implantStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const ImplantsList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  
+
   const { hasPermission } = usePermission();
   const canCreate = hasPermission("İmplantlar", "CREATE");
   const canUpdate = hasPermission("İmplantlar", "UPDATE");
@@ -28,7 +29,7 @@ const ImplantsList = () => {
 
   const filteredImplants = implants.filter((row) => {
     return (
-      row.implantBrandName.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (row.implantBrandName || "").toLowerCase().includes(searchTerm.toLowerCase()) &&
       (statusFilter ? row.status === statusFilter : true)
     );
   });
@@ -51,115 +52,150 @@ const ImplantsList = () => {
     }
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredImplants.map((row, idx) => ({
+      "№": idx + 1,
+      "İmplant markası": row.implantBrandName || "",
+      "Ölçü sayı": row.implantSizesReads?.length || 0,
+      "Status": row.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "implantlar_siyahisi");
+  };
+
   return (
-    <div className="implantsList-container">
-      <div className="implantsList-controls-section">
-        <div className="implantsList-filters">
-          <select
-            className="implantsList-status-dropdown"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">Status</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="PASSIVE">Passiv</option>
-          </select>
-          <div className="implantsList-search-box">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              className="implantsList-search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="implantsList-search-button">
-              <CiSearch className="implantsList-search-icon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
             </button>
           </div>
         </div>
-        <div className="implantsList-actions">
-          {canCreate && (
-            <Link to={"./add"} className="implantsList-add-new-button">
-              <span>+</span> Yenisini əlavə et
-            </Link>
-          )}
-          <button className="implantsList-download-button">
-            <FiDownload className="implantsList-download-icon" />
-          </button>
-        </div>
-      </div>
 
-      <div className="implantsList-table-section">
-        <table className="implantsList-table">
-          <thead>
-            <tr>
-              <th>№</th>
-              <th className=" !text-center">
-                <span className="!flex !justify-center gap-1">
-                <HiOutlineArrowsUpDown className=" mt-1" /> Marka
-                </span>
-              </th>
-              <th className=" !text-center">
-                <span className="!flex !justify-center gap-1"> 
-                <HiOutlineArrowsUpDown className=" mt-1" /> Ölçülər
-                </span>
-              </th>
-              <th>
-                <span className="gap-1 !flex !justify-center"> 
-                <HiOutlineArrowsUpDown className="mt-1" /> Status
-                </span>
-              </th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {loading ? (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td colSpan="5">Yüklənir...</td>
+                <th className="settings-col-num">№</th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Marka
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Ölçülər
+                  </div>
+                </th>
+                <th>
+                  <div className="flex items-center gap-2">
+                    <HiOutlineArrowsUpDown className="text-gray-400" /> Status
+                  </div>
+                </th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            ) : filteredImplants.length > 0 ? (
-              filteredImplants.map((row, index) => (
-                <tr key={row.id}>
-                  <td className="!text-center">{index + 1}</td>
-                  <td className="!text-center">{row.implantBrandName}</td>
-                  <td className="!text-center">
-                    <Link to={`./sizes/${row.id}`}>
-                      Ölçüləri ({row.implantSizesReads?.length || 0})
-                    </Link>
-                  </td>
-                  <td className="!text-center" style={{ cursor: canStatus ? "pointer" : "default" }}>
-                    <span
-                      className={`implantsList-status-badge ${
-                        row.status === "ACTIVE" ? "active" : "passive"
-                      }`}
-                      onClick={() => canStatus && handleStatusChange(row.id, row.status)}>
-                      {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td className="flex gap-2 mt-2.5">
-                      {canUpdate && (
-                        <FiEdit3
-                          className="implantsList-edit-button"
-                          onClick={() => navigate(`/implants/edit/${row.id}`)}
-                        />
-                      )}
-                      {canDelete && (
-                        <GoTrash
-                          className="implantsList-delete-button"
-                          onClick={() => handleDelete(row.id)}
-                        />
-                      )}
-                    </td>
-                  )}
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr>
+                  <td colSpan="5" className="settings-empty-state">Yüklənir...</td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5">Heç bir implant tapılmadı</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              ) : filteredImplants.length > 0 ? (
+                filteredImplants.map((row, index) => (
+                  <tr key={row.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td className="font-medium text-gray-800">{row.implantBrandName}</td>
+                    <td>
+                      <Link
+                        to={`./sizes/${row.id}`}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                      >
+                        Ölçüləri ({row.implantSizesReads?.length || 0})
+                      </Link>
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={!canStatus}
+                        className={`settings-status-badge ${
+                          row.status === "ACTIVE"
+                            ? "settings-status-active"
+                            : "settings-status-passive"
+                        }`}
+                        onClick={() => canStatus && handleStatusChange(row.id, row.status)}
+                      >
+                        <span className="settings-status-dot" />
+                        {row.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </button>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => navigate(`/implants/edit/${row.id}`)}
+                              title="Redaktə et"
+                            >
+                              <FiEdit3 size={15} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(row.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="settings-empty-state">Heç bir implant tapılmadı</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

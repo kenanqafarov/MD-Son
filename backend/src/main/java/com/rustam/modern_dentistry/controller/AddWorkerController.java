@@ -64,4 +64,9 @@ public class AddWorkerController {
     public ResponseEntity<List<AddWorkerReadStatusResponse>> readStatus() {
         return new ResponseEntity<>(addWorkerService.readStatus(), HttpStatus.OK);
     }
+
+    @PatchMapping(path = "/{id}/toggle-status")
+    public ResponseEntity<AddWorkerReadResponse> toggleStatus(@PathVariable UUID id) {
+        return new ResponseEntity<>(addWorkerService.toggleStatus(id), HttpStatus.OK);
+    }
 }

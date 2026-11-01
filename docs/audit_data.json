@@ -1,0 +1,1644 @@
+{
+  "total_css_files": 155,
+  "total_jsx_js_files": 377,
+  "css_inventory": [
+    {
+      "rel_path": "assets/style/AcademicDegrees/academicdegrees.css",
+      "size": 3079,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AcademicDegrees/addacademicdegree.css",
+      "size": 1315,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AcademicDegrees/editacademicdegree.css",
+      "size": 1321,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/add-new-appointment.css",
+      "size": 4383,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AdminUsers/addadmin.css",
+      "size": 5174,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AdminUsers/adminusers.css",
+      "size": 3898,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AdminUsers/editadmin.css",
+      "size": 5710,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AdminUsers/infoadmin.css",
+      "size": 2951,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/addanamnesis.css",
+      "size": 2008,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/addanamnesiscategory.css",
+      "size": 2007,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/anamnesiscategorylist.css",
+      "size": 4208,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/anamnesislist.css",
+      "size": 3251,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/editanamnesis.css",
+      "size": 2016,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Anamnesis/editanamnesiscategory.css",
+      "size": 2011,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/appointment-left-side.css",
+      "size": 1214,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/appointments.css",
+      "size": 4695,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AppointmentTypes/addappointmenttypes.css",
+      "size": 3124,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AppointmentTypes/appointmenttypes.css",
+      "size": 3921,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/AppointmentTypes/editappointmenttypes.css",
+      "size": 3148,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/BlacklistPage/addblacklistedpatient.css",
+      "size": 2484,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/BlacklistPage/blacklist.css",
+      "size": 859,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/breadcrumb.css",
+      "size": 425,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/CabinetsPage/addcabinet.css",
+      "size": 2379,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/CabinetsPage/cabinetspage.css",
+      "size": 3807,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/CabinetsPage/editcabinet.css",
+      "size": 2398,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Ceramics/addceramics.css",
+      "size": 1273,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Ceramics/ceramics.css",
+      "size": 2960,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Ceramics/editceramics.css",
+      "size": 1279,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ChangePassword/changepassword.css",
+      "size": 1687,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ChecklistPage/addchecklist.css",
+      "size": 2417,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ChecklistPage/checklistpage.css",
+      "size": 3831,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ChecklistPage/editchecklist.css",
+      "size": 2417,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ColorsPage/addcolor.css",
+      "size": 2350,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ColorsPage/colorspage.css",
+      "size": 3825,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ColorsPage/editcolor.css",
+      "size": 2369,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/custom_dropdown.css",
+      "size": 2082,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/DentalSet/adddentalset.css",
+      "size": 1898,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/DentalSet/dentalsetlist.css",
+      "size": 3259,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/DentalSet/editdentalset.css",
+      "size": 1929,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/dr-card.css",
+      "size": 800,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/dropdown_checklist.css",
+      "size": 2613,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/employee-schedule.css",
+      "size": 15385,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/EmployeesPage/addemployee.css",
+      "size": 9457,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/EmployeesPage/employeespage.css",
+      "size": 4438,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/EmployeesPage/employeeworkscheduleadd.css",
+      "size": 2156,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/EmployeesPage/employeeworkschedulelist.css",
+      "size": 2790,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/examination.css",
+      "size": 325,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/form.css",
+      "size": 4698,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/GeneralSettings/editsettings.css",
+      "size": 1948,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/GeneralSettings/generalsettings.css",
+      "size": 1560,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/header.css",
+      "size": 2910,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/home.css",
+      "size": 3050,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/image_uploader.css",
+      "size": 1024,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/addimplant.css",
+      "size": 2005,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/addsizes.css",
+      "size": 1997,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/editimplant.css",
+      "size": 2003,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/editsizes.css",
+      "size": 2001,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/implantslist.css",
+      "size": 3870,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Implants/sizeslist.css",
+      "size": 3223,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/index.css",
+      "size": 1097,
+      "is_imported": true,
+      "is_global": true
+    },
+    {
+      "rel_path": "assets/style/Insurance/addinsurance.css",
+      "size": 2002,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Insurance/editinsurance.css",
+      "size": 2010,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Insurance/insurancelist.css",
+      "size": 3330,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/LaboratoryPage/addtechreport.css",
+      "size": 2334,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/LaboratoryPage/sentorders.css",
+      "size": 9317,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/layout.css",
+      "size": 1323,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/login.css",
+      "size": 2830,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Metals/addmetal.css",
+      "size": 1255,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Metals/editmetals.css",
+      "size": 1261,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Metals/metals.css",
+      "size": 2909,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/modal.css",
+      "size": 1946,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/addoperationcategory.css",
+      "size": 3557,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/addopertaion.css",
+      "size": 4002,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/editoperation.css",
+      "size": 4040,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/editoperationcategory.css",
+      "size": 3576,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/operationcategorylist.css",
+      "size": 4258,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Operations/operationlist.css",
+      "size": 0,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OrdersStatus/orderstatus.css",
+      "size": 3011,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OrdinaryListStyle/ordinarylist.css",
+      "size": 1967,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OrdinaryListStyle/ordinarylistheader.css",
+      "size": 1215,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OtherObjects/addobject.css",
+      "size": 2453,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OtherObjects/editobject.css",
+      "size": 2473,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/OtherObjects/otherobjects.css",
+      "size": 3889,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PatientPage/patientedit.css",
+      "size": 2775,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PatientPage/patientreport.css",
+      "size": 12058,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PatientsPage/addpatient.css",
+      "size": 3421,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PatientsPage/patientslist.css",
+      "size": 4632,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PermissionPage/addpermission.css",
+      "size": 4156,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PermissionPage/editpermission.css",
+      "size": 6751,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PermissionPage/infopermission.css",
+      "size": 4637,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PermissionPage/permissionslist.css",
+      "size": 6877,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PriceCategory/addpricecategory.css",
+      "size": 2522,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PriceCategory/editpricecategory.css",
+      "size": 2664,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/PriceCategory/pricecategory.css",
+      "size": 3799,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/addproduct.css",
+      "size": 2239,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/addproductcategory.css",
+      "size": 2030,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/editproduct.css",
+      "size": 2008,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/editproductcategory.css",
+      "size": 2034,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/product.css",
+      "size": 3197,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ProductCategory/productcategory.css",
+      "size": 3195,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/QueuePage/addqueue.css",
+      "size": 4167,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/QueuePage/editqueue.css",
+      "size": 2053,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/QueuePage/queuelist.css",
+      "size": 2887,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/randevu-card.css",
+      "size": 5439,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/addmedicine.css",
+      "size": 1998,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/addrecept.css",
+      "size": 1989,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/editmedicine.css",
+      "size": 2006,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/editrecept.css",
+      "size": 2010,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/medicineslist.css",
+      "size": 2707,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReceptsPage/receptslist.css",
+      "size": 3463,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/RecommendationsPage/addrecommendation.css",
+      "size": 2511,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/RecommendationsPage/editrecommendation.css",
+      "size": 2530,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/RecommendationsPage/recommendationspage.css",
+      "size": 3953,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/ReportsPage/reports.css",
+      "size": 2227,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/settings-unified.css",
+      "size": 6810,
+      "is_imported": true,
+      "is_global": true
+    },
+    {
+      "rel_path": "assets/style/sidebar-menu.css",
+      "size": 5258,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Specialities/addspeciality.css",
+      "size": 1285,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Specialities/editspeciality.css",
+      "size": 1291,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Specialities/specialities.css",
+      "size": 2986,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockExport/addexportstock.css",
+      "size": 4240,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockExport/editexportstock.css",
+      "size": 4214,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockExport/infoexportstock.css",
+      "size": 5656,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockExport/stockexportlist.css",
+      "size": 2666,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockExport/stockexports.css",
+      "size": 2986,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockOrder/stockorderdetail.css",
+      "size": 5499,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/StockOrder/stockorderedit.css",
+      "size": 6194,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Technicians/addtechnician.css",
+      "size": 4216,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Technicians/edittechnician.css",
+      "size": 4286,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Technicians/infotechnician.css",
+      "size": 3060,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Technicians/technicians.css",
+      "size": 6628,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Technicians/techniciansprices.css",
+      "size": 3195,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/addexaminationpicture.css",
+      "size": 3052,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/addoperationpicture.css",
+      "size": 3156,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/addteeth.css",
+      "size": 2798,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/editexaminationpicture.css",
+      "size": 2336,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/editoperationpicture.css",
+      "size": 2465,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/infoexaminationpicture.css",
+      "size": 3307,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/infooperationpicture.css",
+      "size": 3362,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/operationpictures.css",
+      "size": 3063,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/Teeth/teethlist.css",
+      "size": 3834,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "assets/style/tooth_selector.css",
+      "size": 1154,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/appointment-left-side.css",
+      "size": 397,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/CabinetsPage/cabinet.css",
+      "size": 379,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Employees/EmployeeSchedule.css",
+      "size": 5343,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Employees/EmployeList.css",
+      "size": 1959,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Home/HomeStatistics.css",
+      "size": 8939,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Laboratory/sentorders.css",
+      "size": 1721,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Laboratory/techreportdetail.css",
+      "size": 0,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/login.css",
+      "size": 1621,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/NotFound/notfound.css",
+      "size": 732,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/patient/history.css",
+      "size": 3716,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Queue/quee.css",
+      "size": 755,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/stockOrder/additional-styles.css",
+      "size": 2748,
+      "is_imported": false,
+      "is_global": false
+    },
+    {
+      "rel_path": "pages/Technicians/tech.css",
+      "size": 485,
+      "is_imported": true,
+      "is_global": false
+    },
+    {
+      "rel_path": "styles.css",
+      "size": 63,
+      "is_imported": true,
+      "is_global": true
+    }
+  ],
+  "color_counts": {
+    "#155EEF": 654,
+    "#FFFFFF": 349,
+    "#E5E7EB": 150,
+    "#CDD5DF": 143,
+    "#EF4444": 79,
+    "#3B82F6": 58,
+    "#333333": 57,
+    "#222222": 57,
+    "#FD4A3D": 48,
+    "#93B3F5": 48,
+    "#F7FAFD": 47,
+    "#374151": 43,
+    "rgba(0,0,0,0.1)": 42,
+    "#F0F4FF": 40,
+    "#F8FAFC": 36,
+    "#E0E0E0": 36,
+    "#2563EB": 34,
+    "#E2E8F0": 31,
+    "#F9FAFB": 30,
+    "rgba(0,0,0,0.05)": 29,
+    "#6B7280": 29,
+    "#D4DCE8": 28,
+    "rgba(44,62,80,0.07)": 28,
+    "#EEF2F6": 26,
+    "#667085": 26,
+    "#888888": 25,
+    "#DDDDDD": 24,
+    "#F3F6FB": 24,
+    "#1F2937": 23,
+    "#0D4BC4": 23,
+    "#666666": 22,
+    "#697586": 21,
+    "#22C55E": 21,
+    "#000000": 20,
+    "#F3F4F6": 20,
+    "#F8F9FA": 19,
+    "#555555": 18,
+    "#F1F5F9": 18,
+    "#007BFF": 17,
+    "#10B981": 16,
+    "#F0F0F0": 14,
+    "#0D121C": 14,
+    "#CCCCCC": 13,
+    "#1976D2": 13,
+    "#1D4ED8": 13,
+    "#344054": 13,
+    "#4CAF50": 12,
+    "#F44336": 12,
+    "#D1D5DB": 12,
+    "#40BC2B": 12,
+    "#F5F5F5": 10,
+    "#9AA4B2": 10,
+    "#DC3545": 10,
+    "#D0D5DD": 10,
+    "#1E293B": 10,
+    "#1046B8": 9,
+    "#101828": 9,
+    "#EAECF0": 9,
+    "#4A5568": 9,
+    "#0943B9": 9,
+    "#9CA3AF": 8,
+    "rgba(21,94,239,0.1)": 8,
+    "#E53E3E": 8,
+    "#4096FF": 8,
+    "#2D3748": 8,
+    "#FCFCFD": 7,
+    "#999999": 7,
+    "rgba(0,0,0,0.15)": 7,
+    "#64748B": 7,
+    "#DC2626": 7,
+    "#F0F4F8": 7,
+    "#4169E1": 7,
+    "#4B5563": 6,
+    "#111827": 6,
+    "#FFE6E6": 6,
+    "rgba(0,0,0,0.5)": 6,
+    "#FEE2E2": 6,
+    "#EFF6FF": 6,
+    "#004EEB": 6,
+    "#721C24": 6,
+    "#475467": 6,
+    "#98A2B3": 6,
+    "#3157CC": 6,
+    "#CBD5E0": 6,
+    "#0D47A1": 6,
+    "#F9F9F9": 5,
+    "#E9ECEF": 5,
+    "#F1F1F1": 5,
+    "#444444": 5,
+    "rgba(0,0,0,0.06)": 5,
+    "#EFF4FF": 5,
+    "#DBEAFE": 5,
+    "rgba(0,0,0,0.04)": 5,
+    "#0542BD": 5,
+    "#F8D7DA": 5,
+    "#0D99FF": 5,
+    "#D4EDDA": 5,
+    "#C3E6CB": 5,
+    "#155724": 5,
+    "#3182CE": 5,
+    "#1677FF": 5,
+    "#6C757D": 5,
+    "#F59E0B": 5,
+    "#124DCC": 5,
+    "#FF5722": 4,
+    "rgba(0,0,0,0.7)": 4,
+    "#EEEEEE": 4,
+    "#DCFCE7": 4,
+    "#475569": 4,
+    "rgba(21,94,239,0.3)": 4,
+    "rgba(255,255,255,0.3)": 4,
+    "rgba(255,255,255,0.1)": 4,
+    "#3366FF": 4,
+    "rgba(0,0,0,0.07)": 4,
+    "#FFF3CD": 4,
+    "#856404": 4,
+    "#F5C6CB": 4,
+    "#CBD5E1": 4,
+    "rgba(16,24,40,0.05)": 4,
+    "#A0AEC0": 4
+  },
+  "total_unique_colors": 382,
+  "font_families": {
+    "\"Open Sans\", -apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif": 2,
+    "'Arial', sans-serif": 1,
+    "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif": 1,
+    "\"Segoe UI\", sans-serif": 1,
+    "\"Inter\", sans-serif": 1,
+    "\"Poppins\", \"Segoe UI\", Tahoma, Geneva, Verdana, sans-serif": 1,
+    "'Inter', sans-serif": 1
+  },
+  "font_sizes": {
+    "14px": 244,
+    "15px": 155,
+    "13px": 113,
+    "20px": 108,
+    "18px": 103,
+    "16px": 64,
+    "12px": 38,
+    "24px": 16,
+    "1rem": 12,
+    "0.95rem": 7,
+    "11px": 6,
+    "10px": 6,
+    "3vh": 6,
+    "22px": 6,
+    "0.9rem": 4,
+    "0.875rem": 3,
+    "13.5px": 3,
+    "12.5px": 3,
+    "1.2rem": 2,
+    "17px": 2,
+    "1.5rem": 2,
+    "2rem": 2,
+    "0.85rem": 2,
+    "28px": 2,
+    "20px !important": 1,
+    "15px !important": 1,
+    "48px": 1,
+    "4vw": 1,
+    "1.0rem": 1,
+    "0.8rem": 1
+  },
+  "font_weights": {
+    "500": 285,
+    "600": 117,
+    "700": 15,
+    "400": 9,
+    "bold": 6,
+    "300": 5,
+    "600 !important": 2,
+    "500 !important": 1,
+    "800": 1
+  },
+  "border_radii": {
+    "8px": 364,
+    "10px": 186,
+    "4px": 71,
+    "6px": 54,
+    "12px": 31,
+    "50%": 26,
+    "16px": 11,
+    "20px": 4,
+    "5px": 3,
+    "2vh": 3,
+    "0.375rem": 3,
+    "2px": 3,
+    "6px !important": 2,
+    "9999px": 2,
+    "3px": 2,
+    "5px 8px": 2,
+    "12px !important": 1,
+    "100%": 1,
+    "70px": 1,
+    "0.5vh": 1,
+    "999px": 1,
+    "7px": 1,
+    "100px": 1,
+    "8px 8px 0 0": 1
+  },
+  "box_shadows": {
+    "0 2px 8px rgba(44, 62, 80, 0.07)": 28,
+    "0 2px 4px rgba(0, 0, 0, 0.05)": 10,
+    "0 2px 4px rgba(0, 0, 0, 0.1)": 8,
+    "0 2px 8px rgba(0, 0, 0, 0.1)": 6,
+    "0 4px 20px rgba(0, 0, 0, 0.05)": 5,
+    "0 0 8px rgba(0, 0, 0, 0.1)": 5,
+    "0 0 0 3px rgba(21, 94, 239, 0.1)": 5,
+    "0 1px 3px rgba(0, 0, 0, 0.05)": 4,
+    "0 1px 2px rgba(16, 24, 40, 0.05)": 4,
+    "0 8px 32px rgba(0, 0, 0, 0.1)": 4,
+    "0 4px 12px rgba(13, 71, 161, 0.3)": 4,
+    "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)": 3,
+    "0 2px 8px rgba(0,0,0,0.04)": 3,
+    "0 1px 4px rgba(0,0,0,0.07)": 3,
+    "0 0 0 2px rgba(0, 102, 204, 0.1)": 2,
+    "0 0 0 2px rgba(76, 175, 80, 0.2)": 2,
+    "none !important": 2,
+    "0 0 10px rgba(0, 0, 0, 0.1)": 2,
+    "0 2px 8px rgba(0, 0, 0, 0.05)": 2,
+    "0 0 0 3px rgba(21, 94, 239, 0.12)": 2,
+    "0 2px 8px rgba(44, 62, 80, 0.15)": 2,
+    "0 1px 2px rgba(16, 24, 40, .04)": 2,
+    "0 0 0 3px rgba(21, 94, 239, .12)": 2,
+    "0 2px 8px rgba(21, 94, 239, 0.1)": 2,
+    "0 4px 12px rgba(21, 94, 239, 0.3)": 2,
+    "0 0 0 2px rgba(64, 150, 255, 0.1)": 2,
+    "0 1px 2px rgba(0, 0, 0, 0.05)": 2,
+    "0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)": 2,
+    "0 4px 6px rgba(0, 0, 0, 0.1)": 2,
+    "0 2px 10px rgba(0, 0, 0, 0.1)": 1
+  },
+  "z_indices": {
+    "1000": 14,
+    "2": 10,
+    "1": 9,
+    "10": 9,
+    "50": 4,
+    "999": 2,
+    "0": 2,
+    "9999": 2,
+    "99 !important": 1,
+    "100": 1
+  },
+  "spacings": {
+    "20px": 296,
+    "10px": 266,
+    "8px": 170,
+    "12px": 113,
+    "16px": 90,
+    "6px": 79,
+    "0": 60,
+    "2px": 53,
+    "30px": 47,
+    "8px 20px": 47,
+    "40px": 45,
+    "18px": 38,
+    "8px 12px": 37,
+    "0 auto": 37,
+    "50px": 37,
+    "4px": 36,
+    "15px": 35,
+    "5px": 35,
+    "24px": 33,
+    "4px 10px": 32,
+    "10px 28px": 32,
+    "10px 14px": 29,
+    "10px 20px": 26,
+    "10px 0": 21,
+    "32px": 20,
+    "8px 16px": 19,
+    "32px 32px 24px 32px": 17,
+    "8px 8px": 17,
+    "12px 16px": 17,
+    "0 12px": 14,
+    "8px 10px": 10,
+    "1rem": 10,
+    "0 10px": 9,
+    "60px": 9,
+    "8px 14px": 9,
+    "14px": 9,
+    "0 !important": 8,
+    "32px auto": 8,
+    "10px 18px": 8,
+    "6px 10px": 8
+  },
+  "mui_usage_by_module": {},
+  "antd_usage_by_module": {
+    "shared/components": 1,
+    "patient": 13
+  },
+  "top_30_inline_styles": [
+    [
+      "pages/Home/HomeStatistics.jsx",
+      14
+    ],
+    [
+      "pages/Insurance/Operations/InsuranceAddOperation.jsx",
+      14
+    ],
+    [
+      "pages/Insurance/Operations/InsuranceEditOperation.jsx",
+      14
+    ],
+    [
+      "pages/Laboratory/TechnicalsReport.jsx",
+      13
+    ],
+    [
+      "main.jsx",
+      10
+    ],
+    [
+      "components/ErrorBoundary.jsx",
+      10
+    ],
+    [
+      "pages/patient/Treatment/Components/Page/plansTable.jsx",
+      9
+    ],
+    [
+      "pages/Patients/PatientAdd.jsx",
+      9
+    ],
+    [
+      "pages/Technicians/AddTechnician.jsx",
+      8
+    ],
+    [
+      "pages/Employees/EmployeeWorkScheduleList.jsx",
+      7
+    ],
+    [
+      "pages/Operations/AddOperationCategory.jsx",
+      7
+    ],
+    [
+      "pages/Reports/ReportsPage.jsx",
+      7
+    ],
+    [
+      "pages/Technicians/Technicians.jsx",
+      7
+    ],
+    [
+      "pages/PermissionsPage/AddPermisssion.jsx",
+      6
+    ],
+    [
+      "pages/Teeth/OperationPictures.jsx",
+      6
+    ],
+    [
+      "pages/Laboratory/ReceivedOrders.jsx",
+      5
+    ],
+    [
+      "pages/NotFound/NotFound.jsx",
+      5
+    ],
+    [
+      "pages/PermissionsPage/InfoPermission.jsx",
+      5
+    ],
+    [
+      "components/OptimizedImage.jsx",
+      4
+    ],
+    [
+      "pages/Insurance/Operations/InsuranceAddOperationCategory.jsx",
+      4
+    ],
+    [
+      "pages/Laboratory/SentOrders.jsx",
+      4
+    ],
+    [
+      "pages/Operations/OperationCategoryList.jsx",
+      4
+    ],
+    [
+      "pages/patient/Treatment/Components/Teths/interactivesvg.jsx",
+      4
+    ],
+    [
+      "pages/PermissionsPage/Permissions.jsx",
+      4
+    ],
+    [
+      "pages/Teeth/ExaminationPictures.jsx",
+      4
+    ],
+    [
+      "pages/Teeth/TeethList.jsx",
+      4
+    ],
+    [
+      "components/VirtualizedTable.jsx",
+      3
+    ],
+    [
+      "pages/LogIn.jsx",
+      3
+    ],
+    [
+      "pages/ChangePassword/ChangePassword.jsx",
+      3
+    ],
+    [
+      "pages/Operations/OperationList.jsx",
+      3
+    ]
+  ],
+  "pages_without_loading": [
+    "pages/custom-select.jsx",
+    "pages/RandevuCard.jsx",
+    "pages/StockImport.jsx",
+    "pages/AcademicDegrees/AcademicDegrees.jsx",
+    "pages/AcademicDegrees/AddAcademicDegrees.jsx",
+    "pages/AcademicDegrees/EditAcademicDegrees.jsx",
+    "pages/Blacklist/AddBlacklistedPatient.jsx",
+    "pages/Blacklist/Blacklist.jsx",
+    "pages/BlackListReasons/AddReason.jsx",
+    "pages/Ceramics/AddCeramic.jsx",
+    "pages/ChecklistPage/ChecklistPage.jsx",
+    "pages/ColorsPage/ColorsPage.jsx",
+    "pages/DentalSet/AddDentalSet.jsx",
+    "pages/Employees/costom-select.jsx",
+    "pages/Employees/EmployeeAddTest.jsx",
+    "pages/Employees/EmployeeWorkScheduleAdd.jsx",
+    "pages/Employees/EmployeeWorkScheduleEdit.jsx",
+    "pages/GeneralSettings/EditSettings.jsx",
+    "pages/GeneralSettings/GeneralSettings.jsx",
+    "pages/Home/HomePhoto.jsx",
+    "pages/Insurance/AddInsurance.jsx",
+    "pages/Insurance/EditInsurance.jsx",
+    "pages/Insurance/InsuranceList.jsx",
+    "pages/Insurance/Operations/InsuranceAddOperation.jsx",
+    "pages/Insurance/Operations/InsuranceAddOperationCategory.jsx",
+    "pages/Insurance/Operations/InsuranceEditOperation.jsx",
+    "pages/Insurance/Operations/InsuranceEditOperationCategory.jsx",
+    "pages/Insurance/Operations/InsuranceOperationList.jsx",
+    "pages/Laboratory/OrderDetails.jsx",
+    "pages/NotFound/NotFound.jsx",
+    "pages/Operations/AddOperation.jsx",
+    "pages/Operations/EditOperation.jsx",
+    "pages/Operations/OperationList.jsx",
+    "pages/OrderStatus/AddOrderStatus.jsx",
+    "pages/OrderStatus/EditOrderStatus.jsx",
+    "pages/OrderStatus/OrderStatus.jsx",
+    "pages/OtherObjects/OtherObjects.jsx",
+    "pages/patient/AddInsurancePatient.jsx",
+    "pages/patient/CreateInsurance.jsx",
+    "pages/patient/CreatePlan.jsx",
+    "pages/patient/EditHistory.jsx",
+    "pages/patient/EditInsurancePatient.jsx",
+    "pages/patient/EditPlan.jsx",
+    "pages/patient/InfoInsurancePatient.jsx",
+    "pages/patient/PatientInsuranceBalanceAdd.jsx",
+    "pages/patient/PlanCompare.jsx",
+    "pages/patient/Plans.jsx",
+    "pages/patient/Videos.jsx",
+    "pages/patient/ViewInsurance.jsx",
+    "pages/patient/Plans/Components/Page/filters.jsx",
+    "pages/patient/Plans/Components/Page/plansTable.jsx",
+    "pages/patient/Plans/Components/Teths/interactivesvg.jsx",
+    "pages/patient/Plans/Components/Teths/svg.jsx",
+    "pages/patient/Treatment/Components/Page/filters.jsx",
+    "pages/patient/Treatment/Components/Page/plansTable.jsx",
+    "pages/patient/Treatment/Components/Teths/interactivesvg.jsx",
+    "pages/patient/Treatment/Components/Teths/svg.jsx",
+    "pages/Patients/PatientsList.jsx",
+    "pages/PermissionsPage/AddPermisssion.jsx",
+    "pages/ProductCategory/AddProduct.jsx",
+    "pages/ProductCategory/AddProductCategory.jsx",
+    "pages/ProductCategory/EditProductCategory.jsx",
+    "pages/ReceptsPage/AddMedicine.jsx",
+    "pages/ReceptsPage/AddRecept.jsx",
+    "pages/ReceptsPage/MedicinesList.jsx",
+    "pages/ReceptsPage/ReceptsList.jsx",
+    "pages/RecommendationsPage/RecommendationsPage.jsx",
+    "pages/settings/cabinets/AddCabinet.jsx",
+    "pages/settings/cabinets/CabinetDetail.jsx",
+    "pages/settings/cabinets/CabinetList.jsx",
+    "pages/settings/colors/AddColor.jsx",
+    "pages/settings/colors/ColorDetail.jsx",
+    "pages/settings/colors/ColorList.jsx",
+    "pages/settings/dentalSet/AddDentalSet.jsx",
+    "pages/settings/dentalSet/DentalSetDetail.jsx",
+    "pages/settings/dentalSet/DentalSetList.jsx",
+    "pages/settings/examination/AddExamination.jsx",
+    "pages/settings/examination/ExaminationDetail.jsx",
+    "pages/settings/examination/ExaminationList.jsx",
+    "pages/settings/implants/AddImplant.jsx",
+    "pages/settings/implants/ImplantDetail.jsx",
+    "pages/settings/implants/ImplantList.jsx",
+    "pages/settings/insurance/AddInsurance.jsx",
+    "pages/settings/insurance/InsuranceDetail.jsx",
+    "pages/settings/insurance/InsuranceList.jsx",
+    "pages/settings/priceCategories/AddPriceCategory.jsx",
+    "pages/settings/priceCategories/PriceCategoryDetail.jsx",
+    "pages/settings/priceCategories/PriceCategoryList.jsx",
+    "pages/Sizes/AddSizes.jsx",
+    "pages/Sizes/SizesList.jsx",
+    "pages/stockDelete/AddStockDelete.jsx",
+    "pages/stockExport/EditExportStock.jsx",
+    "pages/stockImport/AddStockImport.jsx",
+    "pages/stockImport/StockImportList.jsx",
+    "pages/stockOrder/AddStockOrder.jsx",
+    "pages/stockOrder/StockOrderList.jsx",
+    "pages/Technicians/EditTechnician.jsx",
+    "pages/Technicians/TechniciansPrices.jsx",
+    "pages/Teeth/AddExaminationPicture.jsx",
+    "pages/Teeth/ExaminationPictures.jsx"
+  ],
+  "pages_without_empty": [
+    "pages/AddOrder.jsx",
+    "pages/AddPatient.jsx",
+    "pages/AddUser.jsx",
+    "pages/CabinetStock.jsx",
+    "pages/LogIn.jsx",
+    "pages/StockImport.jsx",
+    "pages/AcademicDegrees/AcademicDegrees.jsx",
+    "pages/AcademicDegrees/AddAcademicDegrees.jsx",
+    "pages/AcademicDegrees/EditAcademicDegrees.jsx",
+    "pages/AdminUsers/AddAdmin.jsx",
+    "pages/Anamnesis/AddAnamnesis.jsx",
+    "pages/Anamnesis/AddAnamnesisCategory.jsx",
+    "pages/Anamnesis/EditAnamnesis.jsx",
+    "pages/Anamnesis/EditAnamnesisCategory.jsx",
+    "pages/Blacklist/AddBlacklistedPatient.jsx",
+    "pages/Blacklist/Blacklist.jsx",
+    "pages/BlackListReasons/AddReason.jsx",
+    "pages/BlackListReasons/EditReason.jsx",
+    "pages/CabinetsPage/AddCabinet.jsx",
+    "pages/CabinetsPage/EditCabinet.jsx",
+    "pages/Ceramics/AddCeramic.jsx",
+    "pages/Ceramics/EditCeramic.jsx",
+    "pages/ChangePassword/ChangePassword.jsx",
+    "pages/ColorsPage/AddColor.jsx",
+    "pages/ColorsPage/EditColor.jsx",
+    "pages/DentalSet/AddDentalSet.jsx",
+    "pages/DentalSet/EditDentalSet.jsx",
+    "pages/Employees/costom-select.jsx",
+    "pages/Employees/EmployeeAdd.jsx",
+    "pages/Employees/EmployeeDetails.jsx",
+    "pages/Employees/EmployeeEdit.jsx",
+    "pages/Employees/EmployeeWorkScheduleAdd.jsx",
+    "pages/GeneralSettings/EditSettings.jsx",
+    "pages/Implants/AddImplant.jsx",
+    "pages/Implants/AddSize.jsx",
+    "pages/Implants/EditImplant.jsx",
+    "pages/Insurance/AddInsurance.jsx",
+    "pages/Insurance/EditInsurance.jsx",
+    "pages/Insurance/Operations/InsuranceAddOperation.jsx",
+    "pages/Insurance/Operations/InsuranceAddOperationCategory.jsx",
+    "pages/Insurance/Operations/InsuranceEditOperation.jsx",
+    "pages/Insurance/Operations/InsuranceEditOperationCategory.jsx",
+    "pages/Laboratory/AddTechReport.jsx",
+    "pages/Metals/AddMetal.jsx",
+    "pages/Metals/EditMetal.jsx",
+    "pages/Operations/AddOperation.jsx",
+    "pages/Operations/EditOperation.jsx",
+    "pages/Operations/EditOperationCategory.jsx",
+    "pages/OrderStatus/AddOrderStatus.jsx",
+    "pages/OrderStatus/EditOrderStatus.jsx",
+    "pages/OrderStatus/OrderStatus.jsx",
+    "pages/OtherObjects/AddObject.jsx",
+    "pages/OtherObjects/EditObject.jsx",
+    "pages/patient/AddInsurancePatient.jsx",
+    "pages/patient/CreateInsurance.jsx",
+    "pages/patient/CreatePlan.jsx",
+    "pages/patient/EditHistory.jsx",
+    "pages/patient/EditPlan.jsx",
+    "pages/patient/EditXray.jsx",
+    "pages/patient/Images.jsx",
+    "pages/patient/InfoInsurancePatient.jsx",
+    "pages/patient/PatientInsuranceBalanceInfo.jsx",
+    "pages/patient/PlanCompare.jsx",
+    "pages/patient/Plans.jsx",
+    "pages/patient/Videos.jsx",
+    "pages/patient/ViewInsurance.jsx",
+    "pages/patient/Plans/Components/Page/filters.jsx",
+    "pages/patient/Plans/Components/Teths/svg.jsx",
+    "pages/patient/Treatment/Components/Page/filters.jsx",
+    "pages/patient/Treatment/Components/Teths/svg.jsx",
+    "pages/PermissionsPage/InfoPermission.jsx",
+    "pages/PriceCategory/AddPriceCategory.jsx",
+    "pages/PriceCategory/EditPriceCategory.jsx",
+    "pages/ProductCategory/AddProduct.jsx",
+    "pages/ProductCategory/AddProductCategory.jsx",
+    "pages/ProductCategory/EditProduct.jsx",
+    "pages/ProductCategory/EditProductCategory.jsx",
+    "pages/productUsage/ProductUsageDetail.jsx",
+    "pages/ReceptsPage/AddRecept.jsx",
+    "pages/ReceptsPage/EditMedicine.jsx",
+    "pages/ReceptsPage/EditRecept.jsx",
+    "pages/RecommendationsPage/AddRecommendation.jsx",
+    "pages/RecommendationsPage/EditRecommendation.jsx",
+    "pages/settings/cabinets/AddCabinet.jsx",
+    "pages/settings/cabinets/CabinetDetail.jsx",
+    "pages/settings/cabinets/CabinetList.jsx",
+    "pages/settings/colors/AddColor.jsx",
+    "pages/settings/colors/ColorDetail.jsx",
+    "pages/settings/colors/ColorList.jsx",
+    "pages/settings/dentalSet/AddDentalSet.jsx",
+    "pages/settings/dentalSet/DentalSetDetail.jsx",
+    "pages/settings/dentalSet/DentalSetList.jsx",
+    "pages/settings/examination/AddExamination.jsx",
+    "pages/settings/examination/ExaminationDetail.jsx",
+    "pages/settings/examination/ExaminationList.jsx",
+    "pages/settings/implants/AddImplant.jsx",
+    "pages/settings/implants/ImplantDetail.jsx",
+    "pages/settings/implants/ImplantList.jsx",
+    "pages/settings/insurance/AddInsurance.jsx",
+    "pages/settings/insurance/InsuranceDetail.jsx",
+    "pages/settings/insurance/InsuranceList.jsx",
+    "pages/settings/priceCategories/AddPriceCategory.jsx",
+    "pages/settings/priceCategories/PriceCategoryDetail.jsx",
+    "pages/settings/priceCategories/PriceCategoryList.jsx",
+    "pages/Sizes/AddSizes.jsx",
+    "pages/stockDelete/AddStockDelete.jsx",
+    "pages/stockDelete/StockDeleteDetail.jsx",
+    "pages/stockEntry/StockEntryDetail.jsx",
+    "pages/stockExport/EditExportStock.jsx",
+    "pages/stockExport/InfoExportStock.jsx",
+    "pages/stockImport/AddStockImport.jsx",
+    "pages/stockImport/StockImportList.jsx",
+    "pages/stockOrder/AddStockOrder.jsx",
+    "pages/stockOrder/StockOrderList.jsx",
+    "pages/Technicians/EditTechnician.jsx",
+    "pages/Technicians/InfoTechnician.jsx",
+    "pages/Teeth/AddExaminationPicture.jsx",
+    "pages/Teeth/AddOperationPicture.jsx",
+    "pages/Teeth/AddTeeth.jsx",
+    "pages/Teeth/EditOperationPicture.jsx",
+    "pages/Teeth/EditTeeth.jsx"
+  ],
+  "pages_without_error": [
+    "pages/custom-select.jsx",
+    "pages/StockImport.jsx",
+    "pages/AcademicDegrees/AddAcademicDegrees.jsx",
+    "pages/AcademicDegrees/EditAcademicDegrees.jsx",
+    "pages/Blacklist/AddBlacklistedPatient.jsx",
+    "pages/CabinetsPage/CabinetsPage.jsx",
+    "pages/ChecklistPage/ChecklistPage.jsx",
+    "pages/Employees/costom-select.jsx",
+    "pages/GeneralSettings/GeneralSettings.jsx",
+    "pages/Home/HomePhoto.jsx",
+    "pages/Home/HomeStatistics.jsx",
+    "pages/Implants/ImplantsList.jsx",
+    "pages/Laboratory/OrderDetail.jsx",
+    "pages/Laboratory/OrderDetails.jsx",
+    "pages/Metals/AddMetal.jsx",
+    "pages/NotFound/NotFound.jsx",
+    "pages/OrderStatus/AddOrderStatus.jsx",
+    "pages/OrderStatus/EditOrderStatus.jsx",
+    "pages/OtherObjects/OtherObjects.jsx",
+    "pages/patient/CreateInsurance.jsx",
+    "pages/patient/CreatePlan.jsx",
+    "pages/patient/EditHistory.jsx",
+    "pages/patient/EditPlan.jsx",
+    "pages/patient/Images.jsx",
+    "pages/patient/PlanCompare.jsx",
+    "pages/patient/Videos.jsx",
+    "pages/patient/ViewInsurance.jsx",
+    "pages/patient/Plans/Components/Page/dualSelectTable.jsx",
+    "pages/patient/Plans/Components/Page/filters.jsx",
+    "pages/patient/Plans/Components/Page/plansTable.jsx",
+    "pages/patient/Plans/Components/Teths/interactivesvg.jsx",
+    "pages/patient/Plans/Components/Teths/svg.jsx",
+    "pages/patient/Treatment/Components/Page/dualSelectTable.jsx",
+    "pages/patient/Treatment/Components/Page/filters.jsx",
+    "pages/patient/Treatment/Components/Page/plansTable.jsx",
+    "pages/patient/Treatment/Components/Teths/interactivesvg.jsx",
+    "pages/patient/Treatment/Components/Teths/svg.jsx",
+    "pages/PermissionsPage/InfoPermission.jsx",
+    "pages/RecommendationsPage/RecommendationsPage.jsx",
+    "pages/settings/cabinets/AddCabinet.jsx",
+    "pages/settings/cabinets/CabinetDetail.jsx",
+    "pages/settings/cabinets/CabinetList.jsx",
+    "pages/settings/colors/AddColor.jsx",
+    "pages/settings/colors/ColorDetail.jsx",
+    "pages/settings/colors/ColorList.jsx",
+    "pages/settings/dentalSet/AddDentalSet.jsx",
+    "pages/settings/dentalSet/DentalSetDetail.jsx",
+    "pages/settings/dentalSet/DentalSetList.jsx",
+    "pages/settings/examination/AddExamination.jsx",
+    "pages/settings/examination/ExaminationDetail.jsx",
+    "pages/settings/examination/ExaminationList.jsx",
+    "pages/settings/implants/AddImplant.jsx",
+    "pages/settings/implants/ImplantDetail.jsx",
+    "pages/settings/implants/ImplantList.jsx",
+    "pages/settings/insurance/AddInsurance.jsx",
+    "pages/settings/insurance/InsuranceDetail.jsx",
+    "pages/settings/insurance/InsuranceList.jsx",
+    "pages/settings/priceCategories/AddPriceCategory.jsx",
+    "pages/settings/priceCategories/PriceCategoryDetail.jsx",
+    "pages/settings/priceCategories/PriceCategoryList.jsx",
+    "pages/stockDelete/AddStockDelete.jsx",
+    "pages/stockExport/EditExportStock.jsx",
+    "pages/stockImport/AddStockImport.jsx",
+    "pages/stockOrder/AddStockOrder.jsx",
+    "pages/Technicians/InfoTechnician.jsx",
+    "pages/Teeth/TeethList.jsx"
+  ],
+  "total_pages_analyzed": 235
+}

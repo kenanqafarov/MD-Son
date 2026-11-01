@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { FiCheck } from "react-icons/fi";
 import { RxCross2 } from "react-icons/rx";
+import { IoArrowBack } from "react-icons/io5";
 import usePermissionStore from "../../../stores/permissionStore";
 import "../../assets/style/PermissionPage/editpermission.css";
 
 const permissionsList = [
   {
-    group: null,
+    group: "ÜMUMİ MODULLAR",
     items: [
       "Ümumi təqvim",
       "Pasientlər",
@@ -86,20 +87,24 @@ const permissionsList = [
 const actions = ["Oxuma", "Yaratma", "Redaktə", "Silmə", "Status", "Sıralama"];
 
 const capitalizeWords = (str) => {
-  return str.split(' ').map(word => {
-    if (word.length === 0) return '';
-    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-  }).join(' ');
+  return str
+    .split(" ")
+    .map((word) => {
+      if (word.length === 0) return "";
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
 };
 
 function EditPermission() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { selectedPermission, fetchPermissionById, updatePermission } =
+  const { selectedPermission, fetchPermissionById, updatePermission, loading } =
     usePermissionStore();
 
   const [name, setName] = useState("");
   const [checked, setChecked] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     const initial = {};
@@ -186,11 +191,22 @@ function EditPermission() {
     }
   };
 
-  const isActionAllChecked = (action) =>
-    Object.keys(checked).every((item) => checked[item]?.[action]);
+  const isActionAllChecked = (action) => {
+    const keys = Object.keys(checked);
+    return keys.length > 0 && keys.every((item) => checked[item]?.[action]);
+  };
 
-  const isRowAllChecked = (item) =>
-    checked[item] ? actions.every((action) => checked[item][action]) : false;
+  const isRowAllChecked = (item) => {
+    return checked[item] ? actions.every((action) => checked[item][action]) : false;
+  };
+
+  const isEntireMatrixAllChecked = () => {
+    const keys = Object.keys(checked);
+    return (
+      keys.length > 0 &&
+      keys.every((item) => actions.every((action) => checked[item]?.[action]))
+    );
+  };
 
   const handleCheckAll = (action) => {
     const allChecked = isActionAllChecked(action);
@@ -214,12 +230,26 @@ function EditPermission() {
     }));
   };
 
+  const handleToggleEntireMatrix = () => {
+    const shouldSelectAll = !isEntireMatrixAllChecked();
+    setChecked((prev) => {
+      const updated = {};
+      Object.keys(prev).forEach((item) => {
+        updated[item] = {};
+        actions.forEach((action) => {
+          updated[item][action] = shouldSelectAll;
+        });
+      });
+      return updated;
+    });
+  };
+
   const handleCheck = (item, action) => {
     setChecked((prev) => ({
       ...prev,
       [item]: {
         ...prev[item],
-        [action]: !prev[item][action],
+        [action]: !prev[item]?.[action],
       },
     }));
   };
@@ -228,7 +258,14 @@ function EditPermission() {
     setName(capitalizeWords(e.target.value));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+    if (!name.trim()) {
+      alert("Zəhmət olmasa icazə qrupunun adını daxil edin.");
+      return;
+    }
+
+    setIsSaving(true);
     const permissions = [];
 
     Object.entries(checked).forEach(([moduleUrl, actionMap]) => {
@@ -240,7 +277,6 @@ function EditPermission() {
         (m) => m.moduleUrl === moduleUrl
       );
 
-      // Hər halda modulun aksiyaları göndər - backend boş aksiyaları (delete) kimi işlə
       permissions.push({
         modulePermissionId: matchedModule?.modulePermissionId || 0,
         moduleUrl,
@@ -250,120 +286,161 @@ function EditPermission() {
 
     const payload = {
       id: Number(id),
-      permissionName: name,
+      permissionName: name.trim(),
       permissions,
     };
-
-    console.log("Göndərilən payload:", payload);
 
     try {
       await updatePermission(payload);
       navigate("/permissions");
     } catch (error) {
       console.error("Xəta baş verdi:", error);
+      alert("Yadda saxlanılarkən xəta baş verdi.");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div className="addPermissionContainer">
-      <div className="addPermissionWrapper">
-        <form
-          className="addPermissionForm"
-          onSubmit={(e) => e.preventDefault()}>
-          <div className="topPartForm">
-            <label htmlFor="name">
-              İcazənin adı <span style={{ color: "red" }}>*</span>
-            </label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              placeholder="İcazənin adı"
-              onChange={handleNameChange}
-              required
-            />
+    <div className="editPermissionContainer">
+      <div className="editPermissionWrapper">
+        {/* Navigation & Header */}
+        <div className="editPermHeader">
+          <button
+            type="button"
+            className="editPermBackBtn"
+            onClick={() => navigate("/permissions")}
+          >
+            <IoArrowBack size={18} /> İcazələr siyahısına qayıt
+          </button>
+          <div className="editPermTitleRow">
+            <div>
+              <h1 className="editPermTitle">İcazəni redaktə et</h1>
+              <p className="editPermSubtitle">
+                {name ? `"${name}" rolunun modul icazələrini tənzimləyin` : "Modul üzrə icazələri konfiqurasiya edin"}
+              </p>
+            </div>
+            <div className="editPermBadge">
+              <span>İcazə ID: #{id}</span>
+            </div>
+          </div>
+        </div>
+
+        <form onSubmit={handleSave} className="flex flex-col gap-5">
+          {/* Role Name Card */}
+          <div className="editPermCard">
+            <div className="editPermInputGroup">
+              <label htmlFor="name" className="editPermLabel">
+                İcazənin adı <span style={{ color: "#EF4444" }}>*</span>
+              </label>
+              <input
+                type="text"
+                id="name"
+                value={name}
+                placeholder="Məsələn: Baş Həkim, Mühasib, Qeydiyyatçı"
+                onChange={handleNameChange}
+                className="editPermInput"
+                required
+              />
+            </div>
           </div>
 
-          <label style={{ marginTop: 20, fontWeight: "bold" }}>
-            İcazələr (redaktə)
-          </label>
-          <div className="permissionTableWrapper">
-            <table
-              className="permissionTable"
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                background: "#f8f9fa",
-              }}>
-              <thead>
-                <tr>
-                  <th>İcazələr</th>
-                  {actions.map((action) => (
-                    <th key={action}>
-                      <input
-                        type="checkbox"
-                        checked={isActionAllChecked(action)}
-                        onChange={() => handleCheckAll(action)}
-                      />
-                      <div>{action}</div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {permissionsList.map((group, idx) => (
-                  <React.Fragment key={group.group || "main-" + idx}>
-                    {group.group && (
-                      <tr>
-                        <td
-                          colSpan={actions.length + 1}
-                          style={{
-                            fontWeight: "bold",
-                            fontSize: "14px",
-                            color: "#155EEF",
-                          }}>
-                          {group.group}
-                        </td>
-                      </tr>
-                    )}
-                    {group.items.map((item) => (
-                      <tr key={item}>
-                        <td>
+          {/* Matrix Table Card */}
+          <div className="editPermCard">
+            <div className="editPermMatrixHeader">
+              <div className="editPermMatrixTitle">
+                <span className="editPermMatrixDot" />
+                <span>Modul üzrə icazələr matrisi</span>
+              </div>
+              <button
+                type="button"
+                className="editPermQuickToggleBtn"
+                onClick={handleToggleEntireMatrix}
+              >
+                {isEntireMatrixAllChecked() ? "Hamısını təmizlə" : "Bütün icazələri seç"}
+              </button>
+            </div>
+
+            <div className="permissionTableWrapper">
+              <table className="permissionTable">
+                <thead>
+                  <tr>
+                    <th style={{ minWidth: "260px" }}>Modul / Bölmə</th>
+                    {actions.map((action) => (
+                      <th key={action} className="colActionHeader">
+                        <div
+                          className="thActionContent"
+                          onClick={() => handleCheckAll(action)}
+                        >
                           <input
                             type="checkbox"
-                            checked={isRowAllChecked(item)}
-                            onChange={() => handleCheckRow(item)}
-                            style={{ marginRight: 8 }}
+                            className="permCheckbox"
+                            checked={isActionAllChecked(action)}
+                            onChange={() => handleCheckAll(action)}
+                            onClick={(e) => e.stopPropagation()}
                           />
-                          {item}
-                        </td>
-                        {actions.map((action) => (
-                          <td key={action} style={{ textAlign: "center" }}>
-                            <input
-                              type="checkbox"
-                              checked={checked[item]?.[action] || false}
-                              onChange={() => handleCheck(item, action)}
-                            />
-                          </td>
-                        ))}
-                      </tr>
+                          <span>{action}</span>
+                        </div>
+                      </th>
                     ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {permissionsList.map((group, gIdx) => (
+                    <React.Fragment key={group.group || "group-" + gIdx}>
+                      <tr className="groupHeaderRow">
+                        <td colSpan={actions.length + 1}>
+                          <span className="groupHeaderPill">{group.group}</span>
+                        </td>
+                      </tr>
+                      {group.items.map((item) => (
+                        <tr key={item} className="permRow">
+                          <td className="colModuleName">
+                            <label className="rowSelectWrap">
+                              <input
+                                type="checkbox"
+                                className="permCheckbox"
+                                checked={isRowAllChecked(item)}
+                                onChange={() => handleCheckRow(item)}
+                              />
+                              <span>{item}</span>
+                            </label>
+                          </td>
+                          {actions.map((action) => (
+                            <td key={action} className="colActionCell">
+                              <input
+                                type="checkbox"
+                                className="permCheckbox"
+                                checked={checked[item]?.[action] || false}
+                                onChange={() => handleCheck(item, action)}
+                              />
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <div className="addPermissionActions">
-            <button
-              type="button"
-              className="cancelBtn"
-              onClick={() => navigate("/permissions")}>
-              <RxCross2 /> İmtina et
-            </button>
-            <button type="submit" className="saveBtn" onClick={handleSave}>
-              <FiCheck /> Yadda saxla (redaktə)
-            </button>
+            {/* Bottom Actions */}
+            <div className="editPermissionActions">
+              <button
+                type="button"
+                className="editPermCancelBtn"
+                onClick={() => navigate("/permissions")}
+              >
+                <RxCross2 size={16} /> İmtina et
+              </button>
+              <button
+                type="submit"
+                className="editPermSaveBtn"
+                disabled={isSaving || !name.trim()}
+              >
+                <FiCheck size={16} /> {isSaving ? "Yadda saxlanılır..." : "Yadda saxla"}
+              </button>
+            </div>
           </div>
         </form>
       </div>

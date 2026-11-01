@@ -1,193 +1,351 @@
-.editPermissionContainer{
+/* Modern Unified Edit Permission Styles */
+
+.editPermissionContainer {
+    width: 100%;
     min-height: 100vh;
-    background: linear-gradient(135deg, #f8fafc 0%, #f0f4ff 100%);
-    width: 100%;
-    padding: 20px;
-}
-
-.permissionTableWrapper {
-    overflow-y: auto;
-    overflow-x: auto;
-    background: #fff;
-    border-radius: 12px;
-    margin-top: 10px;
-    width: 100%;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.permissionTable{
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
-}
-
-.permissionTable > thead{
-    background: linear-gradient(135deg, #f7fafd 0%, #f0f4ff 100%);
-    border-bottom: 2px solid #e5e7eb;
-    position: sticky;
-    top: 0;
-}
-
-.permissionTable > thead > tr > th{
-    font-size: 13px;
-    font-weight: 600;
-    text-align: center;
-    padding: 14px 12px;
-    border: none;
-    color: #667085;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.permissionTable > tbody > tr {
-    border-bottom: 1px solid #e5e7eb;
-    transition: all 0.2s ease;
-}
-
-.permissionTable > tbody > tr:hover {
-    background: #f8fafc;
-}
-
-.permissionTable > tbody > tr > td {
-    padding: 12px;
-    font-size: 14px;
-    color: #374151;
-    text-align: center;
-}
-
-.permissionTable > tbody > tr > td:first-child {
-    text-align: left;
-    font-weight: 500;
-    color: #1f2937;
-}
-
-.permissionTable > tbody > tr.groupHeader > td {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    color: #155EEF;
-    font-weight: 600;
-    padding: 12px;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    background-color: #F8FAFC;
+    padding: 24px 28px;
+    box-sizing: border-box;
 }
 
 .editPermissionWrapper {
-    padding: 40px;
-    border-radius: 12px;
-    width: 100%;
-    max-width: 1400px;
+    max-width: 1360px;
     margin: 0 auto;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.07);
-    border: 1px solid #e5e7eb;
-}
-
-.topPartForm{
-    display: flex;
-    align-items: center;
-    gap: 50px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.topPartForm > label{
-    width: 120px;
-    display: flex;
-    font-weight: 600;
-    color: #1f2937;
-    font-size: 15px;
-}
-
-.editPermissionForm {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
 }
 
-.editPermissionForm label {
-    font-weight: 600;
-    font-size: 14px;
-    color: #1f2937;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.editPermissionForm input[type="text"] {
-    padding: 12px 14px;
-    font-size: 14px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    width: 100%;
-    background-color: #f8fafc;
-    transition: all 0.2s ease;
-    color: #1f2937;
-}
-
-.editPermissionForm input[type="text"]:focus {
-    border-color: #155EEF;
-    background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.1);
-}
-
-.editPermissionForm input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: #155EEF;
-    transition: all 0.2s ease;
-}
-
-.editPermissionForm input[type="checkbox"]:hover {
-    transform: scale(1.1);
-}
-
-.editPermissionActions {
+/* Header & Back Button */
+.editPermHeader {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: 12px;
-    padding-top: 30px;
-    border-top: 1px solid #e5e7eb;
-    margin-top: 40px;
 }
 
-.cancelBtn,
-.saveBtn {
+.editPermBackBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    color: #475467;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    width: fit-content;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    transition: all 0.2s ease;
+}
+
+.editPermBackBtn:hover {
+    background-color: #F1F5F9;
+    color: #155EEF;
+    border-color: #CBD5E1;
+}
+
+.editPermTitleRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.editPermTitle {
+    font-size: 22px;
+    font-weight: 700;
+    color: #101828;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.editPermSubtitle {
+    font-size: 13.5px;
+    color: #667085;
+    margin: 4px 0 0 0;
+}
+
+.editPermBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #155EEF;
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+/* Role Name Card */
+.editPermCard {
+    background: #FFFFFF;
+    border: 1px solid #EAECF0;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04);
+}
+
+.editPermInputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 520px;
+}
+
+.editPermLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: #344054;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.editPermInput {
+    padding: 10px 14px;
+    font-size: 14px;
+    color: #101828;
+    background: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+}
+
+.editPermInput:focus {
+    border-color: #155EEF;
+    box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.14);
+}
+
+/* Matrix Table Card */
+.editPermMatrixHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #F2F4F7;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.editPermMatrixTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: #101828;
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 14px;
+}
+
+.editPermMatrixDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #155EEF;
+}
+
+.editPermQuickToggleBtn {
+    padding: 7px 14px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #344054;
+    background: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    transition: all 0.15s ease;
 }
 
-.cancelBtn {
-    background-color: #fff;
+.editPermQuickToggleBtn:hover {
+    background-color: #F9FAFB;
+    border-color: #98A2B3;
     color: #155EEF;
-    border: 1.5px solid #155EEF;
 }
 
-.cancelBtn:hover {
-    background-color: #f0f4ff;
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(21, 94, 239, 0.1);
+/* Table Wrapper */
+.permissionTableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #EAECF0;
+    border-radius: 10px;
+    background: #FFFFFF;
 }
 
-.saveBtn {
-    background: linear-gradient(135deg, #155EEF 0%, #0d4bc4 100%);
-    color: #fff;
+.permissionTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.permissionTable thead th {
+    background: #F9FAFB;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475467;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #EAECF0;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.permissionTable thead th.colActionHeader {
+    text-align: center;
+    min-width: 105px;
+}
+
+.thActionContent {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.thActionContent:hover span {
+    color: #155EEF;
+}
+
+/* Group Section Header in Table */
+.permissionTable tbody tr.groupHeaderRow td {
+    background: #F8FAFC;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #155EEF;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-top: 1px solid #EAECF0;
+    border-bottom: 1px solid #EAECF0;
+}
+
+.groupHeaderPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.groupHeaderPill::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 12px;
+    background-color: #155EEF;
+    border-radius: 2px;
+}
+
+/* Normal Rows */
+.permissionTable tbody tr.permRow {
+    transition: background-color 0.15s ease;
+}
+
+.permissionTable tbody tr.permRow:hover {
+    background-color: #F8FAFC;
+}
+
+.permissionTable tbody tr.permRow td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #F2F4F7;
+    font-size: 13.5px;
+    color: #344054;
+}
+
+.permissionTable tbody tr.permRow td.colModuleName {
+    font-weight: 500;
+    color: #101828;
+    white-space: nowrap;
+}
+
+.rowSelectWrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.permissionTable tbody tr.permRow td.colActionCell {
+    text-align: center;
+}
+
+/* Custom Checkbox Styling */
+.permCheckbox {
+    width: 17px;
+    height: 17px;
+    cursor: pointer;
+    accent-color: #155EEF;
+    border-radius: 4px;
+    transition: transform 0.1s ease;
+    vertical-align: middle;
+}
+
+.permCheckbox:hover {
+    transform: scale(1.12);
+}
+
+/* Actions Footer */
+.editPermissionActions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    margin-top: 10px;
+}
+
+.editPermCancelBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #344054;
+    background: #FFFFFF;
+    border: 1px solid #D0D5DD;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    transition: all 0.2s ease;
+}
+
+.editPermCancelBtn:hover {
+    background: #F9FAFB;
+    border-color: #CBD5E1;
+    color: #101828;
+}
+
+.editPermSaveBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+    background-color: #155EEF;
     border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.05);
+    transition: all 0.2s ease;
 }
 
-.saveBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(21, 94, 239, 0.3);
+.editPermSaveBtn:hover {
+    background-color: #1048b8;
+    box-shadow: 0 4px 12px rgba(21, 94, 239, 0.25);
 }
 
-  
+.editPermSaveBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}

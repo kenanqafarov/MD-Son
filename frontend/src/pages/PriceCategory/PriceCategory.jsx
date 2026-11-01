@@ -3,11 +3,11 @@ import { CiSearch, CiExport } from "react-icons/ci";
 import { GoTrash } from "react-icons/go";
 import { FiEdit3 } from "react-icons/fi";
 import { HiArrowsUpDown } from "react-icons/hi2";
-import { FaPlus } from "react-icons/fa";
 import "../../assets/style/PriceCategory/pricecategory.css";
 import { Link, useNavigate } from "react-router-dom";
 import usePriceCategoryStore from "../../../stores/priceCategoryStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -30,9 +30,8 @@ const PriceCategory = () => {
     categories,
     loading,
     fetchCategories,
-    exportToExcel,
     removeCategory,
-    updateCategoryStatus, // Status update funksiyası
+    updateCategoryStatus,
   } = usePriceCategoryStore();
 
   useEffect(() => {
@@ -61,16 +60,25 @@ const PriceCategory = () => {
   const filteredCategories = categories.filter(
     (item) =>
       (status === "" || item.status === status) &&
-      item.name.toLowerCase().includes(search.toLowerCase())
+      (item.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const handleExport = () => {
+    const dataToExport = filteredCategories.map((item, idx) => ({
+      "№": idx + 1,
+      "Kateqoriya adı": item.name || "",
+      "Status": item.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "qiymet_kateqoriyalari");
+  };
+
   return (
-    <div className="priceCategoryWrapper">
-      <div className="priceCategoryContainer">
-        <div className="priceCategoryTopPart">
-          <div className="leftPartOfTop">
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
             <select
-              className="priceCategoryStatusSelect"
+              className="settings-select"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
@@ -80,92 +88,103 @@ const PriceCategory = () => {
                 </option>
               ))}
             </select>
-            <div className="searchBarContainer">
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
               <input
                 type="text"
                 placeholder="Axtarış"
+                className="settings-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <CiSearch className="searchIconBTN" />
             </div>
           </div>
-          <div className="rightPartOfTop">
+          <div className="settings-right-controls">
             {canCreate && (
-              <Link to={"add"} className="addNewPriceCategory">
-                <FaPlus /> Yeni kateqoriya əlavə et
+              <Link to={"add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
               </Link>
             )}
             <button
-              className="exportDataOfPriceCategory"
-              title="Export"
-              onClick={exportToExcel}
+              type="button"
+              className="settings-btn-export"
+              title="Excel-ə ixrac et"
+              onClick={handleExport}
             >
-              <CiExport size={22} className="exportPriceCategoryDataIcon" />
+              <CiExport size={20} />
             </button>
           </div>
         </div>
 
-        <div className="priceCategoryTableWrapper">
-          <table className="priceCategoryTable">
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
             <thead>
               <tr>
+                <th className="settings-col-num">#</th>
                 <th>
-                  <span>1-{filteredCategories.length}</span>
+                  <div className="flex items-center gap-2">
+                    <HiArrowsUpDown className="text-gray-400" /> Kateqoriya adı
+                  </div>
                 </th>
                 <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Kateqoriya adı
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <HiArrowsUpDown className="text-gray-400" /> Status
+                  </div>
                 </th>
-                <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Status
-                  </span>
-                </th>
-                {(canUpdate || canDelete) && <th>Düzəliş</th>}
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={4}>Yüklənir...</td>
+                  <td colSpan={4} className="settings-empty-state">Yüklənir...</td>
                 </tr>
               ) : filteredCategories.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>Heç bir nəticə tapılmadı</td>
+                  <td colSpan={4} className="settings-empty-state">Heç bir nəticə tapılmadı</td>
                 </tr>
               ) : (
                 filteredCategories.map((item, idx) => (
                   <tr key={item.id}>
-                    <td>{idx + 1}</td>
-                    <td>{item.name}</td>
-                    <td
-                      onClick={() => canStatus && handleStatusToggle(item)}
-                      style={{ cursor: canStatus ? "pointer" : "default" }}
-                    >
-                      <span
-                        className={`status ${
-                          item.status === "ACTIVE" ? "active" : "passive"
+                    <td className="settings-col-num">{idx + 1}</td>
+                    <td className="font-medium text-gray-800">{item.name}</td>
+                    <td>
+                      <button
+                        type="button"
+                        disabled={!canStatus}
+                        className={`settings-status-badge ${
+                          item.status === "ACTIVE"
+                            ? "settings-status-active"
+                            : "settings-status-passive"
                         }`}
+                        onClick={() => canStatus && handleStatusToggle(item)}
                       >
+                        <span className="settings-status-dot" />
                         {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                      </span>
+                      </button>
                     </td>
                     {(canUpdate || canDelete) && (
-                      <td>
-                        <div className="icons flex gap-3 cursor-pointer">
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
                           {canUpdate && (
-                            <FiEdit3
-                              className="edit"
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
                               onClick={() => handleEdit(item.id)}
-                            />
+                              title="Redaktə et"
+                            >
+                              <FiEdit3 size={15} />
+                            </button>
                           )}
                           {canDelete && (
-                            <GoTrash
-                              className="delete"
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
                               onClick={() => handleDelete(item.id)}
-                            />
+                              title="Sil"
+                            >
+                              <GoTrash size={15} />
+                            </button>
                           )}
                         </div>
                       </td>

@@ -86,5 +86,7 @@ public class AddWorkerCreateRequest {
     String email;
     String address;
     Integer experience;
+    String profilePhotoPath;
+    Boolean enabled;
     Set<String> permissions;
 }

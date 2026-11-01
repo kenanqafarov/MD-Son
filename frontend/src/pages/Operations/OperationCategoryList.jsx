@@ -7,6 +7,7 @@ import { HiOutlineArrowsUpDown } from "react-icons/hi2";
 import { Link, useNavigate } from "react-router-dom";
 import useOperationTypesStore from "../../../stores/operationsTypeStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const OperationCategoryList = () => {
   const navigate = useNavigate();
@@ -77,136 +78,137 @@ const OperationCategoryList = () => {
     return status;
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredOperationTypes.map((row, index) => ({
+      "№": index + 1,
+      "Əməliyyat kateqoriyasının adı": row.categoryName || "",
+      "Status": formatStatus(row.status),
+    }));
+    exportToExcel(dataToExport, "emeliyyat_kateqoriyalari");
+  };
+
   return (
-    <div className="operationsList-container">
-      <div className="operationsList-controls-section">
-        <div className="operationsList-filters">
-          <select 
-            className="operationsList-status-dropdown"
-            value={selectedStatus}
-            onChange={(e) => setSelectedStatus(e.target.value)}
-          >
-            <option value="">Status</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="PASSIVE">Passiv</option>
-          </select>
-          <div className="operationsList-search-box">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              className="operationsList-search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="operationsList-search-button">
-              <CiSearch className="operationsList-search-icon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
             </button>
           </div>
         </div>
-        <div className="operationsList-actions">
-          {canCreate && (
-            <Link to={"./add"} className="operationsList-add-new-button">
-              <span>+</span> Yenisini əlavə et
-            </Link>
-          )}
-          <button className="operationsList-download-button">
-            <FiDownload className="operationsList-download-icon" />
-          </button>
-        </div>
-      </div>
 
-      <div className="operationsList-table-section">
-        {loading && <p>Yüklənir...</p>}
-        {error && (
-          <p style={{ color: "red" }}>
-            Xəta baş verdi: {error.message || error.toString()}
-          </p>
-        )}
-        {!loading && !error && filteredOperationTypes.length === 0 && (
-          <p>Məlumat tapılmadı.</p>
-        )}
-
-        {!loading && !error && filteredOperationTypes.length > 0 && (
-          <table className="operationsList-table">
-            <thead>
-              <tr>
-                <th className="!text-center">
-                  <span className="firstElementOfTHS !flex !items-center gap-1">
-                    <HiOutlineArrowsUpDown className="operationsList-sort-icon !-ml-2" />
-                    {`1-${filteredOperationTypes.length}`}
-                  </span>
-                </th>
-                <th >
-                  <span className="!flex !items-center gap-1 justify-center">
-                    <HiOutlineArrowsUpDown className="operationsList-sort-icon" />{" "}
-                    İcazənin adı
-                  </span>
-                </th>
-                <th >
-                  <span className="!flex !items-center gap-1 justify-center">
-                    <HiOutlineArrowsUpDown className="operationsList-sort-icon mt-1" />{" "}
-                    Əməliyyatların sayı
-                  </span>
-                </th>
-                <th>
-                  <span className="!flex !items-center gap-1 justify-center"> 
-                    <HiOutlineArrowsUpDown className="operationsList-sort-icon mt-1" />{" "}
-                    Status
-                  </span>
-                </th>
-                {(canUpdate || canDelete) && (
-                  <th className="!flex !justify-center">
-                    <span>Düzəliş</span>
-                  </th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOperationTypes.map((row, index) => (
-                <tr key={row.id}>
-                  <td>{index + 1}</td>
-                  <td className="!text-center">{row.categoryName}</td>
-                  <td className="!text-center">
-                    <Link to={`/operations/${row.id}`}>
-                      Əməliyyatların sayı ({row.opTypeItemCount || 0})
-                    </Link>
-                  </td>
-                  <td
-                    onClick={() => canStatus && handleStatusToggle(row)}
-                    style={{ cursor: canStatus ? "pointer" : "default" }}
-                    className="!text-center"
-                  >
-                    <span
-                      className={`operationsList-status-badge ${
-                        row.status === "ACTIVE" ? "active" : "passive"
-                      }`}
-                    >
-                      {formatStatus(row.status)}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="operationsList-action-icons !flex !justify-center">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="operationsList-edit-button"
-                            onClick={() => handleEdit(row.id)}
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="operationsList-delete-button"
-                            onClick={() => handleDelete(row.id)}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  )}
+        <div className="settings-table-wrapper">
+          {loading ? (
+            <div className="settings-empty-state">Yüklənir...</div>
+          ) : error ? (
+            <div className="settings-empty-state" style={{ color: "#DC2626" }}>
+              Xəta: {error.message || error.toString()}
+            </div>
+          ) : filteredOperationTypes.length === 0 ? (
+            <div className="settings-empty-state">Məlumat tapılmadı.</div>
+          ) : (
+            <table className="settings-table">
+              <thead>
+                <tr>
+                  <th className="settings-col-num">№</th>
+                  <th>Kateqoriyanın adı</th>
+                  <th>Əməliyyatların sayı</th>
+                  <th>Status</th>
+                  {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {filteredOperationTypes.map((row, index) => (
+                  <tr key={row.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td style={{ fontWeight: 500, color: "#1E293B" }}>{row.categoryName}</td>
+                    <td>
+                      <Link
+                        to={`/operations/${row.id}`}
+                        style={{ color: "#155EEF", fontWeight: 500, textDecoration: "none" }}
+                        onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
+                        onMouseOut={(e) => (e.target.style.textDecoration = "none")}
+                      >
+                        Əməliyyatların sayı ({row.opTypeItemCount || 0})
+                      </Link>
+                    </td>
+                    <td>
+                      <span
+                        className={`settings-status-badge ${
+                          row.status === "ACTIVE" ? "active" : "passive"
+                        }`}
+                        onClick={() => canStatus && handleStatusToggle(row)}
+                        style={{ cursor: canStatus ? "pointer" : "default" }}
+                        title="Statusu dəyişmək üçün klikləyin"
+                      >
+                        <span className="settings-status-dot" />
+                        {formatStatus(row.status)}
+                      </span>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(row.id)}
+                              title="Düzəliş et"
+                            >
+                              <FiEdit3 size={16} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(row.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );

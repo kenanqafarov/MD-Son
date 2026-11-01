@@ -36,6 +36,14 @@ function LogIn() {
       window.history.replaceState(null, "", window.location.pathname);
     }
 
+    // Yadda saxlanmış istifadəçi adını yüklə
+    const isRemembered = localStorage.getItem("remember_me") === "true";
+    const savedUsername = localStorage.getItem("remembered_username");
+    if (isRemembered && savedUsername) {
+      setUsername(savedUsername);
+      setRememberMe(true);
+    }
+
     const token = localStorage.getItem("token");
     const refreshToken = localStorage.getItem("refreshToken");
 
@@ -75,6 +83,15 @@ function LogIn() {
 
       if (loginSuccess) {
         console.log("Login Success ✅");
+
+        // Yadda saxla seçimini saxla və ya sil
+        if (rememberMe) {
+          localStorage.setItem("remember_me", "true");
+          localStorage.setItem("remembered_username", username);
+        } else {
+          localStorage.removeItem("remember_me");
+          localStorage.removeItem("remembered_username");
+        }
         
         toast.success("Siz sistemə daxil oldunuz", {
           position: "top-right",

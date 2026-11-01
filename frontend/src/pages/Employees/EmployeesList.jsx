@@ -9,6 +9,7 @@ import useEmployeeStore from "../../../stores/workerStore";
 import { useNavigate, Link } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 import { usePermission } from "../../hooks/usePermission";
+import * as XLSX from "xlsx";
 import "./EmployeList.css";
 
 const EmployeesList = () => {
@@ -28,6 +29,7 @@ const EmployeesList = () => {
   const setSearchResult = useEmployeeStore(state => state.setSearchResult);
   const fetchByPermission = useEmployeeStore(state => state.fetchByPermission);
   const fetchPermissions = useEmployeeStore(state => state.fetchPermissions);
+  const toggleStatus = useEmployeeStore(state => state.toggleStatus);
 
   const [searchParams, setSearchParams] = useState({
     username: "",
@@ -194,6 +196,43 @@ const EmployeesList = () => {
     return list;
   }, [handleInfoClick, handleEditClick, handleDeleteClick, canUpdate, canDelete]);
 
+  const handleToggleStatus = useCallback(async (emp) => {
+    try {
+      await toggleStatus(emp.id);
+      // If filtering by status is currently applied, re-apply search to reflect changes
+      if (searchParams.enabled !== "") {
+        handleSearch(searchParams);
+      }
+    } catch (err) {
+      alert("Status dəyişdirilərkən xəta baş verdi.");
+    }
+  }, [toggleStatus, searchParams, handleSearch]);
+
+  const handleExportExcel = useCallback(() => {
+    const dataToExport = searchResult.length > 0 ? searchResult : workers;
+    if (!dataToExport || dataToExport.length === 0) {
+      alert("Yükləmək üçün məlumat tapılmadı");
+      return;
+    }
+    const excelData = dataToExport.map((emp, index) => ({
+      "№": index + 1,
+      "İstifadəçi adı": emp.username || "",
+      "Ad": emp.name || "",
+      "Soyad": emp.surname || "",
+      "Ata adı": emp.patronymic || "",
+      "Telefon": emp.phone || "",
+      "Email": emp.email || "",
+      "FİN kod": emp.finCode || "",
+      "İcazələr": emp.permissions ? emp.permissions.join(", ") : "",
+      "Status": emp.enabled ? "Aktiv" : "Passiv",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "İşçilər");
+    XLSX.writeFile(workbook, "Isciler_Siyahisi.xlsx");
+  }, [searchResult, workers]);
+
   // Memoized pagination
   const totalPages = useMemo(() => {
     return Math.ceil(searchResult.length / itemsPerPage);
@@ -226,6 +265,7 @@ const EmployeesList = () => {
         addText="Yenisini əlavə et"
         addLink="/employees/employee-add"
         exportLink="/employees/export"
+        onExportClick={handleExportExcel}
         showAdd={canCreate}
       />
 
@@ -381,7 +421,12 @@ const EmployeesList = () => {
                       <span
                         className={`status ${
                           emp.enabled ? "active" : "passive"
-                        }`}>
+                        } cursor-pointer hover:opacity-80 transition-opacity`}
+                        title="Statusu dəyişmək üçün klikləyin"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleStatus(emp);
+                        }}>
                         {getStatus(emp)}
                       </span>
                     </td>

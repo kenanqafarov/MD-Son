@@ -34,6 +34,7 @@ import { initWebVitals } from "./utils/webVitals";
 initWebVitals();
 
 // Style
+import "./styles.css";
 import "./assets/style/index.css";
 import Examination from "./pages/patient/Examination.jsx";
 import Images from "./pages/patient/Images.jsx";

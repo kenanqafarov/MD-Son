@@ -26,3 +26,5 @@ backend/.gradle/
 scratch/
 frontend/scratch/
 .git_bk
+__pycache__/
+*.pyc

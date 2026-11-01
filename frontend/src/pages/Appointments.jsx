@@ -71,9 +71,6 @@ const Appointments = () => {
   const canCreate = hasPermission("Ümumi təqvim", "CREATE");
   const calendarRef = useRef(null);
 
-  const [selectedProfession, setSelectedProfession] = useState(null);
-  const [professionWorkers, setProfessionWorkers] = useState([]);
-  const [workersLoading, setWorkersLoading] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -98,11 +95,6 @@ const Appointments = () => {
 
   const { patients, fetchPatients } = usePatientStore();
   const { workers, fetchWorkers } = useWorkerStore();
-  const { permissions, fetchPermissions } = usePermissionStore();
-
-  useEffect(() => {
-    fetchPermissions();
-  }, [fetchPermissions]);
 
   useEffect(() => {
     fetchPatients();
@@ -111,62 +103,6 @@ const Appointments = () => {
   useEffect(() => {
     fetchWorkers();
   }, [fetchWorkers]);
-
-  useEffect(() => {
-    let isCurrent = true;
-    if (selectedProfession?.value) {
-      setWorkersLoading(true);
-      fetchWorkersByPermission(selectedProfession.value)
-        .then((data) => {
-          if (!isCurrent) return;
-          const list = Array.isArray(data) ? data : [];
-          if (list.length === 0 && Array.isArray(workers)) {
-            const permNameLower = selectedProfession.value.toLowerCase();
-            const fallbackList = workers.filter((w) => {
-              if (Array.isArray(w.permissions)) {
-                return w.permissions.some(
-                  (p) =>
-                    (typeof p === "string" ? p : p.permissionName || "")
-                      .toLowerCase() === permNameLower
-                );
-              }
-              return false;
-            });
-            setProfessionWorkers(fallbackList);
-          } else {
-            setProfessionWorkers(list);
-          }
-          setWorkersLoading(false);
-        })
-        .catch((err) => {
-          console.error("fetchWorkersByPermission xətası:", err);
-          if (!isCurrent) return;
-          if (Array.isArray(workers)) {
-            const permNameLower = selectedProfession.value.toLowerCase();
-            const fallbackList = workers.filter((w) => {
-              if (Array.isArray(w.permissions)) {
-                return w.permissions.some(
-                  (p) =>
-                    (typeof p === "string" ? p : p.permissionName || "")
-                      .toLowerCase() === permNameLower
-                );
-              }
-              return false;
-            });
-            setProfessionWorkers(fallbackList);
-          } else {
-            setProfessionWorkers([]);
-          }
-          setWorkersLoading(false);
-        });
-    } else {
-      setProfessionWorkers([]);
-      setWorkersLoading(false);
-    }
-    return () => {
-      isCurrent = false;
-    };
-  }, [selectedProfession, workers]);
 
   const findDoctorForAppointment = (appointment) => {
     if (!appointment) return null;
@@ -310,14 +246,6 @@ const Appointments = () => {
     }));
   }, [appointments]);
 
-  const handleProfessionChange = (option) => {
-    setSelectedProfession(option);
-    setSelectedDoctorId(null);
-    if (option) {
-      setSelectedRoom(null);
-    }
-  };
-
   const handleRoomChange = (option) => {
     setSelectedRoom(option);
     if (option) {
@@ -332,36 +260,21 @@ const Appointments = () => {
     }
   };
 
-  const professionOptions = (permissions || [])
-    .filter((p) => !p.status || p.status === "ACTIVE" || p.status === "Aktiv")
-    .reduce((acc, p) => {
-      const name = (p.permissionName || "").trim();
-      if (name && !acc.some((opt) => opt.value.toLowerCase() === name.toLowerCase())) {
-        acc.push({
-          value: name,
-          label: name,
-        });
-      }
-      return acc;
-    }, []);
-
-  const doctorOptions = doctors.map((doctor) => {
-    const fullName = [doctor.name, doctor.surname].filter(Boolean).join(" ").trim();
-    return {
-      value: doctor.doctorId,
-      label: fullName || doctor.username || "Həkim",
-    };
-  });
-
-  const workerOptions = selectedProfession
-    ? professionWorkers.map((worker) => {
+  const doctorOptions = (doctors || []).length > 0
+    ? doctors.map((doctor) => {
+        const fullName = [doctor.name, doctor.surname].filter(Boolean).join(" ").trim();
+        return {
+          value: doctor.doctorId || doctor.id,
+          label: fullName || doctor.username || "Həkim",
+        };
+      })
+    : (workers || []).map((worker) => {
         const fullName = [worker.name, worker.surname].filter(Boolean).join(" ").trim();
         return {
           value: worker.id || worker.doctorId,
           label: fullName || worker.username || "Əməkdaş",
         };
-      })
-    : doctorOptions;
+      });
 
   const roomOptions = rooms.map((room) => ({
     value: room.cabinetName,
@@ -462,30 +375,16 @@ const Appointments = () => {
       <div className="full-width-container">
         <div className="select-options-row">
           <CustomSelect
-            options={professionOptions}
-            onChange={handleProfessionChange}
-            placeholder="Peşə seç"
-            value={selectedProfession}
-            isClearable
-            isSearchable
-            className="select-item"
-          />
-          <CustomSelect
-            options={workerOptions}
+            options={doctorOptions}
             onChange={handleDoctorChange}
-            placeholder={
-              selectedProfession
-                ? `${selectedProfession.label} seç`
-                : "Həkim / Əməkdaş seç"
-            }
+            placeholder="Həkim / Əməkdaş seç"
             value={
-              workerOptions.find(
+              doctorOptions.find(
                 (opt) => String(opt.value) === String(selectedDoctorId)
               ) || null
             }
             isClearable
             isSearchable
-            isLoading={workersLoading}
             className="select-item"
           />
           <CustomSelect

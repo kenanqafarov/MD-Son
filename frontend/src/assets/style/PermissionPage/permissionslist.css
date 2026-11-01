@@ -26,8 +26,7 @@
     gap: 16px;
 }
 
-.permissionsStatusSelect,
-select {
+.permissionsStatusSelect {
     padding: 10px 14px;
     border: 1.5px solid #e5e7eb;
     border-radius: 8px;
@@ -40,14 +39,12 @@ select {
     font-weight: 500;
 }
 
-.permissionsStatusSelect:hover,
-select:hover {
+.permissionsStatusSelect:hover {
     border-color: #155EEF;
     box-shadow: 0 0 0 2px rgba(21, 94, 239, 0.05);
 }
 
-.permissionsStatusSelect:focus,
-select:focus {
+.permissionsStatusSelect:focus {
     border-color: #155EEF;
     box-shadow: 0 0 0 3px rgba(21, 94, 239, 0.1);
 }

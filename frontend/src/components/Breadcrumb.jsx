@@ -8,41 +8,41 @@ const Breadcrumb = () => {
   const params = useParams();
   
   // URL-dən gələn hissələri decode et
-  const pathSegments = location.pathname
+  const rawSegments = location.pathname
     .split('/')
     .filter(segment => segment)
     .map(decodeURIComponent);
 
+  // /employees/employee/:id yolunda təkrar və 404 yaradan 'employee' seqmentini çıxar
+  const pathSegments = rawSegments.filter((segment, idx) => {
+    if (segment === 'employee' && rawSegments[idx - 1] === 'employees') {
+      return false;
+    }
+    return true;
+  });
+
   const getBreadcrumbName = (segment, index, segments) => {
-    if (params[segment] || Object.values(params).includes(segment)) {
-      const paramKey = Object.keys(params).find(key => params[key] === segment);
-      if (paramKey) {
-        switch (paramKey) {
-          case 'id':
-            const context = segments[index - 1];
-            switch (context) {
-              case 'patient':
-                return 'Xəstə #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
-              case 'user':
-              case 'employee':
-              case 'employees':
-                return 'İşçi #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
-              case 'stock':
-                return 'Anbar #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
-              case 'insurance':
-                return 'Sığorta #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
-              case 'prescription':
-                return 'Resept #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
-              case 'technicals-report':
-                return (segment.length > 8 ? segment.slice(0, 8) : segment);
-              default:
-                return (segment.length > 8 ? segment.slice(0, 8) : '#' + segment);
-            }
-          case 'mode':
-            return segment === 'view' ? 'Baxış' : 'Redaktə';
-          default:
-            return segment;
-        }
+    if (params[segment] || Object.values(params).includes(segment) || /^[0-9a-f]{8}-[0-9a-f]{4}/i.test(segment)) {
+      const context = segments[index - 1];
+      switch (context) {
+        case 'patient':
+        case 'patients':
+          return 'Xəstə məlumatları';
+        case 'user':
+        case 'employee':
+        case 'employees':
+          return 'İşçi məlumatları';
+        case 'stock':
+          return 'Anbar #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
+        case 'insurance':
+          return 'Sığorta #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
+        case 'prescription':
+          return 'Resept #' + (segment.length > 8 ? segment.slice(0, 8) : segment);
+        default:
+          if (segment.length > 20) {
+            return 'Məlumat';
+          }
+          return segment;
       }
     }
 
@@ -221,6 +221,8 @@ const Breadcrumb = () => {
         return 'Sifarişlərin qəbulu';
       case 'Sərf məhsulları':
         return 'Sərf məhsulları';
+      case 'change-password':
+        return 'Şifrəni dəyiş';
 
       default:
         return segment.charAt(0).toUpperCase() + segment.slice(1);

@@ -10,6 +10,7 @@ import {
   searchWorkers,
   fetchWorkersByPermission,
   apiFetchPermissions,
+  toggleWorkerStatus,
 } from "../src/api/add-worker";
 
 const useWorkerStore = create(
@@ -107,6 +108,19 @@ const useWorkerStore = create(
       set({ searchResult: data, loading: false, error: null });
     } catch (err) {
       set({ error: err.message, loading: false });
+      throw err;
+    }
+  },
+
+  toggleStatus: async (id) => {
+    try {
+      await toggleWorkerStatus(id);
+      const { workers, searchResult } = get();
+      const updatedWorkers = workers.map(w => w.id === id ? { ...w, enabled: !w.enabled } : w);
+      const updatedSearchResult = searchResult.map(w => w.id === id ? { ...w, enabled: !w.enabled } : w);
+      set({ workers: updatedWorkers, searchResult: updatedSearchResult });
+    } catch (err) {
+      set({ error: err.message });
       throw err;
     }
   },

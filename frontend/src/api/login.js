@@ -37,3 +37,18 @@ export const refreshToken = async (refreshTokenValue, accessToken) => {
     throw error;
   }
 };
+
+export const changePasswordApi = async ({ oldPassword, newPassword }) => {
+  const token = localStorage.getItem("token");
+  const response = await axios.post(
+    `${API_BASE_URL}/auth/change-password`,
+    { oldPassword, newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  return response.data;
+};

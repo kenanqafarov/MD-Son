@@ -1,3 +1,5 @@
+@import "./settings-unified.css";
+
 /* Font-lar artıq HTML-də preload olunur, burada yalnız fallback */
 /* Lazy load digər font-lar - yalnız lazım olduqda */
 

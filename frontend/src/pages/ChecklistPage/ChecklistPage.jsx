@@ -9,6 +9,7 @@ import "../../assets/style/ChecklistPage/checklistpage.css";
 import { Link, useNavigate } from "react-router-dom";
 import useExaminationStore from "../../../stores/examinationStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -63,109 +64,121 @@ const ChecklistPage = () => {
     });
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredChecklistItems.map((item, idx) => ({
+      "№": idx + 1,
+      "Müayinə növünün adı": item.typeName || "",
+      "Status": item.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "muayine_siyahisi");
+  };
+
   return (
-    <div className="checkListPageWrapper">
-      <div className="checklistPageContainer">
-        <div className="checklistPageTopPart">
-          <div className="leftPartOfTop">
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
             <select
-              className="checklistStatusSelect"
+              className="settings-select"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}>
+              onChange={(e) => setStatus(e.target.value)}
+            >
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            <div className="searchBarContainer">
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
               <input
                 type="text"
                 placeholder="Axtarış"
+                className="settings-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <CiSearch className="searchIconBTN" />
             </div>
           </div>
-          <div className="rightPartOfTop">
+          <div className="settings-right-controls">
             {canCreate && (
-              <Link to={"add"} className="addNewChecklistItem">
-                <FaPlus /> Yenisini əlavə et
+              <Link to={"add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
               </Link>
             )}
-            <Link className="exportDataOfChecklist" title="Export">
-              <CiExport size={22} className="exportChecklistDataIcon" />
-            </Link>
+            <button
+              type="button"
+              className="settings-btn-export"
+              title="Excel-ə ixrac et"
+              onClick={handleExport}
+            >
+              <CiExport size={20} />
+            </button>
           </div>
         </div>
 
-        <div className="checklistTableWrapper">
-          <table className="checklistTable">
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
             <thead>
               <tr>
-                <th>
-                  <span>{`1-${filteredChecklistItems.length}`}</span>
-                </th>
-                <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Növün adı
-                  </span>
-                </th>
-                <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Status
-                  </span>
-                </th>
-                {(canUpdate || canDelete) && <th>Düzəliş</th>}
+                <th className="settings-col-num">№</th>
+                <th>Müayinə növünün adı</th>
+                <th>Status</th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
             </thead>
             <tbody>
-              {filteredChecklistItems.map((item, idx) => (
-                <tr key={item.id}>
-                  <td>{idx + 1}</td>
-                  <td>{item.typeName}</td>
-                  <td>
-                    <span
-                      className={`status ${
-                        item.status === "ACTIVE" ? "active" : "passive"
-                      }`}
-                      style={{
-                        backgroundColor:
-                          item.status === "ACTIVE" ? "#d4edda" : "#f8d7da",
-                        color: item.status === "ACTIVE" ? "#155724" : "#721c24",
-                        padding: "4px 10px",
-                        borderRadius: "8px",
-                        cursor: canStatus ? "pointer" : "default",
-                        display: "inline-block",
-                      }}
-                      onClick={() => canStatus && toggleStatus(item)}>
-                      {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
+              {filteredChecklistItems.length > 0 ? (
+                filteredChecklistItems.map((item, idx) => (
+                  <tr key={item.id}>
+                    <td className="settings-col-num">{idx + 1}</td>
+                    <td style={{ fontWeight: 500, color: "#1E293B" }}>{item.typeName}</td>
                     <td>
-                      <div className="icons flex gap-3 cursor-pointer">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="edit"
-                            onClick={() => handleEdit(item.id)}
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="delete"
-                            onClick={() => handleDelete(item.id)}
-                          />
-                        )}
-                      </div>
+                      <span
+                        className={`settings-status-badge ${
+                          item.status === "ACTIVE" ? "active" : "passive"
+                        }`}
+                        style={{ cursor: canStatus ? "pointer" : "default" }}
+                        onClick={() => canStatus && toggleStatus(item)}
+                        title="Statusu dəyişmək üçün kliklə"
+                      >
+                        <span className="settings-status-dot" />
+                        {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </span>
                     </td>
-                  )}
-                </tr>
-              ))}
-              {filteredChecklistItems.length === 0 && (
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(item.id)}
+                              title="Düzəliş et"
+                            >
+                              <FiEdit3 size={16} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(item.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
                 <tr>
-                  <td colSpan="4">Nəticə tapılmadı</td>
+                  <td colSpan={4}>
+                    <div className="settings-empty-state">Heç bir müayinə tapılmadı.</div>
+                  </td>
                 </tr>
               )}
             </tbody>

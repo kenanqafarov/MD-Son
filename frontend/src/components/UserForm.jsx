@@ -184,7 +184,10 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
     experience: yup
       .number()
       .nullable()
-      .typeError("Təcrübə rəqəm olmalıdır"),
+      .transform((curr, orig) => (orig === "" || orig === undefined ? null : curr))
+      .typeError("Təcrübə yalnız rəqəm olmalıdır")
+      .min(0, "Təcrübə mənfi ola bilməz")
+      .max(100, "Təcrübə 100 ildən çox ola bilməz"),
     degree: yup.string().nullable(),
     permissions:
       mode !== "view"
@@ -222,6 +225,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
       address: "",
       degree: "",
       experience: 0,
+      profilePhotoPath: "",
       permissions: [],
     },
   });
@@ -247,6 +251,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         email: userData.email || "",
         address: userData.address || "",
         experience: userData.experience ?? 0,
+        profilePhotoPath: userData.profilePhotoPath || "",
         permissions: getDefaultPermissions(),
       });
     }
@@ -307,6 +312,7 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
         email: data.email || "",
         address: (data.address && data.address.trim() !== "") ? data.address : "",
         experience: (data.experience !== undefined && data.experience !== null && data.experience !== "") ? Number(data.experience) : 0,
+        profilePhotoPath: data.profilePhotoPath || userData?.profilePhotoPath || null,
         permissions: permissionsWithNames,
       };
 
@@ -317,6 +323,9 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
             if (transformedData.password && transformedData.password.trim() !== "") {
               acc.password = transformedData.password;
             }
+          } else if (key === "permissions") {
+            // Always pass permissions so backend never accidentally drops or ignores them
+            acc.permissions = transformedData.permissions;
           } else if (
             JSON.stringify(transformedData[key]) !==
             JSON.stringify(userData[key])
@@ -328,6 +337,11 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
 
         if (userData?.id) {
           updateData.id = userData.id;
+        }
+        // Always ensure permissions are sent when editing
+        updateData.permissions = transformedData.permissions;
+        if (transformedData.profilePhotoPath) {
+          updateData.profilePhotoPath = transformedData.profilePhotoPath;
         }
 
         await onSubmit(updateData);
@@ -653,29 +667,29 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
 
             <div className="main-form-group">
               <label htmlFor="finCode">FIN kod</label>
-              <div className="-ml-11">
-                {errors.finCode && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.finCode.message}
-                  </p>
-                )}
+              <div className="w-full flex flex-col">
                 <input
                   id="finCode"
                   type="text"
                   maxLength={7}
                   {...register("finCode", {
                     onChange: (e) => {
-                      setValue("finCode", e.target.value.toUpperCase().slice(0, 7));
+                      setValue("finCode", e.target.value.toUpperCase().slice(0, 7), { shouldValidate: true });
                     },
                   })}
-                  placeholder="FIN kodu daxil edin"
+                  placeholder={mode === "view" ? "-" : "FIN kodu daxil edin"}
                   readOnly={mode === "view"}
-                  className={`!w-[457px] ${
+                  className={`${
                     mode === "view" ? "readonly" : ""
                   } ${
                     errors.finCode ? "border-2 border-red-500 bg-red-50" : ""
                   }`}
                 />
+                {errors.finCode && (
+                  <span className="text-red-500 text-xs mt-1 font-medium">
+                    {errors.finCode.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -853,22 +867,37 @@ function UserForm({ mode: initialMode, userData = null, onSubmit, onDelete }) {
 
             <div className="main-form-group">
               <label htmlFor="experience">Təcrübə (il)</label>
-              <input
-                id="experience"
-                type="number"
-                {...register("experience")}
-                readOnly={mode === "view"}
-                placeholder={
-                  errors.experience
-                    ? errors.experience.message
-                    : "Təcrübə rəqəm olmalıdır"
-                }
-                className={`${mode === "view" ? "readonly" : ""} ${
-                  errors.experience && !watch("experience")
-                    ? "border-2 text-sm border-red-500 bg-red-50 placeholder-red-500"
-                    : ""
-                }`}
-              />
+              <div className="w-full flex flex-col">
+                <input
+                  id="experience"
+                  type="number"
+                  min={0}
+                  max={100}
+                  step={1}
+                  onKeyDown={(e) => {
+                    if (["e", "E", "+", "-", "."].includes(e.key)) {
+                      e.preventDefault();
+                    }
+                  }}
+                  {...register("experience")}
+                  readOnly={mode === "view"}
+                  placeholder={
+                    mode === "view"
+                      ? "-"
+                      : "Məsələn: 5"
+                  }
+                  className={`${mode === "view" ? "readonly" : ""} ${
+                    errors.experience
+                      ? "border-2 text-sm border-red-500 bg-red-50"
+                      : ""
+                  }`}
+                />
+                {errors.experience && (
+                  <span className="text-red-500 text-xs mt-1 font-medium">
+                    {errors.experience.message}
+                  </span>
+                )}
+              </div>
             </div>
 
             <div className="main-form-group">

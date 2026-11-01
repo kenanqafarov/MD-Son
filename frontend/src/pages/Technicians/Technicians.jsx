@@ -27,6 +27,7 @@ function Technicians() {
   } = useTechnicianStore();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const navigation = useNavigate();
 
   useEffect(() => {
@@ -60,10 +61,8 @@ function Technicians() {
     }
   };
 
-  const handleSearch = async (e) => {
-    const term = e.target.value;
-    setSearchTerm(term);
-    await searchTechs({ search: term });
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
   };
 
   const icons = [
@@ -99,157 +98,166 @@ function Technicians() {
   // `technicians` məlumatının Array olub olmadığını yoxlayın
   const techList = Array.isArray(technicians) ? technicians : [];
 
+  const filteredTechList = techList.filter((tech) => {
+    if (!tech) return false;
+    const matchesStatus = statusFilter === "" || tech.status === statusFilter;
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch =
+      searchTerm === "" ||
+      (tech.username || "").toLowerCase().includes(searchLower) ||
+      (tech.name || "").toLowerCase().includes(searchLower) ||
+      (tech.surname || "").toLowerCase().includes(searchLower) ||
+      (tech.patronymic || "").toLowerCase().includes(searchLower) ||
+      (tech.phone || "").toLowerCase().includes(searchLower);
+    return matchesStatus && matchesSearch;
+  });
+
   return (
-    <div className="techniciansPageContainer">
-      <div className="techiniciansPageTopPart">
-        <div className="leftPartOfTop">
-          <select name="" id="">
-            <option value="">Status</option>
-            <option value="active">Aktiv</option>
-            <option value="passive">Passiv</option>
-          </select>
-          <div className="searchBarContainer relative flex items-center">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              value={searchTerm}
-              onChange={handleSearch}
-              className="w-full pr-10"
-            />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link className="settings-btn-add" to={"add"}>
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={exportToExcel}
+              title="Excel-ə ixrac et"
+            >
+              <CiExport size={20} />
+            </button>
           </div>
         </div>
-        <div className="rightPartOfTop">
-          {canCreate && (
-            <Link className="addNewTechnicianNow" to={"add"}>
-              <span>+</span> Yenisini əlavə et
-            </Link>
-          )}
-          <button
-            className="exportDataOfTechs"
-            onClick={exportToExcel}
-            title="Export to Excel"
-          >
-            <CiExport className="exportDataOfTechsIcon" />
-          </button>
-        </div>
-      </div>
 
-      <div className="techniciansTableWrapper">
-        <table className="techniciansTable">
-          <thead>
-            <tr>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> İstifadəçi adı
-                </span>
-              </th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> Adı
-                </span>
-              </th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> Soyadı
-                </span>
-              </th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> Ata adı
-                </span>
-              </th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> İcazələr
-                </span>
-              </th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> Mobil nömrə
-                </span>
-              </th>
-              <th>Qiymətlər</th>
-              <th>
-                <span className="flex items-center gap-1">
-                  <HiArrowsUpDown className="tableArrowIcon" /> Status
-                </span>
-              </th>
-              <th>Düzəliş</th>
-            </tr>
-          </thead>
-          <tbody>
-            {techList.length > 0 ? (
-              techList.map((tech) => 
-                // Hər bir "tech" obyektinin mövcudluğunu yenidən yoxlayın
-                tech && tech.username ? (
-                  <tr key={tech.id} onClick={() => navigation(`${tech.id}`)} style={{ cursor: "pointer" }}>
-                    <td className="usernameOfTech">
-                      <img
-                        src={`https://avatar.iran.liara.run/username?username=${encodeURIComponent(
-                          tech.username
-                        )}`}
-                        className="imageOfTech"
-                        alt={tech.username}
-                      />
-                      {tech.username}
-                    </td>
-                    <td>{tech.name}</td>
-                    <td>{tech.surname}</td>
-                    <td>{tech.patronymic}</td>
-                    <td>Texnik</td>
-                    <td>{tech.phone}</td>
-                    <td>
-                      <Link 
-                        className="priceListLinkTech" 
-                        to={`prices/${tech.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        Qiymətlər
-                      </Link>
-                    </td>
-                    <td>
-                      <span
-                        className={`status ${
-                          tech.status === "ACTIVE" ? "active" : "passive"
-                        }`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          canStatus && toggleStatus(tech);
-                        }}
-                        style={{ cursor: canStatus ? "pointer" : "default" }}
-                        title="Statusu dəyişmək üçün klikləyin"
-                      >
-                        {getStatus(tech)}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="icons flex gap-3 cursor-pointer">
-                        {icons.map(
-                          ({ icon: IconComp, className, action }, idx) => (
-                            <IconComp
-                              key={idx}
-                              className={className}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                action(tech);
-                              }}
-                            />
-                          )
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ) : null
-              )
-            ) : (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td colSpan={9} style={{ textAlign: "center" }}>
-                  Heç bir texnik tapılmadı.
-                </td>
+                <th>İstifadəçi adı</th>
+                <th>Adı</th>
+                <th>Soyadı</th>
+                <th>Ata adı</th>
+                <th>İcazələr</th>
+                <th>Mobil nömrə</th>
+                <th>Qiymətlər</th>
+                <th>Status</th>
+                <th className="settings-col-actions">Düzəliş</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredTechList.length > 0 ? (
+                filteredTechList.map((tech) =>
+                  tech && tech.username ? (
+                    <tr
+                      key={tech.id}
+                      onClick={() => navigation(`${tech.id}`)}
+                      style={{ cursor: "pointer" }}
+                    >
+                      <td>
+                        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <img
+                            src={`https://avatar.iran.liara.run/username?username=${encodeURIComponent(
+                              tech.username
+                            )}`}
+                            style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "1px solid #E2E8F0" }}
+                            alt={tech.username}
+                          />
+                          <span style={{ fontWeight: 600, color: "#1E293B" }}>{tech.username}</span>
+                        </div>
+                      </td>
+                      <td>{tech.name || "—"}</td>
+                      <td>{tech.surname || "—"}</td>
+                      <td>{tech.patronymic || "—"}</td>
+                      <td>
+                        <span style={{ background: "#F1F5F9", color: "#475569", padding: "3px 8px", borderRadius: "6px", fontSize: "12px", fontWeight: 500 }}>
+                          Texnik
+                        </span>
+                      </td>
+                      <td>{tech.phone || "—"}</td>
+                      <td>
+                        <Link
+                          to={`prices/${tech.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ color: "#155EEF", fontWeight: 500, fontSize: "13px", textDecoration: "none" }}
+                          onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
+                          onMouseOut={(e) => (e.target.style.textDecoration = "none")}
+                        >
+                          Qiymətlər
+                        </Link>
+                      </td>
+                      <td>
+                        <span
+                          className={`settings-status-badge ${
+                            tech.status === "ACTIVE" ? "active" : "passive"
+                          }`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            canStatus && toggleStatus(tech);
+                          }}
+                          style={{ cursor: canStatus ? "pointer" : "default" }}
+                          title="Statusu dəyişmək üçün klikləyin"
+                        >
+                          <span className="settings-status-dot" />
+                          {getStatus(tech)}
+                        </span>
+                      </td>
+                      <td className="settings-col-actions" onClick={(e) => e.stopPropagation()}>
+                        <div className="settings-actions-group">
+                          {icons.map(
+                            ({ icon: IconComp, className, action }, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                className={`settings-action-btn ${className}`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  action(tech);
+                                }}
+                              >
+                                <IconComp />
+                              </button>
+                            )
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ) : null
+                )
+              ) : (
+                <tr>
+                  <td colSpan={9}>
+                    <div className="settings-empty-state">Heç bir texnik tapılmadı.</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

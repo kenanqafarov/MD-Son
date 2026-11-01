@@ -9,6 +9,7 @@ import { CiExport } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
 import useColorStore from "../../../stores/colorStore";
 import { usePermission } from "../../hooks/usePermission";
+import { exportToExcel } from "../../utils/exportExcel";
 
 const statusOptions = [
   { value: "", label: "Status" },
@@ -71,95 +72,119 @@ const ColorsPage = () => {
     }
   };
 
+  const handleExport = () => {
+    const dataToExport = filteredColors.map((item, idx) => ({
+      "№": idx + 1,
+      "Rəngin adı": item.name || "",
+      "Status": item.status === "ACTIVE" ? "Aktiv" : "Passiv",
+    }));
+    exportToExcel(dataToExport, "rengler_siyahisi");
+  };
+
   return (
-    <div className="checkListPageWrapper">
-      <div className="checklistPageContainer">
-        <div className="checklistPageTopPart">
-          <div className="leftPartOfTop">
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
             <select
-              className="checklistStatusSelect"
+              className="settings-select"
               value={status}
-              onChange={(e) => setStatusFilter(e.target.value)}>
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
               {statusOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>
               ))}
             </select>
-            <div className="searchBarContainer">
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
               <input
                 type="text"
                 placeholder="Axtarış"
+                className="settings-search-input"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <CiSearch className="searchIconBTN" />
             </div>
           </div>
-          <div className="rightPartOfTop">
+          <div className="settings-right-controls">
             {canCreate && (
-              <Link to={"add"} className="addNewChecklistItem">
-                <FaPlus /> Yenisini əlavə et
+              <Link to={"add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
               </Link>
             )}
-            <Link
-              to={"export"}
-              className="exportDataOfChecklist"
-              title="Export">
-              <CiExport size={22} className="exportChecklistDataIcon" />
-            </Link>
+            <button
+              type="button"
+              className="settings-btn-export"
+              title="Excel-ə ixrac et"
+              onClick={handleExport}
+            >
+              <CiExport size={20} />
+            </button>
           </div>
         </div>
 
-        <div className="checklistTableWrapper">
-          <table className="checklistTable">
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
             <thead>
               <tr>
+                <th className="settings-col-num">#</th>
                 <th>
-                  <span>#</span>
+                  <div className="flex items-center gap-2">
+                    <HiArrowsUpDown className="text-gray-400" /> Rəngin adı
+                  </div>
                 </th>
                 <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Rəngin adı
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <HiArrowsUpDown className="text-gray-400" /> Status
+                  </div>
                 </th>
-                <th>
-                  <span>
-                    <HiArrowsUpDown className="tableArrowIcon" /> Status
-                  </span>
-                </th>
-                {(canUpdate || canDelete) && <th>Düzəliş</th>}
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
             </thead>
             <tbody>
               {filteredColors.map((item, idx) => (
                 <tr key={item.id}>
-                  <td>{idx + 1}</td>
-                  <td>{item.name}</td>
+                  <td className="settings-col-num">{idx + 1}</td>
+                  <td className="font-medium text-gray-800">{item.name}</td>
                   <td>
-                    <span
-                      className={`status ${
-                        item.status === "ACTIVE" ? "active" : "passive"
+                    <button
+                      type="button"
+                      disabled={!canStatus}
+                      className={`settings-status-badge ${
+                        item.status === "ACTIVE"
+                          ? "settings-status-active"
+                          : "settings-status-passive"
                       }`}
-                      style={{ cursor: canStatus ? "pointer" : "default" }}
-                      onClick={() => canStatus && handleStatusClick(item.id, item.status)}>
+                      onClick={() => canStatus && handleStatusClick(item.id, item.status)}
+                    >
+                      <span className="settings-status-dot" />
                       {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
+                    </button>
                   </td>
                   {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="icons flex gap-3 cursor-pointer">
+                    <td className="settings-col-actions">
+                      <div className="settings-actions-group">
                         {canUpdate && (
-                          <FiEdit3
-                            className="edit"
+                          <button
+                            type="button"
+                            className="settings-action-btn edit"
                             onClick={() => handleEdit(item.id)}
-                          />
+                            title="Redaktə et"
+                          >
+                            <FiEdit3 size={15} />
+                          </button>
                         )}
                         {canDelete && (
-                          <GoTrash
-                            className="delete"
+                          <button
+                            type="button"
+                            className="settings-action-btn delete"
                             onClick={() => handleDelete(item.id)}
-                          />
+                            title="Sil"
+                          >
+                            <GoTrash size={15} />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -168,7 +193,7 @@ const ColorsPage = () => {
               ))}
               {filteredColors.length === 0 && (
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-gray-500">
+                  <td colSpan="4" className="settings-empty-state">
                     Nəticə tapılmadı.
                   </td>
                 </tr>

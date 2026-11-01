@@ -44,6 +44,7 @@ public class SecurityConfig {
                     // ✅ Permission READ and Worker INFO - hər authenticated istifadəçi üçün
                     x.requestMatchers(HttpMethod.GET, "/api/v1/permission/read").authenticated();
                     x.requestMatchers(HttpMethod.GET, "/api/v1/add-worker/info/{id}").authenticated();
+                    x.requestMatchers(HttpMethod.POST, "/api/v1/auth/change-password").authenticated();
                     registerModulePermissions(x);
                     x.anyRequest().access(superAdminBypassAuthorizationManager);
                 })
@@ -84,6 +85,7 @@ public class SecurityConfig {
             x.requestMatchers(HttpMethod.GET, basePath).access((auth, ctx) -> decision(auth, basePath, "READ"));
             x.requestMatchers(HttpMethod.POST, basePath).access((auth, ctx) -> decision(auth, basePath, "CREATE"));
             x.requestMatchers(HttpMethod.PUT, basePath).access((auth, ctx) -> decision(auth, basePath, "UPDATE"));
+            x.requestMatchers(HttpMethod.PATCH, basePath).access((auth, ctx) -> decision(auth, basePath, "UPDATE"));
             x.requestMatchers(HttpMethod.DELETE, basePath).access((auth, ctx) -> decision(auth, basePath, "DELETE"));
         }
     }

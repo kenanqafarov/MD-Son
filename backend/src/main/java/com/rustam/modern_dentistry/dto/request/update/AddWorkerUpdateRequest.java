@@ -82,5 +82,7 @@ public class AddWorkerUpdateRequest {
     String email;
     String address;
     Integer experience;
+    Boolean enabled;
+    String profilePhotoPath;
     Set<String> permissions;
 }

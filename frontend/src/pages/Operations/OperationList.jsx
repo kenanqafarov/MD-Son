@@ -78,109 +78,120 @@ const OperationList = () => {
   };
 
   return (
-    <div className="operationsList-container">
-      <div className="operationsList-controls-section">
-        <div className="operationsList-filters">
-          <select
-            className="operationsList-status-dropdown"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}>
-            <option value="">Status</option>
-            <option value="ACTIVE">Aktiv</option>
-            <option value="PASSIVE">Passiv</option>
-          </select>
-          <div className="operationsList-search-box">
-            <input
-              type="text"
-              placeholder="Axtarış"
-              className="operationsList-search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <button className="operationsList-search-button">
-              <CiSearch className="operationsList-search-icon" />
+    <div className="settings-page-shell">
+      <div className="settings-container">
+        <div className="settings-top-bar">
+          <div className="settings-left-controls">
+            <select
+              className="settings-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="ACTIVE">Aktiv</option>
+              <option value="PASSIVE">Passiv</option>
+            </select>
+            <div className="settings-search-wrapper">
+              <CiSearch className="settings-search-icon" />
+              <input
+                type="text"
+                placeholder="Axtarış"
+                className="settings-search-input"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="settings-right-controls">
+            {canCreate && (
+              <Link to={"./add"} className="settings-btn-add">
+                <span>+</span> Yenisini əlavə et
+              </Link>
+            )}
+            <button
+              type="button"
+              className="settings-btn-export"
+              onClick={handleExport}
+              title="Excel-ə ixrac et"
+            >
+              <FiDownload size={18} />
             </button>
           </div>
         </div>
-        <div className="operationsList-actions">
-          {canCreate && (
-            <Link to={"./add"} className="operationsList-add-new-button">
-              <span>+</span> Yenisini əlavə et
-            </Link>
-          )}
-          <button
-            className="operationsList-download-button"
-            onClick={handleExport}>
-            <FiDownload className="operationsList-download-icon" />
-          </button>
-        </div>
-      </div>
 
-      <div className="operationsList-table-section">
-        <table className="operationsList-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Əməliyyatın adı</th>
-              <th>Kod</th>
-              <th>Qiymet</th>
-              
-              <th>Məhsul istifadəsi</th>
-              <th>Status</th>
-              {(canUpdate || canDelete) && <th>Düzəliş</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {filteredOperations.length > 0 ? (
-              filteredOperations.map((item, index) => (
-                <tr key={item.id}>
-                  <td>{index + 1}</td>
-                  <td>{item.operationName}</td>
-                  <td>{item.operationCode}</td>
-                  <td>{item.price}</td>
-
-                  <td>{item.productUsage || 0}</td>
-                  <td
-                    onClick={() => canStatus && handleStatusToggle(item)}
-                    style={{ cursor: canStatus ? "pointer" : "default" }}>
-                    <span
-                      className={`operationsList-status-badge ${
-                        item.status === "ACTIVE" ? "active" : "passive"
-                      }`}>
-                      {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
-                    </span>
-                  </td>
-                  {(canUpdate || canDelete) && (
-                    <td>
-                      <div className="operationsList-action-icons">
-                        {canUpdate && (
-                          <FiEdit3
-                            className="operationsList-edit-button"
-                            onClick={() => handleEdit(item.id)}
-                          />
-                        )}
-                        {canDelete && (
-                          <GoTrash
-                            className="operationsList-delete-button"
-                            onClick={() => handleDelete(item.id)}
-                          />
-                        )}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))
-            ) : (
+        <div className="settings-table-wrapper">
+          <table className="settings-table">
+            <thead>
               <tr>
-                <td
-                  colSpan={5 + allPriceCategories.length}
-                  style={{ textAlign: "center" }}>
-                  Məlumat tapılmadı
-                </td>
+                <th className="settings-col-num">№</th>
+                <th>Əməliyyatın adı</th>
+                <th>Kod</th>
+                <th>Qiymət</th>
+                <th>Məhsul istifadəsi</th>
+                <th>Status</th>
+                {(canUpdate || canDelete) && <th className="settings-col-actions">Düzəliş</th>}
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredOperations.length > 0 ? (
+                filteredOperations.map((item, index) => (
+                  <tr key={item.id}>
+                    <td className="settings-col-num">{index + 1}</td>
+                    <td style={{ fontWeight: 500, color: "#1E293B" }}>{item.operationName}</td>
+                    <td><span style={{ fontFamily: "monospace", background: "#F1F5F9", padding: "2px 6px", borderRadius: "4px" }}>{item.operationCode || "—"}</span></td>
+                    <td>{item.price ? `${item.price} AZN` : "—"}</td>
+                    <td>{item.productUsage || 0}</td>
+                    <td>
+                      <span
+                        onClick={() => canStatus && handleStatusToggle(item)}
+                        style={{ cursor: canStatus ? "pointer" : "default" }}
+                        className={`settings-status-badge ${
+                          item.status === "ACTIVE" ? "active" : "passive"
+                        }`}
+                        title="Statusu dəyişmək üçün klikləyin"
+                      >
+                        <span className="settings-status-dot" />
+                        {item.status === "ACTIVE" ? "Aktiv" : "Passiv"}
+                      </span>
+                    </td>
+                    {(canUpdate || canDelete) && (
+                      <td className="settings-col-actions">
+                        <div className="settings-actions-group">
+                          {canUpdate && (
+                            <button
+                              type="button"
+                              className="settings-action-btn edit"
+                              onClick={() => handleEdit(item.id)}
+                              title="Düzəliş et"
+                            >
+                              <FiEdit3 size={16} />
+                            </button>
+                          )}
+                          {canDelete && (
+                            <button
+                              type="button"
+                              className="settings-action-btn delete"
+                              onClick={() => handleDelete(item.id)}
+                              title="Sil"
+                            >
+                              <GoTrash size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7}>
+                    <div className="settings-empty-state">Məlumat tapılmadı.</div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
